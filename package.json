@@ -1,0 +1,34 @@
+{
+  "name": "rsc-client",
+  "version": "1.0.0",
+  "description": "runescape classic client in javascript",
+  "main": "./dist/mudclient.min.js",
+  "scripts": {
+    "build-dev": "browserify example.js | indexhtmlify -t rsc > res/example.html",
+    "start": "st -p 1337 -d res"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/misterhat/rsc-client.git"
+  },
+  "keywords": [
+    "runescape",
+    "classic",
+    "rsc",
+    "client",
+    "mmorpg",
+    "game"
+  ],
+  "author": "Zorian Medwid <misterhat144@gmail.com>",
+  "license": "AGPL-3.0+",
+  "bugs": {
+    "url": "https://github.com/misterhat/rsc-client/issues"
+  },
+  "homepage": "https://github.com/misterhat/rsc-client#readme",
+  "devDependencies": {
+    "browserify": "^16.5.0",
+    "eslint": "^6.4.0",
+    "ndarray": "^1.0.18",
+    "st": "^1.2.2"
+  }
+}
