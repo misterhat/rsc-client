@@ -1,4 +1,4 @@
-module.exports = class GameBuffer {
+class GameBuffer {
     // buffer is an Int8Array
     constructor(buffer) {
         this.buffer = buffer;
@@ -56,4 +56,6 @@ module.exports = class GameBuffer {
             dest[destPos + i] = this.buffer[this.offset++];
         }
     }
-};
+}
+
+module.exports = GameBuffer;

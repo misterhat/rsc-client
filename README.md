@@ -1,7 +1,7 @@
 # rsc-client
 
-a ported version of the runescape classic client (*mudclient*) revision 204 from
-java to javascript.
+a ported runescape classic client (*mudclient*) revision 204 from java to 
+javascript.
 
 ## license
 This program is free software: you can redistribute it and/or modify it under 

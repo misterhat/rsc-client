@@ -1,4 +1,4 @@
-function populate2DInt8Array(x, y) {
+function init2DInt8Array(x, y) {
     const a = [];
 
     for (let i = 0; i < x; i += 1) {
@@ -45,17 +45,17 @@ class BZState {
         this.selector = new Int8Array(18002); 
         this.selectorMtf = new Int8Array(18002); 
 
-        this.len = populate2DInt8Array(6, 258);
-        this.limit = populate2DInt8Array(6, 258);
-        this.base = populate2DInt8Array(6, 258);
-        this.perm = populate2DInt8Array(6, 258);
+        this.len = init2DInt8Array(6, 258);
+        this.limit = init2DInt8Array(6, 258);
+        this.base = init2DInt8Array(6, 258);
+        this.perm = init2DInt8Array(6, 258);
 
         this.minLens = new Int32Array(6);
     }
 }
 
 // TODO should we just use functions here instead? it's all static.
-module.exports = class BZLib {
+class BZLib {
     static decompress(out, input, inSize, offset) {
         let block = new BZState();
 
@@ -124,7 +124,7 @@ module.exports = class BZLib {
             while (flag) {
                 flag = false;
 
-                if (cNblockUsed == sSaveNblockPP) {
+                if (cNblockUsed === sSaveNblockPP) {
                     cStateOutLen = 0;
                     break returnNotr;
                 }
@@ -135,7 +135,7 @@ module.exports = class BZLib {
                 cTpos >>= 8;
                 cNblockUsed++;
 
-                if (k1 != cK0) {
+                if (k1 !== cK0) {
                     cK0 = k1;
 
                     if (csAvailOut === 0) {
@@ -155,7 +155,7 @@ module.exports = class BZLib {
                     continue;
                 }
 
-                if (csAvailOut == 0) {
+                if (csAvailOut === 0) {
                     cStateOutLen = 1;
                     break returnNotr;
                 }
@@ -171,7 +171,7 @@ module.exports = class BZLib {
             let k2 = cTpos & 0xff;
             cTpos >>= 8;
 
-            if (++cNblockUsed != sSaveNblockPP) {
+            if (++cNblockUsed !== sSaveNblockPP) {
                 if (k2 !== cK0) {
                     cK0 = k2;
                 } else {
@@ -180,7 +180,7 @@ module.exports = class BZLib {
                     let k3 = cTpos & 0xff;
                     cTpos >>= 8;
 
-                    if (++cNblockUsed != sSaveNblockPP) {
+                    if (++cNblockUsed !== sSaveNblockPP) {
                         if (k3 !== cK0) {
                             cK0 = k3;
                         } else {
@@ -249,10 +249,10 @@ module.exports = class BZLib {
             uc = BZLib.getUChar(state);
             uc = BZLib.getUChar(state);
             uc = BZLib.getBit(state);
-            state.blockRandomised = uc != 0;
+            state.blockRandomised = uc !== 0;
 
             if (state.blockRandomised) {
-                console.log("PANIC! RANDOMISED BLOCK!");
+                console.log('PANIC! RANDOMISED BLOCK!');
             }
 
             state.origPtr = 0;
@@ -265,7 +265,7 @@ module.exports = class BZLib {
 
             for (let i = 0; i < 16; i++) {
                 uc = BZLib.getBit(state);
-                state.inUse_16[i] = uc == 1;
+                state.inUse_16[i] = uc === 1;
             }
 
             for (let i = 0; i < 256; i++) {
@@ -283,7 +283,7 @@ module.exports = class BZLib {
                 }
             }
 
-            makeMaps(state);
+            BZLib.makeMaps(state);
 
             let alphaSize = state.nInUse + 2;
             let nGroups = BZLib.getBits(3, state);
@@ -361,7 +361,7 @@ module.exports = class BZLib {
                     }
                 }
 
-                createDecodeTables(state.limit[t], state.base[t], state.perm[t], state.len[t], minLen, maxLen, alphaSize);
+                BZLib.createDecodeTables(state.limit[t], state.base[t], state.perm[t], state.len[t], minLen, maxLen, alphaSize);
                 state.minLens[t] = minLen;
             }
 
@@ -378,7 +378,7 @@ module.exports = class BZLib {
 
             for (let ii = 15; ii >= 0; ii--) {
                 for (let jj = 15; jj >= 0; jj--) {
-                    state.mtfa[kk] = (byte) (ii * 16 + jj);
+                    state.mtfa[kk] = (ii * 16 + jj) & 0xff;
                     kk--;
                 }
 
@@ -387,7 +387,7 @@ module.exports = class BZLib {
 
             let nblock = 0;
             // GETMTFVAL
-            if (groupPos == 0) {
+            if (groupPos === 0) {
                 groupNo++;
                 groupPos = 50; // BZGSIZE
                 let gSel = state.selector[groupNo];
@@ -407,10 +407,11 @@ module.exports = class BZLib {
                 zj = BZLib.getBit(state);
             }
 
-            for (let nextSym = gPerm[zvec - gBase[zn]]; nextSym != eob; ) {
-                if (nextSym == 0 || nextSym == 1) { // BZRUNA, BZRUNB
+            for (let nextSym = gPerm[zvec - gBase[zn]]; nextSym !== eob; ) {
+                if (nextSym === 0 || nextSym === 1) { // BZRUNA, BZRUNB
                     let es = -1;
                     let N = 1;
+
                     do {
                         if (nextSym === 0) {
                             es += N;
@@ -442,7 +443,7 @@ module.exports = class BZLib {
                         }
 
                         nextSym = gPerm[zvec_2 - gBase[zn_2]];
-                    } while (nextSym == 0 || nextSym == 1);
+                    } while (nextSym === 0 || nextSym === 1);
 
                     es++;
                     uc = state.setToUnseq[state.mtfa[state.mtfbase[0]] & 0xff];
@@ -492,7 +493,7 @@ module.exports = class BZLib {
                         state.mtfbase[0]--;
                         state.mtfa[state.mtfbase[0]] = uc;
 
-                        if (state.mtfbase[0] == 0) {
+                        if (state.mtfbase[0] === 0) {
                             kk = 4095; // MTFASIZE - 1
                             for (let ii = 15; ii >= 0; ii--) {
                                 for (let jj = 15; jj >= 0; jj--) {
@@ -511,7 +512,7 @@ module.exports = class BZLib {
                     nblock++;
 
                     // GETMTFVAL here we go AGAIN
-                    if (groupPos == 0) {
+                    if (groupPos === 0) {
                         groupNo++;
                         groupPos = 50;
                         let gSel = state.selector[groupNo];
@@ -548,7 +549,7 @@ module.exports = class BZLib {
             }
 
             for (let i = 0; i < nblock; i++) {
-                uc = (byte) (state.tt[i] & 0xff);
+                uc = (state.tt[i] & 0xff);
                 state.tt[state.cftab[uc & 0xff]] |= i << 8;
                 state.cftab[uc & 0xff]++;
             }
@@ -556,12 +557,12 @@ module.exports = class BZLib {
             state.tpos = state.tt[state.origPtr] >> 8;
             state.nblockUsed = 0;
             state.tpos = state.tt[state.tpos];
-            state.k0 = (byte) (state.tpos & 0xff);
+            state.k0 = state.tpos & 0xff;
             state.tpos >>= 8;
             state.nblockUsed++;
             state.saveNblock = nblock;
             BZLib.nextHeader(state);
-            goingandshit = state.nblockUsed == state.saveNblock + 1 && state.stateOutLen == 0;
+            goingandshit = state.nblockUsed === state.saveNblock + 1 && state.stateOutLen === 0;
         }
     }
 
@@ -570,11 +571,11 @@ module.exports = class BZLib {
     }
 
     static getBit(state) {
-        return BZLib.getBit(1, state) & 0xff;
+        return BZLib.getBits(1, state) & 0xff;
     }
 
     static getBits(i, state) {
-        let bits;
+        let bits = 0;
 
         do {
             if (state.bsLive >= i) {
@@ -609,7 +610,7 @@ module.exports = class BZLib {
         }
     }
 
-    createDecodeTables(limit, base, perm, length, minLen, maxLen, alphaSize) {
+    static createDecodeTables(limit, base, perm, length, minLen, maxLen, alphaSize) {
         let pp = 0;
 
         for (let i = minLen; i <= maxLen; i++) {
@@ -649,3 +650,5 @@ module.exports = class BZLib {
         }
     }    
 }
+
+module.exports = BZLib;
