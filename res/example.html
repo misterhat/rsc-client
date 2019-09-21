@@ -18,9 +18,22 @@ gameCanvas.height = 345;
 
 document.body.appendChild(gameCanvas);
 
-const mc = new mudclient();
+/*const mc = new mudclient();
 mc.members = false;
-mc.startApplication(512, 334, 'Runescape by Andrew Gower', false);
+mc.startApplication(512, 334, 'Runescape by Andrew Gower', false);*/
+
+(async function () {
+    const response = await fetch('./data204/models36.jag');
+    const reader = response.body.getReader();
+
+    let finished = false;
+
+    do {
+        const { done, value } = await reader.read();
+        console.log(typeof value, value);
+        finished = done;
+    } while (!finished);
+})();
 
 },{"./src/mudclient":2}],2:[function(require,module,exports){
 

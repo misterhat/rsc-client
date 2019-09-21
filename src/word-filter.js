@@ -17,7 +17,7 @@ const C_X = 'x'.charCodeAt(0);
 const C_Z = 'z'.charCodeAt(0);
 
 function toCharArray(s) {
-    let a = new UInt16Array(s.length);
+    let a = new Uint16Array(s.length);
 
     for (let i = 0; i < s.length; i += 1) {
         a[i] = s.charCodeAt(i);
@@ -27,7 +27,7 @@ function toCharArray(s) {
 }
 
 function fromCharArray(a) {
-    return a.map(c => String.fromCharCode(c)).join('');
+    return Array.from(a).map(c => String.fromCharCode(c)).join('');
 }
 
 class WordFilter {
@@ -47,7 +47,7 @@ class WordFilter {
         for (let i = 0; i < wordCount; i++) {
             WordFilter.tldType[i] = buffer.getUnsignedByte();
 
-            let ac = new UInt16Array(buffer.getUnsignedByte());
+            let ac = new Uint16Array(buffer.getUnsignedByte());
 
             for (let j = 0; j < ac.length; j++) {
                 ac[j] = buffer.getUnsignedByte();
@@ -89,7 +89,7 @@ class WordFilter {
 
     static readBuffer(buffer, wordList, charIds) {
         for (let i = 0; i < wordList.length; i++) {
-            let currentWord = new UInt16Array(buffer.getUnsignedByte());
+            let currentWord = new Uint16Array(buffer.getUnsignedByte());
 
             for (let j = 0; j < currentWord.length; j++) {
                 currentWord[j] = buffer.getUnsignedByte();
@@ -120,10 +120,10 @@ class WordFilter {
 
         for (let ignoreIdx = 0; ignoreIdx < WordFilter.ignoreList.length; ignoreIdx++) {
             for (let inputIgnoreIdx = -1; (inputIgnoreIdx = input.indexOf(ignoreList[ignoreIdx], inputIgnoreIdx + 1)) !== -1;) {
-                let ignorewordChars = toCharArray(ignoreList[ignoreIdx]);
+                let ignoreWordChars = toCharArray(ignoreList[ignoreIdx]);
 
-                for (let ignorewordIdx = 0; ignorewordIdx < ignorewordChars.length; ignorewordIdx++) {
-                    inputChars[ignorewordIdx + inputIgnoreIdx] = ignorewordChars[ignorewordIdx];
+                for (let ignorewordIdx = 0; ignorewordIdx < ignoreWordChars.length; ignorewordIdx++) {
+                    inputChars[ignorewordIdx + inputIgnoreIdx] = ignoreWordChars[ignorewordIdx];
                 }
             }
         }
@@ -498,7 +498,7 @@ class WordFilter {
 
                         for (; !flag4 && j1 < inputCharCount; j1++) {
                             if (j1 >= 0 && (!WordFilter.isSpecial(input[j1]) || input[j1] === C_SINGLE_QUOTE)) {
-                                let ac2 = new UInt16Array(3);
+                                let ac2 = new Uint16Array(3);
                                 let k1;
 
                                 for (k1 = 0; k1 < 3; k1++) {
@@ -941,7 +941,7 @@ class WordFilter {
             return true;
         }
 
-        let inputHash = WordFilter.wordTohash(input);
+        let inputHash = WordFilter.wordToHash(input);
         let first = 0;
         let last = WordFilter.hashFragments.length - 1;
 
