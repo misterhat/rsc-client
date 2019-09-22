@@ -213,7 +213,7 @@ class GameModel {
             this.faceFillFront[l1] = Utility.getSignedShort(data, offset);
             offset += 2;
 
-            if (this.faceFillFront[l1] == 32767) {
+            if (this.faceFillFront[l1] === 32767) {
                 this.faceFillFront[l1] = this.magic;
             }
         }
@@ -222,7 +222,7 @@ class GameModel {
             this.faceFillBack[i2] = Utility.getSignedShort(data, offset);
             offset += 2;
 
-            if (this.faceFillBack[i2] == 32767) {
+            if (this.faceFillBack[i2] === 32767) {
                 this.faceFillBack[i2] = this.magic;
             }
         }
@@ -230,7 +230,7 @@ class GameModel {
         for (let j2 = 0; j2 < k; j2++) {
             let k2 = data[offset++] & 0xff;
 
-            if (k2 == 0) {
+            if (k2 === 0) {
                 this.faceIntensity[j2] = 0;
             } else {
                 this.faceIntensity[j2] = magic;
@@ -373,11 +373,11 @@ class GameModel {
     }
 
     projectionPrepare() {
-        this.projectVertexX = new Int32Array(numVertices);
-        this.projectVertexY = new Int32Array(numVertices);
-        this.projectVertexZ = new Int32Array(numVertices);
-        this.vertexViewX = new Int32Array(numVertices);
-        this.vertexViewY = new Int32Array(numVertices);
+        this.projectVertexX = new Int32Array(this.numVertices);
+        this.projectVertexY = new Int32Array(this.numVertices);
+        this.projectVertexZ = new Int32Array(this.numVertices);
+        this.vertexViewX = new Int32Array(this.numVertices);
+        this.vertexViewY = new Int32Array(this.numVertices);
     }
 
     clear() {
@@ -463,7 +463,7 @@ class GameModel {
 
 
     vertexAt(x, y, z) {
-        for (let l = 0; l < numVertices; l++) {
+        for (let l = 0; l < this.numVertices; l++) {
             if (this.vertexX[l] === x && this.vertexY[l] === y && this.vertexZ[l] === z) {
                 return l;
             }
@@ -484,9 +484,9 @@ class GameModel {
         if (this.numVertices >= this.maxVerts) {
             return -1;
         } else {
-            this.vertexX[numVertices] = i;
-            this.vertexY[numVertices] = j;
-            this.vertexZ[numVertices] = k;
+            this.vertexX[this.numVertices] = i;
+            this.vertexY[this.numVertices] = j;
+            this.vertexZ[this.numVertices] = k;
 
             return this.numVertices++;
         }
@@ -502,7 +502,7 @@ class GameModel {
             this.faceFillBack[this.numFaces] = back;
             this.transformState = 1;
 
-            return numFaces++;
+            return this.numFaces++;
         }
     }
 
@@ -528,7 +528,7 @@ class GameModel {
                 sumZ += this.vertexZ[vs[i]];
             }
 
-            let p = sumX / (n * pieceDx) + (sumZ / (n * pieceDz)) * rows;
+            let p = ((sumX / (n * pieceDx)) | 0) + ((sumZ / (n * pieceDz)) | 0) * rows;
             pieceNV[p] += n;
             pieceNF[p]++;
         }
@@ -556,7 +556,7 @@ class GameModel {
                 sumZ += this.vertexZ[vs[i]];
             }
 
-            let p = sumX / (n * pieceDx) + (sumZ / (n * pieceDz)) * rows;
+            let p = ((sumX / (n * pieceDx)) | 0) + ((sumZ / (n * pieceDz)) | 0) * rows;
             this.copyLighting(pieces[p], vs, n, f);
         }
 
@@ -578,7 +578,7 @@ class GameModel {
 
         let outF = model.createFace(nV, dstVs, this.faceFillFront[inF], this.faceFillBack[inF]);
 
-        if (!model.unpickable && !unpickable) {
+        if (!model.unpickable && !this.unpickable) {
             model.faceTag[outF] = this.faceTag[inF];
         }
 
@@ -686,7 +686,7 @@ class GameModel {
             this.transformKind = 4;
         } else if (this.scaleFx !== 256 || this.scaleFy !== 256 || this.scaleFz !== 256) {
             this.transformKind = 3;
-        } else if (orientationYaw !== 0 || orientationPitch !== 0 || orientationRoll !== 0) {
+        } else if (this.orientationYaw !== 0 || this.orientationPitch !== 0 || this.orientationRoll !== 0) {
             this.transformKind = 2;
         } else if (this.baseX !== 0 || this.baseY !== 0 || this.baseZ !== 0) {
             this.transformKind = 1;
@@ -696,7 +696,7 @@ class GameModel {
     }
 
     applyTranslate(dx, dy, dz) {
-        for (let v = 0; v < numVertices; v++) {
+        for (let v = 0; v < this.numVertices; v++) {
             this.vertexTransformedX[v] += dx;
             this.vertexTransformedY[v] += dy;
             this.vertexTransformedZ[v] += dz;
@@ -704,27 +704,30 @@ class GameModel {
     }
 
     applyRotation(yaw, roll, pitch) {
-        for (let v = 0; v < numVertices; v++) {
-            if (pitch != 0) {
+        for (let v = 0; v < this.numVertices; v++) {
+            if (pitch !== 0) {
                 let sin = GameModel.sine9[pitch];
                 let cos = GameModel.sine9[pitch + 256];
                 let x = this.vertexTransformedY[v] * sin + this.vertexTransformedX[v] * cos >> 15;
+
                 this.vertexTransformedY[v] = this.vertexTransformedY[v] * cos - this.vertexTransformedX[v] * sin >> 15;
                 this.vertexTransformedX[v] = x;
             }
 
-            if (yaw != 0) {
+            if (yaw !== 0) {
                 let sin = GameModel.sine9[yaw];
                 let cos = GameModel.sine9[yaw + 256];
                 let y = this.vertexTransformedY[v] * cos - this.vertexTransformedZ[v] * sin >> 15;
+
                 this.vertexTransformedZ[v] = this.vertexTransformedY[v] * sin + this.vertexTransformedZ[v] * cos >> 15;
                 this.vertexTransformedY[v] = y;
             }
 
-            if (roll != 0) {
+            if (roll !== 0) {
                 let sin = sine9[roll];
                 let cos = sine9[roll + 256];
                 let x = this.vertexTransformedZ[v] * sin + this.vertexTransformedX[v] * cos >> 15;
+
                 this.vertexTransformedZ[v] = this.vertexTransformedZ[v] * cos - this.vertexTransformedX[v] * sin >> 15;
                 this.vertexTransformedX[v] = x;
             }
@@ -733,27 +736,27 @@ class GameModel {
 
     applyShear(xy, xz, yx, yz, zx, zy) {
         for (let idx = 0; idx < this.numVertices; idx++) {
-            if (xy != 0) {
+            if (xy !== 0) {
                 this.vertexTransformedX[idx] += this.vertexTransformedY[idx] * xy >> 8;
             }
 
-            if (xz != 0) {
+            if (xz !== 0) {
                 this.vertexTransformedZ[idx] += this.vertexTransformedY[idx] * xz >> 8;
             }
 
-            if (yx != 0) {
+            if (yx !== 0) {
                 this.vertexTransformedX[idx] += this.vertexTransformedZ[idx] * yx >> 8;
             }
 
-            if (yz != 0) {
+            if (yz !== 0) {
                 this.vertexTransformedY[idx] += this.vertexTransformedZ[idx] * yz >> 8;
             }
 
-            if (zx != 0) {
+            if (zx !== 0) {
                 this.vertexTransformedZ[idx] += this.vertexTransformedX[idx] * zx >> 8;
             }
 
-            if (zy != 0) {
+            if (zy !== 0) {
                 this.vertexTransformedY[idx] += this.vertexTransformedX[idx] * zy >> 8;
             }
         }
@@ -860,14 +863,14 @@ class GameModel {
 
         for (let face = 0; face < this.numFaces; face++) {
             if (this.faceIntensity[this.face] !== this.magic) {
-                this.faceIntensity[this.face] = (this.faceNormalX[face] * this.lightDirectionX + this.faceNormalY[face] * this.lightDirectionY + this.faceNormalZ[face] * this.lightDirectionZ) / divisor;
+                this.faceIntensity[this.face] = ((this.faceNormalX[face] * this.lightDirectionX + this.faceNormalY[face] * this.lightDirectionY + this.faceNormalZ[face] * this.lightDirectionZ) / divisor) | 0;
             }
         }
 
-        let normalX = new Int32Array(numVertices);
-        let normalY = new Int32Array(numVertices);
-        let normalZ = new Int32Array(numVertices);
-        let normalMagnitude = new Int32Array(numVertices);
+        let normalX = new Int32Array(this.numVertices);
+        let normalY = new Int32Array(this.numVertices);
+        let normalZ = new Int32Array(this.numVertices);
+        let normalMagnitude = new Int32Array(this.numVertices);
 
         for (let k = 0; k < this.numVertices; k++) {
             normalX[k] = 0;
@@ -880,6 +883,7 @@ class GameModel {
             if (this.faceIntensity[face] === this.magic) {
                 for (let v = 0; v < faceNumVertices[face]; v++) {
                     let k1 = this.faceVertices[face][v];
+
                     normalX[k1] += this.faceNormalX[face];
                     normalY[k1] += this.faceNormalY[face];
                     normalZ[k1] += this.faceNormalZ[face];
@@ -928,17 +932,17 @@ class GameModel {
                 normMag = 1;
             }
 
-            this.faceNormalX[face] = (normX * 0x10000) / normMag;
-            this.faceNormalY[face] = (normY * 0x10000) / normMag;
-            this.faceNormalZ[face] = (normZ * 65535) / normMag;
+            this.faceNormalX[face] = ((normX * 0x10000) / normMag) | 0;
+            this.faceNormalY[face] = ((normY * 0x10000) / normMag)| 0;
+            this.faceNormalZ[face] = ((normZ * 65535) / normMag) | 0;
             this.normalScale[face] = -1;
         }
 
-        light();
+        this.light();
     }
 
     apply() {
-        if (this.transformState == 2) {
+        if (this.transformState === 2) {
             this.transformState = 0;
 
             for (let v = 0; v < this.numVertices; v++) {
@@ -953,7 +957,7 @@ class GameModel {
             return;
         }
 
-        if (this.transformState == 1) {
+        if (this.transformState === 1) {
             this.transformState = 0;
 
             for (let v = 0; v < this.numVertices; v++) {
@@ -1000,17 +1004,17 @@ class GameModel {
         let rollSin = 0;
         let rollCos = 0;
 
-        if (this.cameraYaw !== 0) {
+        if (cameraYaw !== 0) {
             yawSin = GameModel.sine11[cameraYaw];
             yawCos = GameModel.sine11[cameraYaw + 1024];
         }
 
-        if (this.cameraRoll !== 0) {
+        if (cameraRoll !== 0) {
             rollSin = GameModel.sine11[cameraRoll];
             rollCos = GameModel.sine11[cameraRoll + 1024];
         }
 
-        if (this.cameraPitch !== 0) {
+        if (cameraPitch !== 0) {
             pitchSin = GameModel.sine11[cameraPitch];
             pitchCos = GameModel.sine11[cameraPitch + 1024];
         }
@@ -1020,19 +1024,19 @@ class GameModel {
             let y = this.vertexTransformedY[v] - cameraY;
             let z = this.vertexTransformedZ[v] - cameraZ;
 
-            if (this.cameraYaw !== 0) {
+            if (cameraYaw !== 0) {
                 let X = y * yawSin + x * yawCos >> 15;
                 y = y * yawCos - x * yawSin >> 15;
                 x = X;
             }
 
-            if (this.cameraRoll !== 0) {
+            if (cameraRoll !== 0) {
                 let X = z * rollSin + x * rollCos >> 15;
                 z = z * rollCos - x * rollSin >> 15;
                 x = X;
             }
 
-            if (this.cameraPitch !== 0) {
+            if (cameraPitch !== 0) {
                 let Y = y * pitchCos - z * pitchSin >> 15;
                 z = y * pitchSin + z * pitchCos >> 15;
                 y = Y;
@@ -1072,9 +1076,10 @@ class GameModel {
         this.transformKind = 0;
     }
 
+    // TODO see if we have to call .slice() anywhere here
     copy(...args) {
         if (!args) {
-            let pieces = [ this ]; new GameModel[1];
+            let pieces = [ this ]; 
             gameModel = new GameModel(pieces, 1);
             gameModel.depth = depth;
             gameModel.transparent = transparent;
@@ -1103,14 +1108,14 @@ class GameModel {
     }
 
     readBase64(buff) {
-        for (; buff[dataPtr] == 10 || buff[dataPtr] == 13; dataPtr++) ;
+        for (; buff[dataPtr] === 10 || buff[dataPtr] === 13; dataPtr++) ;
 
         let hi = GameModel.base64Alphabet[buff[dataPtr++] & 0xff];
         let mid = GameModel.base64Alphabet[buff[dataPtr++] & 0xff];
         let lo = GameModel.base64Alphabet[buff[dataPtr++] & 0xff];
-        let val = (hi * 4096 + mid * 64 + lo) - 0x20000;
+        let val = ((hi * 4096 + mid * 64 + lo) - 0x20000) | 0;
 
-        if (val == 0x1e240) {
+        if (val === 0x1e240) {
             val = this.magic;
         }
 
@@ -1124,13 +1129,13 @@ GameModel.sine11 = new Int32Array(2048);
 GameModel.base64Alphabet = new Int32Array(256);
 
 for (let i = 0; i < 256; i++) {
-    GameModel.sine9[i] = Math.sin(i * 0.02454369) * 32768;
-    GameModel.sine9[i + 256] = Math.cos(i * 0.02454369) * 32768;
+    GameModel.sine9[i] = (Math.sin(i * 0.02454369) * 32768) | 0;
+    GameModel.sine9[i + 256] = (Math.cos(i * 0.02454369) * 32768) | 0;
 }
 
 for (let j = 0; j < 1024; j++) {
-    GameModel.sine11[j] = Math.sin(j * 0.00613592315) * 32768;
-    GameModel.sine11[j + 1024] = Math.cos(0.00613592315) * 32768;
+    GameModel.sine11[j] = (Math.sin(j * 0.00613592315) * 32768) | 0;
+    GameModel.sine11[j + 1024] = (Math.cos(0.00613592315) * 32768) | 0;
 }
 
 for (let j1 = 0; j1 < 10; j1++) {

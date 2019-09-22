@@ -453,7 +453,7 @@ class WordFilter {
             if (k >= wordList.length) {
                 let filter = true;
 
-                if (DEBUGTLD) {
+                if (WordFilter.DEBUGTLD) {
                     console.log(`Potential word: ${wordList} at char ${charIndex}`);
                 }
 
@@ -532,7 +532,7 @@ class WordFilter {
                 }
 
                 if (filter) {
-                    if (DEBUGWORD) {
+                    if (WordFilter.DEBUGWORD) {
                         console.log(`Filtered word: ${wordList} at char ${charIndex}`);
                     }
 
@@ -558,7 +558,7 @@ class WordFilter {
         }
 
         while (first !== last && (first + 1) !== last) {
-            let middle = (first + last) / 2;
+            let middle = ((first + last) / 2) | 0;
 
             if (charIdData[middle][0] === prevCharId && charIdData[middle][1] === curCharId) {
                 return true;
@@ -810,7 +810,7 @@ class WordFilter {
             return 0;
         }
 
-        if (DEBUGWORD) {
+        if (WordFilter.DEBUGWORD) {
             console.log(`Letter=${filterChar} not matched`);
         }
 
@@ -950,7 +950,7 @@ class WordFilter {
         }
 
         while (first != last && first + 1 != last) {
-            let middle = (first + last) / 2;
+            let middle = ((first + last) / 2) | 0;
 
             if (inputHash === WordFilter.hashFragments[middle]) {
                 return true;
@@ -966,7 +966,6 @@ class WordFilter {
         return false;
     }
 
-    // TODO: make sure we don't have to explicitly convert the hash to an int
     static wordToHash(word) {
         if (word.length > 6) {
             return 0;
@@ -983,8 +982,8 @@ class WordFilter {
                 hash = (hash * 38 + 27) | 0;
             } else if (c >= C_0 && c <= C_9) {
                 hash = (hash * 38 + c - 48 + 28) | 0;
-            } else if (c != 0) {
-                if (DEBUGWORD) {
+            } else if (c !== 0) {
+                if (WordFilter.DEBUGWORD) {
                     console.log(`wordToHash failed on ${fromCharArray(word)}`);
                 }
 
