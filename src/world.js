@@ -19,7 +19,7 @@ class World {
 
         this.worldInitialised = true;
         this.objectAdjacency = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [ this.regionWidth, this.regionHeight ]);
-        this.tileDirection = ndarray(new Int8Array(4 * 2304), [ 4, 2304 ]);
+        this.tileDirection = ndarray(new Int8Array(4 * 2304), [4, 2304]);
 
         this.wallModels = [];
         this.roofModels = [];
@@ -35,15 +35,15 @@ class World {
         }
 
         this.terrainColours = new Int32Array(256);
-        this.wallsNorthSouth = ndarray(new Int8Array(4 * 2304), [ 4, 2304 ]);
-        this.wallsRoof = ndarray(new Int8Array(4 * 2304), [ 4, 2304 ]);
-        this.terrainHeight = ndarray(new Int8Array(4 * 2304), [ 4, 2304 ]);
-        this.terrainColour = ndarray(new Int8Array(4 * 2304), [ 4, 2304 ]);
+        this.wallsNorthSouth = ndarray(new Int8Array(4 * 2304), [4, 2304]);
+        this.wallsRoof = ndarray(new Int8Array(4 * 2304), [4, 2304]);
+        this.terrainHeight = ndarray(new Int8Array(4 * 2304), [4, 2304]);
+        this.terrainColour = ndarray(new Int8Array(4 * 2304), [4, 2304]);
         this.localY = new Int32Array(18432);
-        this.tileDecoration = ndarray(new Int8Array(4 * 2304), [ 4, 2304 ]);
+        this.tileDecoration = ndarray(new Int8Array(4 * 2304), [4, 2304]);
         this.routeVia = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [ this.regionWidth, this.regionHeight ]);
-        this.wallsDiagonal = ndarray(new Int32Array(4 * 2304), [ 4, 2304 ]);
-        this.wallsEastWest = ndarray(new Int8Array(4 * 2304), [ 4, 2304 ])
+        this.wallsDiagonal = ndarray(new Int32Array(4 * 2304), [4, 2304]);
+        this.wallsEastWest = ndarray(new Int8Array(4 * 2304), [4, 2304])
         this.aBoolean592 = false;
         this.playerAlive = false;
         this.terrainHeightLocal = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [ this.regionWidth, this.regionHeight ]);
@@ -1269,7 +1269,7 @@ class World {
                     this.method428(k6 - 1, l3, l4, l3 + 1, l4);
                 }
 
-                k6 = this.getWallNorthsouth(l3, l4);
+                k6 = this.getWallNorthSouth(l3, l4);
 
                 if (k6 > 0) {
                     this.method428(k6 - 1, l3, l4, l3, l4 + 1);
@@ -1805,27 +1805,27 @@ class World {
                 for (let l1 = y; l1 < y + j1; l1++) {
                     const adjacency = this.objectAdjacency.get(k1, l1);
 
-                    if (GameData.objectType[id] == 1) {
+                    if (GameData.objectType[id] === 1) {
                         this.objectAdjacency.set(k1, l1, adjacency & 0xffbf);
-                    } else if (l == 0) {
+                    } else if (l === 0) {
                         this.objectAdjacency.set(k1, l1, adjacency & 0xfffd);
 
                         if (k1 > 0) {
                             this.method407(k1 - 1, l1, 8);
                         }
-                    } else if (l == 2) {
+                    } else if (l === 2) {
                         this.objectAdjacency.set(k1, l1, adjacency & 0xfffb);
 
                         if (l1 < 95) {
                             this.method407(k1, l1 + 1, 1);
                         }
-                    } else if (l == 4) {
+                    } else if (l === 4) {
                         this.objectAdjacency.set(k1, l1, adjacency & 0xfff7);
 
                         if (k1 < 95) {
                             this.method407(k1 + 1, l1, 2);
                         }
-                    } else if (l == 6) {
+                    } else if (l === 6) {
                         this.objectAdjacency.set(k1, l1, adjacency & 0xfffe);
 
                         if (l1 > 0) {
