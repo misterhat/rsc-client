@@ -476,7 +476,7 @@ class Panel {
     }
 
     drawTextListInteractive(control, x, y, width, height, textSize, listEntries, listEntryCount, l1) {
-        let displayedEntryCount = (height / surface.textHeight(textSize)) | 0;
+        let displayedEntryCount = (height / this.surface.textHeight(textSize)) | 0;
 
         if (displayedEntryCount < listEntryCount) {
             let right = (x + width) - 12;
@@ -487,7 +487,7 @@ class Panel {
             }
 
             let j3 = (((height - 27 - l2) * l1) / (listEntryCount - displayedEntryCount)) | 0;
-            
+
             if (this.mouseButtonDown === 1 && this.mouseX >= right && this.mouseX <= right + 12) { 
                 if (this.mouseY > y && this.mouseY < y + 12 && l1 > 0) {
                     l1--;
@@ -541,7 +541,7 @@ class Panel {
                 i4 = 0;
             }
 
-            if (this.mouseX >= x + 2 && this.mouseX <= x + 2 + this.surace.textWidth(listEntries[k3], textSize) && this.mouseY - 2 <= i3 && this.mouseY - 2 > i3 - this.surace.textHeight(textSize)) {
+            if (this.mouseX >= x + 2 && this.mouseX <= x + 2 + this.surface.textWidth(listEntries[k3], textSize) && this.mouseY - 2 <= i3 && this.mouseY - 2 > i3 - this.surface.textHeight(textSize)) {
                 if (this.controlUseAlternativeColour[control]) {
                     i4 = 0x808080;
                 } else {

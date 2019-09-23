@@ -56,7 +56,7 @@ class BZState {
 
 // TODO should we just use functions here instead? it's all static.
 class BZLib {
-    static decompress(out, input, inSize, offset) {
+    static decompress(out, outSize, input, inSize, offset) {
         let block = new BZState();
 
         block.input = input;
