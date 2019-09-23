@@ -97,7 +97,7 @@ class Utility {
     static usernameToHash(s) {
         let s1 = '';
 
-        for (int i = 0; i < s.length(); i++) {
+        for (let i = 0; i < s.length(); i++) {
             let c = s.charCodeAt(i);
 
             if (c >= C_A && c <= C_Z) {
