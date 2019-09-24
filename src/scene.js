@@ -149,7 +149,7 @@ class Scene {
         l += k1;
         i1 += l1;
 
-        if (i1 != 0) {
+        if (i1 !== 0) {
             i3 = k / i1 << 7;
             j3 = l / i1 << 7;
         }
@@ -228,7 +228,7 @@ class Scene {
             l += k1;
             i1 += l1;
 
-            if (i1 != 0) {
+            if (i1 !== 0) {
                 i3 = k / i1 << 7;
                 j3 = l / i1 << 7;
             }
@@ -730,10 +730,12 @@ class Scene {
             i1 += l1;
             i = i3;
             j = j3;
-            if (i1 != 0) {
+
+            if (i1 !== 0) {
                 i3 = k / i1 << 6;
                 j3 = l / i1 << 6;
             }
+
             if (i3 < 0) {
                 i3 = 0;
             } else if (i3 > 4032) {
@@ -1025,7 +1027,7 @@ class Scene {
         i1 <<= 1;
         k = ai1[l >> 8 & 0xff];
         l += i1;
-        let j1 = i / 8;
+        let j1 = (i / 8) | 0;
 
         for (let k1 = j1; k1 < 0; k1++) {
             ai[j++] = k;
@@ -1066,7 +1068,7 @@ class Scene {
         i1 <<= 2;
         k = ai1[l >> 8 & 0xff];
         l += i1;
-        let j1 = i / 16;
+        let j1 = (i / 16) | 0;
 
         for (let k1 = j1; k1 < 0; k1++) {
             ai[j++] = k + (ai[j] >> 1 & 0x7f7f7f);
@@ -1117,7 +1119,7 @@ class Scene {
         i1 <<= 2;
         k = ai1[l >> 8 & 0xff];
         l += i1;
-        let j1 = i / 16;
+        let j1 = (i / 16) | 0;
 
         for (let k1 = j1; k1 < 0; k1++) {
             ai[j++] = k;
@@ -1460,7 +1462,7 @@ class Scene {
     }
 
     render() {
-        this.interlace = surface.interlace;
+        this.interlace = this.surface.interlace;
         let i3 = this.clipX * this.clipFar3d >> this.viewDistance;
         let j3 = this.clipY * this.clipFar3d >> this.viewDistance;
 
@@ -1598,8 +1600,8 @@ class Scene {
                 let vz = model_2d.projectVertexZ[vertex0];
 
                 if (vz > this.clipNear && vz < this.clipFar2d) {
-                    let vw = (this.spriteWidth[face] << this.viewDistance) / vz;
-                    let vh = (this.spriteHeight[face] << this.viewDistance) / vz;
+                    let vw = ((this.spriteWidth[face] << this.viewDistance) / vz) | 0;
+                    let vh = ((this.spriteHeight[face] << this.viewDistance) / vz) | 0;
 
                     if (vx - ((vw / 2) | 0) <= this.clipX && vx + ((vw / 2) | 0) >= -this.clipX && vy - vh <= this.clipY && vy >= -this.clipY) {
                         let polygon_2 = this.visiblePolygons[this.visiblePolygonsCount];
@@ -1668,9 +1670,9 @@ class Scene {
                 for (let k11 = 0; k11 < l10; k11++) {
                     let k2 = ai3[k11];
 
-                    vertexX[k11] = gameModel_2.projectVertexX[k2];
-                    vertexY[k11] = gameModel_2.projectVertexY[k2];
-                    vertexZ[k11] = gameModel_2.projectVertexZ[k2];
+                    this.vertexX[k11] = gameModel_2.projectVertexX[k2];
+                    this.vertexY[k11] = gameModel_2.projectVertexY[k2];
+                    this.vertexZ[k11] = gameModel_2.projectVertexZ[k2];
 
                     if (gameModel_2.faceIntensity[l] === World.colourTransparent) {
                         if (polygon.visibility < 0) {
@@ -1686,7 +1688,7 @@ class Scene {
                         this.vertexShade[k8] = j10;
 
                         if (gameModel_2.projectVertexZ[k2] > this.fogZDistance) {
-                            this.vertexShade[k8] += (gameModel_2.projectVertexZ[k2] - this.fogZDistance) / this.fogZFalloff;
+                            this.vertexShade[k8] += ((gameModel_2.projectVertexZ[k2] - this.fogZDistance) / this.fogZFalloff) | 0;
                         }
 
                         k8++;
@@ -1765,7 +1767,7 @@ class Scene {
             let l8 = ai2[0];
             let j10 = ai2[1];
             let j11 = ai2[2];
-            let j12 = (this.baseY + clipY) - 1;
+            let j12 = (this.baseY + this.clipY) - 1;
             let l12 = 0;
             let j13 = 0;
             let l13 = 0;
@@ -2177,7 +2179,7 @@ class Scene {
                     j23 += k23;
                 }
 
-                let scanline_7 = scanlines[k];
+                let scanline_7 = this.scanlines[k];
                 scanline_7.startX = i;
                 scanline_7.endX = j;
                 scanline_7.startS = l;
@@ -2319,8 +2321,8 @@ class Scene {
                         j4 = 0;
                     }
 
-                    if (j3 > maxY) {
-                        j3 = maxY;
+                    if (j3 > this.maxY) {
+                        j3 = this.maxY;
                     }
 
                     for (let i12 = j4; i12 <= j3; i12++) {
@@ -2648,7 +2650,7 @@ class Scene {
             }
 
             for (i = this.minY; i < this.maxY; i += byte2) {
-                let scanline = scanlines[i];
+                let scanline = this.scanlines[i];
                 j = scanline.startX >> 8;
                 let i20 = scanline.endX >> 8;
                 let l21 = i20 - j;
@@ -2726,7 +2728,7 @@ class Scene {
         }
 
         if (gameModel.transparent) {
-            for (i = minY; i < maxY; i += byte0) {
+            for (i = this.minY; i < this.maxY; i += byte0) {
                 let scanline = this.scanlines[i];
                 j = scanline.startX >> 8;
                 let k4 = scanline.endX >> 8;
@@ -3211,7 +3213,7 @@ class Scene {
         this.textureLoadedNumber = [];
         this.textureBackTransparent = new Int8Array(count);
         this.texturePixels = [];
-        this.textureCountLoaded = new Long(0);
+        Scene.textureCountLoaded = new Long(0);
 
         for (let i = 0; i < count; i += 1) {
             this.textureColoursUsed.push(null);
@@ -3250,7 +3252,8 @@ class Scene {
             return;
         }
 
-        this.textureLoadedNumber[id] = this.textureCountLoaded++;
+        Scene.textureCountLoaded = Scene.textureCountLoaded.add(1);
+        this.textureLoadedNumber[id] = new Long(Scene.textureCountLoaded);
 
         if (this.texturePixels[id] !== null) {
             return;
@@ -3270,7 +3273,7 @@ class Scene {
             let wut = 0;
 
             for (let k1 = 0; k1 < this.textureCount; k1++) {
-                if (k1 != id && this.textureDimension[k1] === 0 && this.texturePixels[k1] !== null && this.textureLoadedNumber[k1].lessThan(GIGALONG)) {
+                if (k1 !== id && this.textureDimension[k1] === 0 && this.texturePixels[k1] !== null && this.textureLoadedNumber[k1].lessThan(GIGALONG)) {
                     GIGALONG = this.textureLoadedNumber[k1];
                     wut = k1;
                 }
@@ -3284,7 +3287,7 @@ class Scene {
 
         // is 128 wide
         for (let k = 0; k < this.textureColours128.length; k++) {
-            if (this.textureColours128[k] == null) {
+            if (this.textureColours128[k] === null) {
                 this.textureColours128[k] = new Int32Array(0x10000);
                 this.texturePixels[id] = this.textureColours128[k];
                 this.setTexturePixels(id);
@@ -3427,7 +3430,7 @@ class Scene {
         if (l === j) {
             return i;
         } else {
-            return i + ((k - i) * (i1 - j)) / (l - j);
+            return i + ((((k - i) * (i1 - j)) / (l - j)) | 0);
         }
     }
 

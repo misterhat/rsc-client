@@ -23,7 +23,11 @@ class FileDownloadStream {
         });
     }
 
-    async readFully(dest, off, len) {
+    async readFully(dest, off = 0, len) {
+        if (isNaN(len)) {
+            len = dest.length;
+        }
+
         if (!this.buffer) {
             this.buffer = await _loadResBytes();
         }
