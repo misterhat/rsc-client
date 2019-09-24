@@ -167,7 +167,7 @@ class Packet {
     }
 
     newPacket(i) {
-        if (this.packetStart > (this.packetMaxLength * 4) / 5)
+        if (this.packetStart > (((this.packetMaxLength * 4) / 5) | 0))
             try {
                 this.writePacket(0);
             } catch (e) {

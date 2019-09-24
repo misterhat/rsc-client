@@ -11,12 +11,12 @@ class Font {
 
     getType(){
         if (this.type === 1) {
-            return "bold";
+            return 'bold';
         } else if (this.type === 2) {
-            return "italic";
+            return 'italic';
         }
 
-        return "normal";
+        return 'normal';
     }
 }
 
