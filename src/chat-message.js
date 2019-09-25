@@ -85,7 +85,7 @@ class ChatMessage {
         let off = 0;
         let lshift = -1;
 
-        for (let k = 0; k < s.length(); k++) {
+        for (let k = 0; k < s.length; k++) {
             let currentChar = s.charCodeAt(k);
             let foundCharMapIdx = 0;
 
