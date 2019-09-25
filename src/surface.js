@@ -2216,7 +2216,7 @@ class Surface {
 
                     idx += 4;
                 } else {
-                    let width = Surface.characterWidth[text.charAt(idx)];
+                    let width = Surface.characterWidth[text[idx]];
 
                     if (loggedIn && colour !== 0) {
                         this.drawCharacter(width, x + 1, y, 0, fontData);
@@ -2405,7 +2405,7 @@ class Surface {
             } else if (text[idx] === '~' && idx + 4 < text.length && text[idx + 4] === '~') {
                 idx += 4;
             } else {
-                total += font[characterWidth[text.charAt(idx)] + 7];
+                total += font[characterWidth[text[idx]] + 7];
             }
         }
 

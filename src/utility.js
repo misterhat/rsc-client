@@ -225,8 +225,9 @@ class Utility {
 
         filename = filename.toUpperCase();
 
-        for (let l = 0; l < filename.length(); l++)
-            wantedHash = (((wantedHash * 61) | 0) + filename.charAt(l)) - 32;
+        for (let l = 0; l < filename.length(); l++) {
+            wantedHash = (((wantedHash * 61) | 0) + filename.charCodeAt(l)) - 32;
+        }
 
         let offset = 2 + numEntries * 10;
 

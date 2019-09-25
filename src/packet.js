@@ -121,7 +121,7 @@ class Packet {
     }
 
     sendPacket() {
-        if (isaacOutgoing !== null) {
+        if (this.isaacOutgoing !== null) {
             let i = this.packetData[this.packetStart + 2] & 0xff;
             this.packetData[this.packetStart + 2] = (i + isaacOutgoing.getNextValue()) & 0xff;
         }

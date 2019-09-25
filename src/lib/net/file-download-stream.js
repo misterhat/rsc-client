@@ -17,22 +17,20 @@ class FileDownloadStream {
         return new Promise((resolve, reject) => {
             xhr.onerror = e => reject(e);
 
-            xhr.onload = () => {
-                resolve(new Int8Array(xhr.response));
-            };
+            xhr.onload = () => resolve(new Int8Array(xhr.response));
         });
     }
 
     async readFully(dest, off = 0, len) {
-        if (isNaN(len)) {
+        if (typeof len === 'undefined') {
             len = dest.length;
         }
 
         if (!this.buffer) {
             this.buffer = await _loadResBytes();
+        } else {
+            await sleep(250);
         }
-
-        await sleep(100);
 
         dest.set(this.buffer.slice(off, len), off);
     }
