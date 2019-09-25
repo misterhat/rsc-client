@@ -37,8 +37,8 @@ class Packet {
     closeStream() {
     }
 
-    readBytes(len, buff) {
-        this.readStreamBytes(len, 0, buff);
+    async readBytes(len, buff) {
+        await this.readStreamBytes(len, 0, buff);
     }
 
     readPacket(buff) {
@@ -90,7 +90,7 @@ class Packet {
         return 0;
     }
 
-    readStreamBytes(i, j, abyte0) {
+    async readStreamBytes(i, j, abyte0) {
     }
 
     hasPacket() {
@@ -188,15 +188,15 @@ class Packet {
     writeStreamBytes(abyte0, i, j) {
     }
 
-    readStream() {
+    async readStream() {
         return 0;
     }
 
-    getLong() {
-        let l = this.getShort();
-        let l1 = this.getShort();
-        let l2 = this.getShort();
-        let l3 = this.getShort();
+    async getLong() {
+        let l = await this.getShort();
+        let l1 = await this.getShort();
+        let l2 = await this.getShort();
+        let l3 = await this.getShort();
 
         return Long.fromInt(l).shiftLeft(48).add(l1 << 32).add(l2 << 16).add(l3);
     }
@@ -213,9 +213,9 @@ class Packet {
         this.packetData[this.packetEnd++] =  i & 0xff;
     }
 
-    getShort() {
-        let i = this.getByte();
-        let j = this.getByte();
+    async getShort() {
+        let i = await this.getByte();
+        let j = await this.getByte();
 
         return i * 256 + j;
     }
@@ -235,8 +235,8 @@ class Packet {
         return i;
     }
 
-    getByte() {
-        return this.readStream();
+    async getByte() {
+        return await this.readStream();
     }
 
     flushPacket() {

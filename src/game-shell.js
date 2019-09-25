@@ -12,6 +12,7 @@ const { TGA } = require('./lib/tga');
 class GameShell {
     constructor(canvas) {
         this.canvas = canvas;
+        this._graphics = new Graphics(this.canvas);
 
         this.mouseActionTimeout = 0;
         this.loadingStep = 0;
@@ -459,7 +460,8 @@ class GameShell {
     }
 
     getGraphics() {
-        return new Graphics(this.canvas);
+        //return new Graphics(this.canvas);
+        return this._graphics;
     }
 
     async createSocket() {
