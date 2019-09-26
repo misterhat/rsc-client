@@ -1,5 +1,22 @@
 const Utility = require('./utility');
 
+function fixPixel(pixel) {
+    let c = (pixel >> 24) & 255;
+    let r = (pixel >> 16) & 255;
+    let g = (pixel >> 8) & 255;
+    let b = pixel & 255;
+
+    if (c !== 0) {
+        return pixel;
+    }
+
+    // //invert
+    let a = 255;
+    //const black = (255 << 24);
+
+    return (a << 24) + (b << 16) + (g << 8) + r;
+}
+
 class Surface {
     constructor(width, height, limit, component) {
         this.image = null;
@@ -39,6 +56,7 @@ class Surface {
         this.spriteTranslateX = new Int32Array(limit);
         this.spriteTranslateY = new Int32Array(limit);
 
+        this.imageData = component._graphics.ctx.getImageData(0, 0, width, height);
         //this.image = component.createImage();
 
         //this.ctx = component.canvas.getContext('2d);
@@ -62,6 +80,8 @@ class Surface {
         //imageconsumer.setPixels(0, 0, width2, height2, colorModel, pixels, 0, width2);
         //imageconsumer.imageComplete(2)
         // TODO: put pixels into our instance of canvas...
+
+        this.imageData.data.set(new Uint8ClampedArray(this.pixels.map(fixPixel).buffer), 0, 0);
     }
 
     setBounds(x1, y1, x2, y2) {
@@ -97,7 +117,8 @@ class Surface {
     draw(g, x, y) {
         // blit our canvas to the page's canvas
         this.setComplete();
-        g.drawImage(image, x, y, this);
+        //g.drawImage(image, x, y, this);
+        g.drawImage(this.imageData, x, y);
     }
 
     blackScreen() {
@@ -564,16 +585,18 @@ class Surface {
 
             if (unknown === 0) {
                 for (let pixel = 0; pixel < size; pixel++) {
-                    spriteColoursUsed[id][pixel] = spriteData[spriteOff++];
-                    if (spriteColoursUsed[id][pixel] === 0)
+                    this.spriteColoursUsed[id][pixel] = spriteData[spriteOff++];
+
+                    if (this.spriteColoursUsed[id][pixel] === 0) {
                         this.spriteTranslate[id] = true;
+                    }
                 }
             } else if (unknown === 1) {
                 for (let x = 0; x < this.spriteWidth[id]; x++) {
-                    for (let y = 0; y < spriteHeight[id]; y++) {
+                    for (let y = 0; y < this.spriteHeight[id]; y++) {
                         this.spriteColoursUsed[id][x + y * this.spriteWidth[id]] = spriteData[spriteOff++];
 
-                        if (spriteColoursUsed[id][x + y * this.spriteWidth[id]] === 0) {
+                        if (this.spriteColoursUsed[id][x + y * this.spriteWidth[id]] === 0) {
                             this.spriteTranslate[id] = true;
                         }
                     }

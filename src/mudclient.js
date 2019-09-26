@@ -99,7 +99,6 @@ class mudclient extends GameConnection {
             'Fight Arena (members)', 'Tree Gnome Village (members)', 'The Hazeel Cult (members)', 'Sheep Herder (members)', 'Plague City (members)', 'Sea Slug (members)', 'Waterfall quest (members)', 'Biohazard (members)', 'Jungle potion (members)', 'Grand tree (members)',
             'Shilo village (members)', 'Underground pass (members)', 'Observatory quest (members)', 'Tourist trap (members)', 'Watchtower (members)', 'Dwarf Cannon (members)', 'Murder Mystery (members)', 'Digsite (members)', 'Gertrude\'s Cat (members)', 'Legend\'s Quest (members)'
         ];
-        this.errorLoadingData = false;
         this.healthBarCount = 0;
         this.spriteMedia = 0;
         this.spriteUtil = 0;
@@ -287,7 +286,7 @@ class mudclient extends GameConnection {
         this.teleportBubbleY = new Int32Array(50);
         this.receivedMessages = [];
         this.receivedMessages.length = 50;
-        this.receivedMessage.fill(null);
+        this.receivedMessages.fill(null);
         this.showDialogDuelConfirm = false;
         this.duelAccepted = false;
         this.players = [];
@@ -411,7 +410,7 @@ class mudclient extends GameConnection {
         this.npcsServer = [];
         this.npcsServer.length = this.npcsServerMax;
         this.npcsServer.fill(null);
-        this.playerStatEquipment = new Int32Array(playerStatEquipmentCount);
+        this.playerStatEquipment = new Int32Array(this.playerStatEquipmentCount);
         this.objectModel = [];
         this.objectModel.length = this.objectsMax;
         this.objectModel.fill(null);
@@ -3179,7 +3178,7 @@ class mudclient extends GameConnection {
     }
 
     async loadGameConfig() {
-        let buff = await readDataFile('config' + VERSION.CONFIG + '.jag', 'Configuration', 10);
+        let buff = await this.readDataFile('config' + VERSION.CONFIG + '.jag', 'Configuration', 10);
 
         if (buff === null) {
             this.errorLoadingData = true;
@@ -3188,7 +3187,7 @@ class mudclient extends GameConnection {
 
         GameData.loadData(buff, this.members);
 
-        let abyte1 = await readDataFile('filter' + VERSION.FILTER + '.jag', 'Chat system', 15);
+        let abyte1 = await this.readDataFile('filter' + VERSION.FILTER + '.jag', 'Chat system', 15);
 
         if (abyte1 === null) {
             this.errorLoadingData = true;
@@ -4278,7 +4277,7 @@ class mudclient extends GameConnection {
     }
 
     async loadMedia() {
-        let media = await readDataFile('media' + VERSION.MEDIA + '.jag', '2d graphics', 20);
+        let media = await this.readDataFile('media' + VERSION.MEDIA + '.jag', '2d graphics', 20);
 
         if (media === null) {
             this.errorLoadingData = true;
@@ -4393,7 +4392,7 @@ class mudclient extends GameConnection {
 
         this.port = 43594;
         this.maxReadTries = 1000;
-        this.clientVersion = VERSIONS.CLIENT;
+        this.clientVersion = VERSION.CLIENT;
 
         await this.loadGameConfig();
 
@@ -4453,13 +4452,13 @@ class mudclient extends GameConnection {
         this.world = new World(this.scene, this.surface);
         this.world.baseMediaSprite = this.spriteMedia;
 
-        await loadTextures();
+        await this.loadTextures();
 
         if (this.errorLoadingData) {
             return;
         }
 
-        await loadModels();
+        await this.loadModels();
 
         if (this.errorLoadingData) {
             return;
@@ -4472,7 +4471,7 @@ class mudclient extends GameConnection {
         }
 
         if (this.members) {
-            loadSounds();
+            await loadSounds();
         }
 
         if (!this.errorLoadingData) {
@@ -5243,7 +5242,7 @@ class mudclient extends GameConnection {
 
     async loadSounds() {
         try {
-            this.soundData = await readDataFile('sounds' + VERSION.SOUNDS + '.mem', 'Sound effects', 90);
+            this.soundData = await this.readDataFile('sounds' + VERSION.SOUNDS + '.mem', 'Sound effects', 90);
             //this.audioPlayer = new StreamAudioPlayer();
         } catch (e) {
             console.log('Unable to init sounds:' + e.message);
@@ -5265,7 +5264,7 @@ class mudclient extends GameConnection {
         let entityBuff = null;
         let indexDat = null;
 
-        entityBuff = await readDataFile('entity' + VERSION.ENTITY + '.jag', 'people and monsters', 30);
+        entityBuff = await this.readDataFile('entity' + VERSION.ENTITY + '.jag', 'people and monsters', 30);
 
         if (entityBuff === null) {
             this.errorLoadingData = true;
@@ -5278,7 +5277,7 @@ class mudclient extends GameConnection {
         let indexDatMem = null;
 
         if (this.members) {
-            entityBuffMem = await readDataFile('entity' + VERSION.ENTITY + '.mem', 'member graphics', 45);
+            entityBuffMem = await this.readDataFile('entity' + VERSION.ENTITY + '.mem', 'member graphics', 45);
 
             if (entityBuffMem === null) {
                 this.errorLoadingData = true;
@@ -5507,6 +5506,7 @@ class mudclient extends GameConnection {
             }
         } catch (e) {
             // OutOfMemory 
+            console.error(e);
             this.disposeAndCollect();
             this.errorLoadingMemory = true;
         }
@@ -5647,7 +5647,7 @@ class mudclient extends GameConnection {
         GameData.getModelIndex('spellcharge2');
         GameData.getModelIndex('spellcharge3');
 
-        let abyte0 = await readDataFile('models' + VERSION.MODELS + '.jag', '3d models', 60);
+        let abyte0 = await this.readDataFile('models' + VERSION.MODELS + '.jag', '3d models', 60);
 
         if (abyte0 === null) {
             this.errorLoadingData = true;
@@ -6165,7 +6165,7 @@ class mudclient extends GameConnection {
     }
 
     async loadTextures() {
-        let buffTextures = await readDataFile('textures' + VERSION.TEXTURES + '.jag', 'Textures', 50);
+        let buffTextures = await this.readDataFile('textures' + VERSION.TEXTURES + '.jag', 'Textures', 50);
 
         if (buffTextures === null) {
             this.errorLoadingData = true;
@@ -8255,6 +8255,8 @@ class mudclient extends GameConnection {
                 return;
             }
         } catch (e) {
+            console.error(e);
+
             if (this.packetErrorCount < 3) {
                 let s1 = e.stack;
                 let slen = s1.length;
@@ -8934,6 +8936,7 @@ class mudclient extends GameConnection {
             }
         } catch (e) {
             // OutOfMemory
+            console.error(e);
             this.disposeAndCollect();
             this.errorLoadingMemory = true;
         }
@@ -8986,16 +8989,16 @@ class mudclient extends GameConnection {
     }
 
     async loadMaps() {
-        this.world.mapPack = await readDataFile('maps' + VERSION.MAPS + '.jag', 'map', 70);
+        this.world.mapPack = await this.readDataFile('maps' + VERSION.MAPS + '.jag', 'map', 70);
 
         if (this.members) {
-            this.world.memberMapPack = await readDataFile('maps' + VERSION.MAPS + '.mem', 'members map', 75);
+            this.world.memberMapPack = await this.readDataFile('maps' + VERSION.MAPS + '.mem', 'members map', 75);
         }
 
-        this.world.landscapePack = await readDataFile('land' + VERSION.MAPS + '.jag', 'landscape', 80);
+        this.world.landscapePack = await this.readDataFile('land' + VERSION.MAPS + '.jag', 'landscape', 80);
 
         if (this.members) {
-            this.world.memberLandscapePack = await readDataFile('land' + VERSION.MAPS + '.mem', 'members landscape', 85);
+            this.world.memberLandscapePack = await this.readDataFile('land' + VERSION.MAPS + '.mem', 'members landscape', 85);
         }
     }
 

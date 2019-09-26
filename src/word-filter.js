@@ -53,7 +53,7 @@ class WordFilter {
                 ac[j] = buffer.getUnsignedByte();
             }
 
-            tldList.push(ac);
+            WordFilter.tldList.push(ac);
         }
     }
 
@@ -62,10 +62,12 @@ class WordFilter {
 
         WordFilter.badList = [];
         WordFilter.badList.length = wordCount;
+        WordFilter.badList.fill(null);
         WordFilter.badCharIds = [];
         WordFilter.badCharIds.length = wordCount;
+        WordFilter.badCharIds.fill(null);
 
-        WordFilter.readBuffer(buffer, badList, badCharIds);
+        WordFilter.readBuffer(buffer, WordFilter.badList, WordFilter.badCharIds);
     }
 
     static loadHost(buffer) {
@@ -73,16 +75,18 @@ class WordFilter {
 
         WordFilter.hostList = [];
         WordFilter.hostList.length = wordCount;
+        WordFilter.hostList.fill(null);
         WordFilter.hostCharIds = [];
         WordFilter.hostCharIds.length = wordCount;
+        WordFilter.hostCharIds.fill(null);
 
-        WordFilter.readBuffer(buffer, hostList, hostCharIds);
+        WordFilter.readBuffer(buffer, WordFilter.hostList, WordFilter.hostCharIds);
     }
 
     static loadFragments(buffer) {
         WordFilter.hashFragments = new Int32Array(buffer.getUnsignedInt());
 
-        for (let i = 0; i < hashFragments.length; i++) {
+        for (let i = 0; i < WordFilter.hashFragments.length; i++) {
             WordFilter.hashFragments[i] = buffer.getUnsignedShort();
         }
     }
@@ -188,8 +192,8 @@ class WordFilter {
         let slash = toCharArray('slash');
         WordFilter.applyWordFilter(input2, slash, null);
 
-        for (let i = 0; i < tldList.length; i++) {
-            WordFilter.applyTldFilter(input, input1, input2, tldList[i], tldType[i]);
+        for (let i = 0; i < WordFilter.tldList.length; i++) {
+            WordFilter.applyTldFilter(input, input1, input2, WordFilter.tldList[i], WordFilter.tldType[i]);
         }
     }
 

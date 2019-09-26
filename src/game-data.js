@@ -120,15 +120,15 @@ class GameData {
             GameData.itemMembers[i] = GameData.getUnsignedByte();
         }
 
-        for (i = 0; i < itemCount; i++) {
-            if (!isMembers && GameData.itemsMembers[i] === 1) {
-                GameData.itemsName[i] = 'Members object';
-                GameData.itemsDescription[i] = 'You need to be a member to use this object';
-                GameData.itemsBasePrice[i] = 0;
-                GameData.itemsCommand[i] = '';
-                GameData.itemsUnused[0] = 0;
-                GameData.itemsWearable[i] = 0;
-                GameData.itemsSpecial[i] = 1;
+        for (i = 0; i < GameData.itemCount; i++) {
+            if (!isMembers && GameData.itemMembers[i] === 1) {
+                GameData.itemName[i] = 'Members object';
+                GameData.itemDescription[i] = 'You need to be a member to use this object';
+                GameData.itemBasePrice[i] = 0;
+                GameData.itemCommand[i] = '';
+                GameData.itemUnused[0] = 0;
+                GameData.itemWearable[i] = 0;
+                GameData.itemSpecial[i] = 1;
             }
         }
 
@@ -184,7 +184,7 @@ class GameData {
             for (let i5 = 0; i5 < 12; i5++) {
                 GameData.npcSprite.set(i, i5, GameData.getUnsignedByte());
 
-                if (GameData.npcSprite.GameData.get(i, i5) === 255) {
+                if (GameData.npcSprite.get(i, i5) === 255) {
                     GameData.npcSprite.set(i, i5, -1);
                 }
             }

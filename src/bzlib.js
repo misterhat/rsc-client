@@ -8,6 +8,16 @@ function init2DInt8Array(x, y) {
     return a;
 }
 
+function init2DInt32Array(x, y) {
+    const a = [];
+
+    for (let i = 0; i < x; i += 1) {
+        a.push(new Int32Array(y));
+    }
+
+    return a;
+}
+
 class BZState {
     constructor() {
         this.tt = null; // Int32Array
@@ -41,14 +51,14 @@ class BZState {
         this.inUse_16 = new Int8Array(16); 
         this.setToUnseq = new Int8Array(256); 
         this.mtfa = new Int8Array(4096);
-        this.mftabase = new Int32Array(16);
+        this.mtfbase = new Int32Array(16);
         this.selector = new Int8Array(18002); 
         this.selectorMtf = new Int8Array(18002); 
 
         this.len = init2DInt8Array(6, 258);
-        this.limit = init2DInt8Array(6, 258);
-        this.base = init2DInt8Array(6, 258);
-        this.perm = init2DInt8Array(6, 258);
+        this.limit = init2DInt32Array(6, 258);
+        this.base = init2DInt32Array(6, 258);
+        this.perm = init2DInt32Array(6, 258);
 
         this.minLens = new Int32Array(6);
     }
@@ -386,6 +396,7 @@ class BZLib {
             }
 
             let nblock = 0;
+
             // GETMTFVAL
             if (groupPos === 0) {
                 groupNo++;
@@ -442,6 +453,10 @@ class BZLib {
                             zj_2 = BZLib.getBit(state);
                         }
 
+                        if (window._debug > 500) {
+                            throw new Error("pls god");
+                        }
+
                         nextSym = gPerm[zvec_2 - gBase[zn_2]];
                     } while (nextSym === 0 || nextSym === 1);
 
@@ -474,7 +489,7 @@ class BZLib {
 
                         state.mtfa[pp] = uc;
                     } else {
-                        let lno = nn / 16;
+                        let lno = (nn / 16) | 0;
                         let off = nn % 16;
                         let pp = state.mtfbase[lno] + off;
                         uc = state.mtfa[pp];

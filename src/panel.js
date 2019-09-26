@@ -56,18 +56,18 @@ class Panel {
             this.controlListEntries.push([]);
         }
 
-        this.colourScrollbarTop = Panel.rgbToLongMod(114, 114, 176);
-        this.colourScrollbarBottom = Panel.rgbToLongMod(14, 14, 62);
-        this.colourScrollbarHandleLeft = Panel.rgbToLongMod(200, 208, 232);
-        this.colourScrollbarHandleMid = Panel.rgbToLongMod(96, 129, 184);
-        this.colourScrollbarHandleRight = Panel.rgbToLongMod(53, 95, 115);
-        this.colourRoundedBoxOut = Panel.rgbToLongMod(117, 142, 171);
-        this.colourRoundedBoxMid = Panel.rgbToLongMod(98, 122, 158);
-        this.colourRoundedBoxIn = Panel.rgbToLongMod(86, 100, 136);
-        this.colourBoxTopNBottom = Panel.rgbToLongMod(135, 146, 179);
-        this.colourBoxTopNBottom2 = Panel.rgbToLongMod(97, 112, 151);
-        this.colourBoxLeftNRight2 = Panel.rgbToLongMod(88, 102, 136);
-        this.colourBoxLeftNRight = Panel.rgbToLongMod(84, 93, 120);
+        this.colourScrollbarTop = this.rgbToLongMod(114, 114, 176);
+        this.colourScrollbarBottom = this.rgbToLongMod(14, 14, 62);
+        this.colourScrollbarHandleLeft = this.rgbToLongMod(200, 208, 232);
+        this.colourScrollbarHandleMid = this.rgbToLongMod(96, 129, 184);
+        this.colourScrollbarHandleRight = this.rgbToLongMod(53, 95, 115);
+        this.colourRoundedBoxOut = this.rgbToLongMod(117, 142, 171);
+        this.colourRoundedBoxMid = this.rgbToLongMod(98, 122, 158);
+        this.colourRoundedBoxIn = this.rgbToLongMod(86, 100, 136);
+        this.colourBoxTopNBottom = this.rgbToLongMod(135, 146, 179);
+        this.colourBoxTopNBottom2 = this.rgbToLongMod(97, 112, 151);
+        this.colourBoxLeftNRight2 = this.rgbToLongMod(88, 102, 136);
+        this.colourBoxLeftNRight = this.rgbToLongMod(84, 93, 120);
     }
 
     rgbToLongMod(i, j, k) {
@@ -101,7 +101,7 @@ class Panel {
             this.mouseMetaButtonHeld = 0;
         }
 
-        if (lastMb === 1 || mouseMetaButtonHeld > 20) {
+        if (lastMb === 1 || this.mouseMetaButtonHeld > 20) {
             for (let j1 = 0; j1 < this.controlCount; j1++) {
                 if (this.controlShown[j1] && this.controlType[j1] === 15 && this.mouseX >= this.controlX[j1] && this.mouseY >= this.controlY[j1] && this.mouseX <= this.controlX[j1] + this.controlWidth[j1] && this.mouseY <= this.controlY[j1] + this.controlHeight[j1]) {
                     this.controlClicked[j1] = true;

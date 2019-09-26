@@ -5,6 +5,7 @@ const Graphics = require('./lib/graphics/graphics');
 const KEYCODES = require('./lib/keycodes');
 const Socket = require('./lib/net/socket');
 const Surface = require('./surface');
+const Utility = require('./utility');
 const VERSION = require('./version');
 const zzz = require('sleep-promise');
 const { TGA } = require('./lib/tga');
@@ -229,8 +230,8 @@ class GameShell {
             if (this.timings[i] === 0) {
                 j = k1;
                 sleep = lastSleep;
-            } else if (time > timings[i]) {
-                j = ((2560 * targetFps) / (time - timings[i])) | 0;
+            } else if (time > this.timings[i]) {
+                j = ((2560 * this.targetFps) / (time - this.timings[i])) | 0;
             }
 
             if (j < 25) {
@@ -239,7 +240,7 @@ class GameShell {
 
             if (j > 256) {
                 j = 256;
-                sleep = (targetFps - (time - timings[i]) / 10) | 0;
+                sleep = (this.targetFps - (time - this.timings[i]) / 10) | 0;
 
                 if (sleep < this.threadSleep) {
                     sleep = this.threadSleep;
@@ -295,7 +296,7 @@ class GameShell {
     }
 
     async loadJagex() {
-        this.graphics.setColor(Color.block);
+        this.graphics.setColor(Color.black);
         this.graphics.fillRect(0, 0, this.appletWidth, this.appletHeight);
         
         let buff = await this.readDataFile('jagex.jag', 'Jagex library', 0);
@@ -320,52 +321,49 @@ class GameShell {
     }
 
     drawLoadingScreen(percent, text) {
-        try {
-            let midX = ((this.appletWidth - 281) / 2) | 0;
-            let midY = ((this.appletHeight - 148) / 2) | 0;
+        let midX = ((this.appletWidth - 281) / 2) | 0;
+        let midY = ((this.appletHeight - 148) / 2) | 0;
 
-            this.graphics.setColor(Color.black);
-            this.graphics.fillRect(0, 0, this.appletWidth, this.appletHeight);
+        this.graphics.setColor(Color.black);
+        this.graphics.fillRect(0, 0, this.appletWidth, this.appletHeight);
 
-            if (!this.hasRefererLogoNotUsed) {
-                this.graphics.drawImage(imageLogo, midX, midY/*, this*/);
-            }
+        if (!this.hasRefererLogoNotUsed) {
+            this.graphics.drawImage(this.imageLogo, midX, midY/*, this*/);
+        }
 
-            midX += 2;
-            midY += 90;
+        midX += 2;
+        midY += 90;
 
-            this.loadingProgressPercent = percent;
-            this.loadingProgessText = text;
-            this.graphics.setColor(new Color(132, 132, 132));
+        this.loadingProgressPercent = percent;
+        this.loadingProgessText = text;
+        this.graphics.setColor(new Color(132, 132, 132));
 
-            if (hasRefererLogoNotused) {
-                this.graphics.setColor(new Color(220, 0, 0));
-            }
+        if (this.hasRefererLogoNotUsed) {
+            this.graphics.setColor(new Color(220, 0, 0));
+        }
 
-            this.graphics.drawRect(midX - 2, midY - 2, 280, 23);
-            this.graphics.fillRect(midX, midY, ((277 * percent) / 100) | 0, 20);
-            this.graphics.setColor(new Color(198, 198, 198));
+        this.graphics.drawRect(midX - 2, midY - 2, 280, 23);
+        this.graphics.fillRect(midX, midY, ((277 * percent) / 100) | 0, 20);
+        this.graphics.setColor(new Color(198, 198, 198));
 
-            if (this.hasRefererLogoNotUsed) {
-                this.graphics.setColor(new Color(255, 255, 255));
-            }
+        if (this.hasRefererLogoNotUsed) {
+            this.graphics.setColor(new Color(255, 255, 255));
+        }
 
-            this.drawString(this.graphics, text, fontTimesRoman15, midX + 138, midY + 10);
+        this.drawString(this.graphics, text, this.fontTimesRoman15, midX + 138, midY + 10);
 
-            if (!hasRefererLogoNotused) {
-                this.drawString(this.graphics, "Created by JAGeX - visit www.jagex.com", this.fontHelvetica13b, midX + 138, midY + 30);
-                this.drawString(this.graphics, "\2512001-2002 Andrew Gower and Jagex Ltd", this.fontHelvetica13b, midX + 138, midY + 44);
-            } else {
-                this.graphics.setColor(new Color(132, 132, 152));
-                this.drawString(this.graphics, "\2512001-2002 Andrew Gower and Jagex Ltd", this.fontHelvetica12, midX + 138, this.appletHeight - 20);
-            }
+        if (!this.hasRefererLogoNotUsed) {
+            this.drawString(this.graphics, 'Created by JAGeX - visit www.jagex.com', this.fontHelvetica13b, midX + 138, midY + 30);
+            this.drawString(this.graphics, '\u00a92001-2002 Andrew Gower and Jagex Ltd', this.fontHelvetica13b, midX + 138, midY + 44);
+        } else {
+            this.graphics.setColor(new Color(132, 132, 152));
+            this.drawString(this.graphics, '\u00a92001-2002 Andrew Gower and Jagex Ltd', this.fontHelvetica12, midX + 138, this.appletHeight - 20);
+        }
 
-            // not sure where this would have been used. maybe to indicate a special client?
-            if (this.logoHeaderText !== null) {
-                this.graphics.setColor(Color.white);
-                this.drawString(this.graphics, this.logoHeaderText, this.fontHelvetica13b, midX + 138, midY - 120);
-            }
-        } catch (e) {
+        // not sure where this would have been used. maybe to indicate a special client?
+        if (this.logoHeaderText !== null) {
+            this.graphics.setColor(Color.white);
+            this.drawString(this.graphics, this.logoHeaderText, this.fontHelvetica13b, midX + 138, midY - 120);
         }
     }
 
@@ -409,7 +407,7 @@ class GameShell {
     createImage(buff) {
         const tgaImage = new TGA();
 
-        tgaImage.load(buff);
+        tgaImage.load(buff.buffer);
 
         const canvas = tgaImage.getCanvas();
         const ctx = canvas.getContext('2d');
@@ -425,33 +423,31 @@ class GameShell {
         let archiveSizeCompressed = 0;
         let archiveData = null;
 
-        try {
-            this.showLoadingProgress(percent, 'Loading ' + description + ' - 0%');
+        this.showLoadingProgress(percent, 'Loading ' + description + ' - 0%');
 
-            let fileDownloadStream = Utility.openFile(file);
-            let header = new new Int8Array(6);
+        let fileDownloadStream = Utility.openFile(file);
+        let header = new Int8Array(6);
 
-            await fileDownloadStream.readFully(header, 0, 6);
+        await fileDownloadStream.readFully(header, 0, 6);
 
-            archiveSize = ((header[0] & 0xff) << 16) + ((header[1] & 0xff) << 8) + (header[2] & 0xff);
-            archiveSizeCompressed = ((header[3] & 0xff) << 16) + ((header[4] & 0xff) << 8) + (header[5] & 0xff);
+        archiveSize = ((header[0] & 0xff) << 16) + ((header[1] & 0xff) << 8) + (header[2] & 0xff);
+        archiveSizeCompressed = ((header[3] & 0xff) << 16) + ((header[4] & 0xff) << 8) + (header[5] & 0xff);
 
-            this.showLoadingProgress(percent, 'Loading ' + description + ' - 5%');
-            let read = 0;
-            archiveData = new Int8Array(archiveSizeCompressed);
+        this.showLoadingProgress(percent, 'Loading ' + description + ' - 5%');
 
-            while (read < archiveSizeCompressed) {
-                let length = archiveSizeCompressed - read;
+        let read = 0;
+        archiveData = new Int8Array(archiveSizeCompressed);
 
-                if (length > 1000) {
-                    length = 1000;
-                }
+        while (read < archiveSizeCompressed) {
+            let length = archiveSizeCompressed - read;
 
-                await fileDownloadStream.readFully(archiveData, read, length);
-                read += length;
-                this.showLoadingProgress(percent, 'Loading ' + description + ' - ' + ((5 + (read * 95) / archiveSizeCompressed) | 0) + '%');
+            if (length > 1000) {
+                length = 1000;
             }
-        } catch (e) {
+
+            await fileDownloadStream.readFully(archiveData, read, length);
+            read += length;
+            this.showLoadingProgress(percent, 'Loading ' + description + ' - ' + ((5 + (read * 95) / archiveSizeCompressed) | 0) + '%');
         }
 
         this.showLoadingProgress(percent, 'Unpacking ' + description);

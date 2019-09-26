@@ -4,6 +4,8 @@ const Polygon = require('./polygon');
 const Scanline = require('./scanline');
 const World = require('./world');
 
+console.log(GameModel);
+
 class Scene {
     constructor(surface, i, polygons, k) {
         this.lastVisiblePolygonsCount = 0;
@@ -55,7 +57,7 @@ class Scene {
         this.mousePickedModels = [];
         this.mousePickedModels.length = this.mousePickedMax;
         this.mousePickedModels.fill(null);
-        this.mousePickedFaces = new Int32Array(mousePickedMax);
+        this.mousePickedFaces = new Int32Array(this.mousePickedMax);
         this.width = 512;
         this.clipX = 256;
         this.clipY = 192;

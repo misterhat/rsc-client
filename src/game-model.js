@@ -1,5 +1,6 @@
 const Utility = require('./utility');
 const World = require('./world');
+const Scene = require('./scene');
 
 class GameModel {
     constructor(...args) {
@@ -1152,3 +1153,5 @@ for (let l1 = 0; l1 < 26; l1++) {
 
 GameModel.base64Alphabet[163] = 62;
 GameModel.base64Alphabet[36] = 63;
+
+module.exports = GameModel;

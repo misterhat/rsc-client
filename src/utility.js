@@ -97,7 +97,7 @@ class Utility {
     static usernameToHash(s) {
         let s1 = '';
 
-        for (let i = 0; i < s.length(); i++) {
+        for (let i = 0; i < s.length; i++) {
             let c = s.charCodeAt(i);
 
             if (c >= C_A && c <= C_Z) {
@@ -225,7 +225,7 @@ class Utility {
 
         filename = filename.toUpperCase();
 
-        for (let l = 0; l < filename.length(); l++) {
+        for (let l = 0; l < filename.length; l++) {
             wantedHash = (((wantedHash * 61) | 0) + filename.charCodeAt(l)) - 32;
         }
 
