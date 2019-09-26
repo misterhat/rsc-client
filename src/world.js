@@ -49,10 +49,8 @@ class World {
         this.terrainHeightLocal = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [ this.regionWidth, this.regionHeight ]);
 
         this.terrainModels = [];
-
-        for (let i = 0; i < 64; i += 1) {
-            this.terrainModels.push(null);
-        }
+        this.terrainModels.length = 64;
+        this.terrainModels.fill(null);
 
         this.localX = new Int32Array(18432);
         this.baseMediaSprite = 750;
@@ -482,7 +480,7 @@ class World {
                 this.tileDecoration.set(chunk, tile, 8); 
             }
 
-            tileDirection.set(chunk, tile, 0);
+            this.tileDirection.set(chunk, tile, 0);
         }
     }
 
@@ -749,7 +747,7 @@ class World {
                 }
             }
 
-            if (x > 0 && this.routeVia.get(x - 1, y) === 0 && (this.this.objectAdjacency.get(x - 1, y) & 0x78) === 0) {
+            if (x > 0 && this.routeVia.get(x - 1, y) === 0 && (this.objectAdjacency.get(x - 1, y) & 0x78) === 0) {
                 routeX[writePtr] = x - 1;
                 routeY[writePtr] = y;
                 writePtr = (writePtr + 1) % size;
@@ -995,12 +993,12 @@ class World {
                         }
                         
                         if (GameData.tileAdjacent[decorationType - 1] !== 0) {
-                            const adjacency =  this.objectAdjacency.get(lx, ly);
+                            const adjacency = this.objectAdjacency.get(lx, ly);
                             this.objectAdjacency.set(lx, ly, adjacency | 0x40);
                         }
 
                         if (GameData.tileType[decorationType - 1] === 2) {
-                            const adjacency =  this.objectAdjacency.get(lx, ly);
+                            const adjacency = this.objectAdjacency.get(lx, ly);
                             this.objectAdjacency.set(lx, ly, adjacency | 0x80);
                         }
                     }
@@ -1081,17 +1079,16 @@ class World {
                         gameModel.faceTag[l19] = 0x30d40 + l19;
                     }
                 }
-
             }
 
             for (let k4 = 1; k4 < 95; k4++) {
                 for (let i6 = 1; i6 < 95; i6++) {
                     if (this.getTileDecoration(k4, i6, plane) > 0 && GameData.tileType[this.getTileDecoration(k4, i6, plane) - 1] === 4) {
                         let l7 = GameData.tileDecoration[this.getTileDecoration(k4, i6, plane) - 1];
-                        let j10 = gameModel.vertexAt(k4 * anInt585, -this.getTerrainHeight(k4, i6), i6 * anInt585);
-                        let l12 = gameModel.vertexAt((k4 + 1) * anInt585, -this.getTerrainHeight(k4 + 1, i6), i6 * anInt585);
-                        let i15 = gameModel.vertexAt((k4 + 1) * anInt585, -this.getTerrainHeight(k4 + 1, i6 + 1), (i6 + 1) * anInt585);
-                        let j17 = gameModel.vertexAt(k4 * anInt585, -this.getTerrainHeight(k4, i6 + 1), (i6 + 1) * anInt585);
+                        let j10 = gameModel.vertexAt(k4 * this.anInt585, -this.getTerrainHeight(k4, i6), i6 * this.anInt585);
+                        let l12 = gameModel.vertexAt((k4 + 1) * this.anInt585, -this.getTerrainHeight(k4 + 1, i6), i6 * this.anInt585);
+                        let i15 = gameModel.vertexAt((k4 + 1) * this.anInt585, -this.getTerrainHeight(k4 + 1, i6 + 1), (i6 + 1) * this.anInt585);
+                        let j17 = gameModel.vertexAt(k4 * this.anInt585, -this.getTerrainHeight(k4, i6 + 1), (i6 + 1) * this.anInt585);
                         let ai2 = new Int32Array([j10, l12, i15, j17]);
                         let i20 = gameModel.createFace(4, ai2, l7, World.colourTransparent);
                         this.localX[i20] = k4;
@@ -1101,10 +1098,10 @@ class World {
                     } else if (this.getTileDecoration(k4, i6, plane) === 0 || GameData.tileType[this.getTileDecoration(k4, i6, plane) - 1] !== 3) {
                         if (this.getTileDecoration(k4, i6 + 1, plane) > 0 && GameData.tileType[this.getTileDecoration(k4, i6 + 1, plane) - 1] === 4) {
                             let i8 = GameData.tileDecoration[this.getTileDecoration(k4, i6 + 1, plane) - 1];
-                            let k10 = gameModel.vertexAt(k4 * anInt585, -this.getTerrainHeight(k4, i6), i6 * anInt585);
-                            let i13 = gameModel.vertexAt((k4 + 1) * anInt585, -this.getTerrainHeight(k4 + 1, i6), i6 * anInt585);
-                            let j15 = gameModel.vertexAt((k4 + 1) * anInt585, -this.getTerrainHeight(k4 + 1, i6 + 1), (i6 + 1) * anInt585);
-                            let k17 = gameModel.vertexAt(k4 * anInt585, -this.getTerrainHeight(k4, i6 + 1), (i6 + 1) * anInt585);
+                            let k10 = gameModel.vertexAt(k4 * this.anInt585, -this.getTerrainHeight(k4, i6), i6 * this.anInt585);
+                            let i13 = gameModel.vertexAt((k4 + 1) * this.anInt585, -this.getTerrainHeight(k4 + 1, i6), i6 * this.anInt585);
+                            let j15 = gameModel.vertexAt((k4 + 1) * this.anInt585, -this.getTerrainHeight(k4 + 1, i6 + 1), (i6 + 1) * this.anInt585);
+                            let k17 = gameModel.vertexAt(k4 * this.anInt585, -this.getTerrainHeight(k4, i6 + 1), (i6 + 1) * this.anInt585);
                             let ai3 = new Int32Array([k10, i13, j15, k17]);
                             let j20 = gameModel.createFace(4, ai3, i8, World.colourTransparent);
                             this.localX[j20] = k4;
@@ -1115,10 +1112,10 @@ class World {
 
                         if (this.getTileDecoration(k4, i6 - 1, plane) > 0 && GameData.tileType[this.getTileDecoration(k4, i6 - 1, plane) - 1] === 4) {
                             let j8 = GameData.tileDecoration[this.getTileDecoration(k4, i6 - 1, plane) - 1];
-                            let l10 = gameModel.vertexAt(k4 * anInt585, -this.getTerrainHeight(k4, i6), i6 * anInt585);
-                            let j13 = gameModel.vertexAt((k4 + 1) * anInt585, -this.getTerrainHeight(k4 + 1, i6), i6 * anInt585);
-                            let k15 = gameModel.vertexAt((k4 + 1) * anInt585, -this.getTerrainHeight(k4 + 1, i6 + 1), (i6 + 1) * anInt585);
-                            let l17 = gameModel.vertexAt(k4 * anInt585, -this.getTerrainHeight(k4, i6 + 1), (i6 + 1) * anInt585);
+                            let l10 = gameModel.vertexAt(k4 * this.anInt585, -this.getTerrainHeight(k4, i6), i6 * this.anInt585);
+                            let j13 = gameModel.vertexAt((k4 + 1) * this.anInt585, -this.getTerrainHeight(k4 + 1, i6), i6 * this.anInt585);
+                            let k15 = gameModel.vertexAt((k4 + 1) * this.anInt585, -this.getTerrainHeight(k4 + 1, i6 + 1), (i6 + 1) * this.anInt585);
+                            let l17 = gameModel.vertexAt(k4 * this.anInt585, -this.getTerrainHeight(k4, i6 + 1), (i6 + 1) * this.anInt585);
                             let ai4 = new Int32Array([l10, j13, k15, l17]);
                             let k20 = gameModel.createFace(4, ai4, j8, World.colourTransparent);
                             this.localX[k20] = k4;
@@ -1129,10 +1126,10 @@ class World {
 
                         if (this.getTileDecoration(k4 + 1, i6, plane) > 0 && GameData.tileType[this.getTileDecoration(k4 + 1, i6, plane) - 1] === 4) {
                             let k8 = GameData.tileDecoration[this.getTileDecoration(k4 + 1, i6, plane) - 1];
-                            let i11 = gameModel.vertexAt(k4 * anInt585, -this.getTerrainHeight(k4, i6), i6 * anInt585);
-                            let k13 = gameModel.vertexAt((k4 + 1) * anInt585, -this.getTerrainHeight(k4 + 1, i6), i6 * anInt585);
-                            let l15 = gameModel.vertexAt((k4 + 1) * anInt585, -this.getTerrainHeight(k4 + 1, i6 + 1), (i6 + 1) * anInt585);
-                            let i18 = gameModel.vertexAt(k4 * anInt585, -this.getTerrainHeight(k4, i6 + 1), (i6 + 1) * anInt585);
+                            let i11 = gameModel.vertexAt(k4 * this.anInt585, -this.getTerrainHeight(k4, i6), i6 * this.anInt585);
+                            let k13 = gameModel.vertexAt((k4 + 1) * this.anInt585, -this.getTerrainHeight(k4 + 1, i6), i6 * this.anInt585);
+                            let l15 = gameModel.vertexAt((k4 + 1) * this.anInt585, -this.getTerrainHeight(k4 + 1, i6 + 1), (i6 + 1) * this.anInt585);
+                            let i18 = gameModel.vertexAt(k4 * this.anInt585, -this.getTerrainHeight(k4, i6 + 1), (i6 + 1) * this.anInt585);
                             let ai5 = new Int32Array([i11, k13, l15, i18]);
                             let l20 = gameModel.createFace(4, ai5, k8, World.colourTransparent);
                             this.localX[l20] = k4;
@@ -1183,7 +1180,7 @@ class World {
                     this.method422(this.parentModel, k3 - 1, i2, k2, i2 + 1, k2);
 
                     if (flag && GameData.wallObjectAdjacent[k3 - 1] !== 0) {
-                        const adjacency =  this.objectAdjacency.get(i2, k2);
+                        const adjacency = this.objectAdjacency.get(i2, k2);
                         this.objectAdjacency.set(adjacency | 1);
 
                         if (k2 > 0) {
@@ -1202,7 +1199,7 @@ class World {
                     this.method422(this.parentModel, k3 - 1, i2, k2, i2, k2 + 1);
 
                     if (flag && GameData.wallObjectAdjacent[k3 - 1] !== 0) {
-                        const adjacency =  this.objectAdjacency.get(i2, k2);
+                        const adjacency = this.objectAdjacency.get(i2, k2);
                         this.objectAdjacency.set(adjacency | 2);
 
                         if (i2 > 0) {
@@ -1221,7 +1218,7 @@ class World {
                     this.method422(this.parentModel, k3 - 1, i2, k2, i2 + 1, k2 + 1);
 
                     if (flag && GameData.wallObjectAdjacent[k3 - 1] !== 0) { 
-                        const adjacency =  this.objectAdjacency.get(i2, k2);
+                        const adjacency = this.objectAdjacency.get(i2, k2);
                         this.objectAdjacency.set(adjacency | 0x20);
                     }
 
@@ -1236,7 +1233,7 @@ class World {
                     this.method422(this.parentModel, k3 - 12001, i2 + 1, k2, i2, k2 + 1);
 
                     if (flag && GameData.wallObjectAdjacent[k3 - 12001] !== 0) {
-                        const adjacency =  this.objectAdjacency.get(i2, k2);
+                        const adjacency = this.objectAdjacency.get(i2, k2);
                         this.objectAdjacency.set(adjacency | 0x10);
                     }
 

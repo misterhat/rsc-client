@@ -23,15 +23,14 @@ class Surface {
         this.pixels = new Int32Array(width * height);
 
         this.surfacePixels = [];
+        this.surfacePixels.length = limit;
+        this.surfacePixels.fill(null);
         this.spriteColoursUsed = []
+        this.spriteColoursUsed.length = limit;
+        this.spriteColoursUsed.fill(null);
         this.spriteColourList = [];
-
-        for (let i = 0; i < limit; i+= 1) {
-            this.surfacePixels.push(null);
-            this.spriteColoursUsed.push(null);
-            this.spriteColourList.push(null);
-        }
-
+        this.spriteColourList.length = limit;
+        this.spriteColourList.fill(null);
         this.spriteTranslate = new Int8Array(limit);
         this.spriteWidth = new Int32Array(limit);
         this.spriteHeight = new Int32Array(limit);
@@ -221,7 +220,7 @@ class Surface {
                 let bgGreen = (this.pixels[pixelIdx] >> 8 & 0xff) * bgAlpha;
                 let bgBlue = (this.pixels[pixelIdx] & 0xff) * bgAlpha;
                 let newColour = ((red + bgRed >> 8) << 16) + ((green + bgGreen >> 8) << 8) + (blue + bgBlue >> 8);
-                this.this.pixels[pixelIdx++] = newColour;
+                this.pixels[pixelIdx++] = newColour;
             }
 
             pixelIdx += j3;
@@ -2418,10 +2417,8 @@ Surface.anInt347 = 0;
 Surface.anInt348 = 0;
 
 Surface.gameFonts = [];
-
-for (let i = 0; i < 50; i += 1) {
-    Surface.gameFonts.push(null);
-}
+Surface.gameFonts.length = 50;
+Surface.gameFonts.fill(null);
 
 Surface.characterWidth = new Int32Array(256);
 

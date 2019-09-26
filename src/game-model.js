@@ -233,7 +233,7 @@ class GameModel {
             if (k2 === 0) {
                 this.faceIntensity[j2] = 0;
             } else {
-                this.faceIntensity[j2] = magic;
+                this.faceIntensity[j2] = this.magic;
             }
         }
 
@@ -316,7 +316,7 @@ class GameModel {
 
         this.faceVertices = [];
         this.faceVerticies.length = numF;
-
+        this.faceVerticies.fill(null);
         this.faceFillFront = new Int32Array(numF);
         this.faceFillBack = new Int32Array(numF);
         this.faceIntensity = new Int32Array(numF);
@@ -352,7 +352,7 @@ class GameModel {
             this.faceNormalZ = new Int32Array(numF);
         }
 
-        if (!isolated) {
+        if (!this.isolated) {
             this.faceBoundLeft = new Int32Array(numF);
             this.faceBoundRight = new Int32Array(numF);
             this.faceBoundBottom = new Int32Array(numF);
@@ -597,7 +597,7 @@ class GameModel {
 
         for (let i = 0; i < this.numFaces; i++) {
             if (gouraud) {
-                this.faceIntensity[i] = magic;
+                this.faceIntensity[i] = this.magic;
             } else {
                 this.faceIntensity[i] = 0;
             }
@@ -894,7 +894,7 @@ class GameModel {
 
         for (let v = 0; v < this.numVertices; v++) {
             if (normalMagnitude[v] > 0) {
-                this.vertexIntensity[v] = (normalX[v] * this.lightDirectionX + normalY[v] * this.lightDirectionY + normalZ[v] * this.lightDirectionZ) / (divisor * normalMagnitude[v]);
+                this.vertexIntensity[v] = ((normalX[v] * this.lightDirectionX + normalY[v] * this.lightDirectionY + normalZ[v] * this.lightDirectionZ) / (divisor * normalMagnitude[v])) | 0;
             }
         }
     }
@@ -933,7 +933,7 @@ class GameModel {
             }
 
             this.faceNormalX[face] = ((normX * 0x10000) / normMag) | 0;
-            this.faceNormalY[face] = ((normY * 0x10000) / normMag)| 0;
+            this.faceNormalY[face] = ((normY * 0x10000) / normMag) | 0;
             this.faceNormalZ[face] = ((normZ * 65535) / normMag) | 0;
             this.normalScale[face] = -1;
         }
@@ -1072,13 +1072,13 @@ class GameModel {
         this.baseX = this.baseY = this.baseZ = 0;
         this.orientationYaw = this.orientationPitch = this.orientationRoll = 0;
         this.scaleFx = this.scaleFy = this.scaleFz = 256;
-        this.this.shearXy = this.shearXz = this.shearYx = this.shearYz = this.shearZx = this.shearZy = 256;
+        this.shearXy = this.shearXz = this.shearYx = this.shearYz = this.shearZx = this.shearZy = 256;
         this.transformKind = 0;
     }
 
     // TODO see if we have to call .slice() anywhere here
     copy(...args) {
-        if (!args) {
+        if (!args || !args.length) {
             let pieces = [ this ]; 
             gameModel = new GameModel(pieces, 1);
             gameModel.depth = depth;

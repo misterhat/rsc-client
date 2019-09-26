@@ -1,4 +1,4 @@
-// a quick shim for downloading files 
+// a quick shim for downloading files
 
 const sleep = require('sleep-promise');
 
@@ -15,9 +15,9 @@ class FileDownloadStream {
 
     async _loadResBytes() {
         return new Promise((resolve, reject) => {
-            xhr.onerror = e => reject(e);
-
-            xhr.onload = () => resolve(new Int8Array(xhr.response));
+            this.xhr.onerror = e => reject(e);
+            this.xhr.onload = () => resolve(new Int8Array(xhr.response));
+            this.xhr.send();
         });
     }
 

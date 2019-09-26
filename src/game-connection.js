@@ -91,7 +91,7 @@ class GameConnection extends GameShell {
             let sessId = this.clientStream.getLong();
             this.sessionID = sessId;
 
-            if (sessId === 0) {
+            if (sessId.equals(0)) {
                 this.showLoginScreenStatus('Login server offline.', 'Please try again in a few mins');
                 return;
             }

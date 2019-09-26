@@ -37,7 +37,7 @@ class Scene {
         this.gradientBase = new Int32Array(this.rampCount);
 
         this.gradientRamps = [];
-        
+
         for (let _i = 0; _i < this.rampCount; _i += 1) {
             this.gradientRamps.push(new Int32Array(256));
         }
@@ -52,13 +52,9 @@ class Scene {
         this.anInt388 = 1;
         this.mousePickingActive = false;
         this.mousePickedMax = 100;
-
         this.mousePickedModels = [];
-
-        for (let _i = 0; _i < this.mousePickedMax; _i += 1) {
-            this.mousePickedModels.push(null);
-        }
-
+        this.mousePickedModels.length = this.mousePickedMax;
+        this.mousePickedModels.fill(null);
         this.mousePickedFaces = new Int32Array(mousePickedMax);
         this.width = 512;
         this.clipX = 256;
@@ -80,11 +76,9 @@ class Scene {
         this.raster = surface.pixels;
         this.modelCount = 0;
         this.maxModelCount = i;
-        this.models = []; 
-
-        for (let _i = 0; _i < this.maxModelCount; _i += 1) {
-            this.models.push(null);
-        }
+        this.models = [];
+        this.models.length = this.maxModelCount;
+        this.models.fill(null);
 
         this.visiblePolygonsCount = 0;
         this.visiblePolygons = [];
@@ -369,7 +363,7 @@ class Scene {
             } else if (i3 > 16256) {
                 i3 = 16256;
             }
-            
+
             k3 = i3 - i >> 4;
             l3 = j3 - j >> 4;
         }
@@ -458,13 +452,13 @@ class Scene {
                 k += i4;
 
                 if ((i = ai1[(k & 0x3f80) + (j >> 7)] >>> k4) !== 0) {
-                    ai[k2] = i; 
+                    ai[k2] = i;
                 }
 
                 k2++;
                 j += l3;
                 k += i4;
- 
+
                 if ((i = ai1[(k & 0x3f80) + (j >> 7)] >>> k4) !== 0) {
                     ai[k2] = i;
                 }
@@ -1206,7 +1200,7 @@ class Scene {
         this.view.reduce(i, i * 2);
 
         if (this.spriteCount < 0) {
-            spriteCount = 0;
+            this.spriteCount = 0;
         }
     }
 
@@ -1267,7 +1261,7 @@ class Scene {
         this.scanlines = [];
 
         for (let k1 = 0; k1 < clipY + baseY; k1++) {
-            scanlines.push(new Scanline());
+            this.scanlines.push(new Scanline());
         }
     }
 
@@ -1525,11 +1519,11 @@ class Scene {
                         for (let vertex = 0; vertex < num_vertices; vertex++) {
                             let x = gameModel.vertexViewX[vertices[vertex]];
 
-                            if (x > -clipX) {
+                            if (x > -this.clipX) {
                                 viewXCount |= 1;
                             }
 
-                            if (x < clipX) {
+                            if (x < this.clipX) {
                                 viewXCount |= 2;
                             }
 
@@ -1544,11 +1538,11 @@ class Scene {
                             for (let vertex = 0; vertex < num_vertices; vertex++) {
                                 let k1 = gameModel.vertexViewY[vertices[vertex]];
 
-                                if (k1 > -clipY) {
+                                if (k1 > -this.clipY) {
                                     viewYCount |= 1;
                                 }
 
-                                if (k1 < clipY) {
+                                if (k1 < this.clipY) {
                                     viewYCount |= 2;
                                 }
 
@@ -1571,7 +1565,7 @@ class Scene {
                                     faceFill = gameModel.faceFillBack[face];
                                 }
 
-                                if (faceFill !== World.colourTransparent) { 
+                                if (faceFill !== World.colourTransparent) {
                                     let h = 0;
 
                                     for (let vertex = 0; vertex < num_vertices; vertex++) {
@@ -1664,7 +1658,7 @@ class Scene {
                         j10 = gameModel_2.lightAmbience - gameModel_2.faceIntensity[l];
                     } else {
                         j10 = gameModel_2.lightAmbience + gameModel_2.faceIntensity[l];
-                    } 
+                    }
                 }
 
                 for (let k11 = 0; k11 < l10; k11++) {
@@ -2068,7 +2062,7 @@ class Scene {
 
             if (l4 !== l3) {
                 i23 = ((k10 - i9 << 8) / (l4 - l3)) | 0;
-                k23 = ((k13 - i13 << 8) / (l4 - l3)) | 0; 
+                k23 = ((k13 - i13 << 8) / (l4 - l3)) | 0;
 
                 if (l3 < l4) {
                     l22 = i9 << 8;
@@ -2861,7 +2855,7 @@ class Scene {
         this.cameraZ = y - j2;
     }
 
-    initialisePolygon3D() {
+    initialisePolygon3D(i) {
         let polygon = this.visiblePolygons[i];
         let gameModel = polygon.model;
         let face = polygon.face;
@@ -3208,33 +3202,34 @@ class Scene {
     allocateTextures(count, something7, something11) {
         this.textureCount = count;
         this.textureColoursUsed = []; // byte[][]
-        this.textureColourList = []; 
+        this.textureColoursUsed.length = count; // byte[][]
+        this.textureColoursUsed.fill(null);
+        this.textureColourList = [];
+        this.textureColourList.length = count;
+        this.textureColourList.fill(null);
         this.textureDimension = new Int32Array(count);
         this.textureLoadedNumber = [];
+        this.textureLoadedNumber.length = count;
+        this.textureLoadedNumber.fill(null);
         this.textureBackTransparent = new Int8Array(count);
         this.texturePixels = [];
+        this.texturePixels.length = count;
+        this.texturePixels.fill(null);
         Scene.textureCountLoaded = new Long(0);
 
         for (let i = 0; i < count; i += 1) {
-            this.textureColoursUsed.push(null);
-            this.textureColoursList.push(null);
-            this.textureLoadedNumber.push(null);
-            this.textureLoadedPixels.push(null);
             this.textureLoadedNumber.push(new Long(0));
         }
 
         // 64x64 rgba
-        this.textureColours64 = []; 
+        this.textureColours64 = [];
+        this.textureColours64.length = something7;
+        this.textureColours64.fill(null);
+
         // 128x128 rgba
         this.textureColours128 = [];
-
-        for (let i = 0; i < something7; i += 1) {
-            this.textureColours64.push(null);
-        }
-
-        for (let i = 0; i < something11; i += 1) {
-            this.textureColours11.push(null);
-        }
+        this.textureColours128.length = something11;
+        this.textureColours128.fill(null);
     }
 
     defineTexture(id, usedColours, colours,  wide128) {
@@ -3314,9 +3309,9 @@ class Scene {
         let textureWidth = 0;
 
         if (this.textureDimension[id] === 0) {
-            textureWidth = 64; 
+            textureWidth = 64;
         } else {
-            textureWidth = 128; 
+            textureWidth = 128;
         }
 
         let colours = this.texturePixels[id];
@@ -3476,7 +3471,7 @@ class Scene {
         }
 
         if (j < k) {
-            return true; 
+            return true;
         } else {
             return flag;
         }

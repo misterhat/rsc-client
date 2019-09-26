@@ -473,11 +473,8 @@ class GameData {
 }
 
 GameData.modelName = [];
-
-for (let i = 0; i < 5000; i += 1) {
-    GameData.modelName.push(null);
-}
-
+GameData.modelName.length = 5000;
+GameData.modelName.fill(null);
 GameData.textureName = null;
 GameData.textureSubtypeName = null;
 GameData.objectModelIndex = null;
