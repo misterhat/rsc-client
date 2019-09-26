@@ -408,8 +408,14 @@ class GameShell {
 
     createImage(buff) {
         const tgaImage = new TGA();
+
         tgaImage.load(buff);
-        return tgaImage.getCanvas();
+
+        const canvas = tgaImage.getCanvas();
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        return imageData;
     }
 
     async readDataFile(file, description, percent) {

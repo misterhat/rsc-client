@@ -125,7 +125,7 @@ class mudclient extends GameConnection {
         this.receivedMessagesCount = 0;
         this.messageTabFlashAll = 0;
         this.messageTabFlashHistory = 0;
-        this.messtageTabFlashQuest = 0;
+        this.messageTabFlashQuest = 0;
         this.messageTabFlashPrivate = 0;
         this.bankItemCount = 0;
         this.objectAnimationNumberFireLightningSpell = 0;
@@ -4062,8 +4062,8 @@ class mudclient extends GameConnection {
             let i5 = this.wallObjectDirection[k2];
 
             try {
-                this.world.setObjectAdjacency(i3, l3, i5, j4);
-                let gameModel_1 = createModel(i3, l3, i5, j4, k2);
+                this.world._setObjectAdjacency_from4(i3, l3, i5, j4);
+                let gameModel_1 = this.createModel(i3, l3, i5, j4, k2);
                 this.wallObjectModel[k2] = gameModel_1;
             } catch (e) {
                 console.log('Bound Error: ' + e.message);
@@ -4362,7 +4362,7 @@ class mudclient extends GameConnection {
             col = Surface.rgbToLong(255, 200, 50);
         }
 
-        if (this.messtageTabFlashQuest % 30 > 15) {
+        if (this.messageTabFlashQuest % 30 > 15) {
             col = Surface.rgbToLong(255, 50, 50);
         }
 
@@ -5810,7 +5810,7 @@ class mudclient extends GameConnection {
             }
 
             if (type === 5 && this.messageTabSelected !== 2) {
-                this.messtageTabFlashQuest = 200;
+                this.messageTabFlashQuest = 200;
             }
 
             if (type === 6 && this.messageTabSelected !== 3) {
@@ -6361,7 +6361,7 @@ class mudclient extends GameConnection {
             }
 
             if (s !== null) {
-                this.surface.drawstring(s, 6, 14, 1, 0xffff00);
+                this.surface.drawString(s, 6, 14, 1, 0xffff00);
             }
 
             if (!this.optionMouseButtonOne && this.mouseButtonClick === 1 || this.optionMouseButtonOne && this.mouseButtonClick === 1 && this.menuItemsCount === 1) {
@@ -6453,12 +6453,12 @@ class mudclient extends GameConnection {
     }
 
     menuItemClick(i) {
-        let mx = menuItemX[i];
-        let my = menuItemY[i];
-        let mIdx = menuSourceType[i];
-        let mSrcIdx = menuSourceIndex[i];
-        let mTargetIndex = menuTargetIndex[i];
-        let mItemId = menuItemID[i];
+        let mx = this.menuItemX[i];
+        let my = this.menuItemY[i];
+        let mIdx = this.menuSourceType[i];
+        let mSrcIdx = this.menuSourceIndex[i];
+        let mTargetIndex = this.menuTargetIndex[i];
+        let mItemId = this.menuItemID[i];
 
         if (mItemId === 200) {
             this.walkToGroundItem(this.localRegionX, this.localRegionY, mx, my, true);
@@ -6617,7 +6617,7 @@ class mudclient extends GameConnection {
         if (mItemId === 650) {
             this.selectedItemInventoryIndex = mIdx;
             this.showUiTab = 0;
-            this.selectedItemName = GameData.itemName[inventoryItemId[selectedItemInventoryIndex]];
+            this.selectedItemName = GameData.itemName[this.inventoryItemId[this.selectedItemInventoryIndex]];
         }
 
         if (mItemId === 660) {
@@ -6626,7 +6626,7 @@ class mudclient extends GameConnection {
             this.clientStream.sendPacket();
             this.selectedItemInventoryIndex = -1;
             this.showUiTab = 0;
-            this.showMessage('Dropping ' + GameData.itemName[inventoryItemId[mIdx]], 4);
+            this.showMessage('Dropping ' + GameData.itemName[this.inventoryItemId[mIdx]], 4);
         }
 
         if (mItemId === 3600) {
@@ -6712,7 +6712,7 @@ class mudclient extends GameConnection {
             this.clientStream.putShort(mIdx);
             this.clientStream.putShort(mSrcIdx);
             this.clientStream.sendPacket();
-            selectedItemInventoryIndex = -1;
+            this.selectedItemInventoryIndex = -1;
         }
 
         if (mItemId === 805 || mItemId === 2805) {
@@ -7094,7 +7094,7 @@ class mudclient extends GameConnection {
 
                             let mX = (((lX + lX + width) * this.magicLoc) / 2) | 0;
                             let mY = (((lY + lY + height) * this.magicLoc) / 2) | 0;
-                            let modelIdx = GameData.this.objectModelIndex[id];
+                            let modelIdx = GameData.objectModelIndex[id];
                             let model = this.gameModels[modelIdx].copy();
 
                             this.scene.addModel(model);
@@ -7732,6 +7732,7 @@ class mudclient extends GameConnection {
 
             if (opcode === S_OPCODES.TRADE_ITEMS) {
                 this.tradeRecipientItemsCount = pdata[1] & 0xff;
+
                 let l3 = 2;
 
                 for (let i11 = 0; i11 < tradeRecipientItemsCount; i11++) {
@@ -7749,6 +7750,7 @@ class mudclient extends GameConnection {
 
             if (opcode === S_OPCODES.TRADE_RECIPIENT_STATUS) {
                 let byte0 = pdata[1];
+
                 if (byte0 === 1) {
                     this.tradeRecipientAccepted = true;
                     return;
@@ -8079,6 +8081,7 @@ class mudclient extends GameConnection {
 
             if (opcode === S_OPCODES.INVENTORY_ITEM_REMOVE) {
                 let index = pdata[1] & 0xff;
+
                 this.inventoryItemsCount--;
 
                 for (let l12 = index; l12 < this.inventoryItemsCount; l12++) {
@@ -8252,7 +8255,7 @@ class mudclient extends GameConnection {
                 return;
             }
         } catch (e) {
-            if (packetErrorCount < 3) {
+            if (this.packetErrorCount < 3) {
                 let s1 = e.stack;
                 let slen = s1.length;
 
@@ -8279,6 +8282,772 @@ class mudclient extends GameConnection {
             this.clientStream.closeStream();
             this.resetLoginVars();
         }
+    }
+
+    drawUiTabPlayerInfo(nomenus) {
+        let uiX = this.surface.width2 - 199;
+        let uiY = 36;
+
+        this.surface._drawSprite_from3(uiX - 49, 3, this.spriteMedia + 3);
+
+        let uiWidth = 196;
+        let uiHeight = 275;
+        let l = 0;
+        let k = l = Surface.rgbToLong(160, 160, 160);
+
+        if (this.uiTabPlayerInfoSubTab === 0) {
+            k = Surface.rgbToLong(220, 220, 220);
+        } else {
+            l = Surface.rgbToLong(220, 220, 220);
+        }
+
+        this.surface.drawBoxAlpha(uiX, uiY, (uiWidth / 2) | 0, 24, k, 128);
+        this.surface.drawBoxAlpha(uiX + ((uiWidth / 2) | 0), uiY, (uiWidth / 2) | 0, 24, l, 128);
+        this.surface.drawBoxAlpha(uiX, uiY + 24, uiWidth, uiHeight - 24, Surface.rgbToLong(220, 220, 220), 128);
+        this.surface.drawLineHoriz(uiX, uiY + 24, uiWidth, 0);
+        this.surface.drawLineVert(uiX + ((uiWidth / 2) | 0), uiY, 24, 0);
+        this.surface.drawStringCenter('Stats', uiX + ((uiWidth / 4) | 0), uiY + 16, 4, 0);
+        this.surface.drawStringCenter('Quests', uiX + ((uiWidth / 4) | 0) + ((uiWidth / 2) | 0), uiY + 16, 4, 0);
+
+        if (this.uiTabPlayerInfoSubTab === 0) {
+            let i1 = 72;
+            let k1 = -1;
+
+            this.surface.drawString('Skills', uiX + 5, i1, 3, 0xffff00);
+
+            i1 += 13;
+
+            for (let l1 = 0; l1 < 9; l1++) {
+                let i2 = 0xffffff;
+
+                if (this.mouseX > uiX + 3 && this.mouseY >= i1 - 11 && this.mouseY < i1 + 2 && this.mouseX < uiX + 90) {
+                    i2 = 0xff0000;
+                    k1 = l1;
+                }
+
+                this.surface.drawString(this.skillNameShort[l1] + ':@yel@' + this.playerStatCurrent[l1] + '/' + this.playerStatBase[l1], uiX + 5, i1, 1, i2);
+                i2 = 0xffffff;
+
+                if (this.mouseX >= uiX + 90 && this.mouseY >= i1 - 13 - 11 && this.mouseY < (i1 - 13) + 2 && this.mouseX < uiX + 196) {
+                    i2 = 0xff0000;
+                    k1 = l1 + 9;
+                }
+
+                this.surface.drawString(this.skillNameShort[l1 + 9] + ':@yel@' + this.playerStatCurrent[l1 + 9] + '/' + this.playerStatBase[l1 + 9], (uiX + ((uiWidth / 2) | 0)) - 5, i1 - 13, 1, i2);
+                i1 += 13;
+            }
+
+            this.surface.drawString('Quest Points:@yel@' + this.playerQuestPoints, (uiX + ((uiWidth / 2) | 0)) - 5, i1 - 13, 1, 0xffffff);
+            i1 += 12;
+            this.surface.drawString('Fatigue: @yel@' + (((this.statFatigue * 100) / 750) | 0) + '%', uiX + 5, i1 - 13, 1, 0xffffff);
+            i1 += 8;
+            this.surface.drawString('Equipment Status', uiX + 5, i1, 3, 0xffff00);
+            i1 += 12;
+
+            for (let j2 = 0; j2 < 3; j2++) {
+                this.surface.drawString(this.equipmentStatNames[j2] + ':@yel@' + this.playerStatEquipment[j2], uiX + 5, i1, 1, 0xffffff);
+
+                if (j2 < 2) {
+                    this.surface.drawString(this.equipmentStatNames[j2 + 3] + ':@yel@' + this.playerStatEquipment[j2 + 3], uiX + ((uiWidth / 2) | 0) + 25, i1, 1, 0xffffff);
+                }
+
+                i1 += 13;
+            }
+
+            i1 += 6;
+            this.surface.drawLineHoriz(uiX, i1 - 15, uiWidth, 0);
+
+            if (k1 !== -1) {
+                this.surface.drawString(this.skillNameLong[k1] + ' skill', uiX + 5, i1, 1, 0xffff00);
+                i1 += 12;
+                let k2 = this.experienceArray[0];
+
+                for (let i3 = 0; i3 < 98; i3++) {
+                    if (this.playerExperience[k1] >= this.experienceArray[i3]) {
+                        k2 = this.experienceArray[i3 + 1];
+                    }
+                }
+
+                this.surface.drawString('Total xp: ' + ((this.playerExperience[k1] / 4) | 0), uiX + 5, i1, 1, 0xffffff);
+                i1 += 12;
+                this.surface.drawString('Next level at: ' + ((k2 / 4) | 0), uiX + 5, i1, 1, 0xffffff);
+            } else {
+                this.surface.drawString('Overall levels', uiX + 5, i1, 1, 0xffff00);
+                i1 += 12;
+                let l2 = 0;
+
+                for (let j3 = 0; j3 < this.playerStatCount; j3++) {
+                    l2 += this.playerStatBase[j3];
+                }
+
+                this.surface.drawString('Skill total: ' + l2, uiX + 5, i1, 1, 0xffffff);
+                i1 += 12;
+                this.surface.drawString('Combat level: ' + this.localPlayer.level, uiX + 5, i1, 1, 0xffffff);
+                i1 += 12;
+            }
+        }
+
+        if (this.uiTabPlayerInfoSubTab === 1) {
+            this.panelQuestList.clearList(this.controlListQuest);
+            this.panelQuestList.addListEntry(this.controlListQuest, 0, '@whi@Quest-list (green=completed)');
+
+            for (let j1 = 0; j1 < this.questCount; j1++) {
+                this.panelQuestList.addListEntry(this.controlListQuest, j1 + 1, (this.questComplete[j1] ? '@gre@' : '@red@') + this.questName[j1]);
+            }
+
+            this.panelQuestList.drawPanel();
+        }
+
+        if (!nomenus) {
+            return;
+        }
+
+        let mouseX = this.mouseX - (this.surface.width2 - 199);
+        let mouseY = this.mouseY - 36;
+
+        if (mouseX >= 0 && mouseY >= 0 && mouseX < uiWidth && mouseY < uiHeight) {
+            if (this.uiTabPlayerInfoSubTab === 1) {
+                this.panelQuestList.handleMouse(mouseX + (this.surface.width2 - 199), mouseY + 36, this.lastMouseButtonDown, this.mouseButtonDown);
+            }
+
+            if (mouseY <= 24 && this.mouseButtonClick === 1) {
+                if (mouseX < 98) {
+                    this.uiTabPlayerInfoSubTab = 0;
+                    return;
+                }
+
+                if (mouseX > 98) {
+                    this.uiTabPlayerInfoSubTab = 1;
+                }
+            }
+        }
+    }
+
+    createRightClickMenu() {
+        let i = 2203 - (this.localRegionY + this.planeHeight + this.regionY);
+
+        if (this.localRegionX + this.planeWidth + this.regionX >= 2640) {
+            i = -50;
+        }
+
+        let j = -1;
+
+        for (let k = 0; k < this.objectCount; k++) {
+            this.objectAlreadyInMenu[k] = false;
+        }
+
+        for (let l = 0; l < this.wallObjectCount; l++) {
+            this.wallObjectAlreadyInMenu[l] = false;
+        }
+
+        let i1 = this.scene.getMousePickedCount();
+        let objs = this.scene.getMousePickedModels();
+        let plyrs = this.scene.getMousePickedFaces();
+
+        for (let menuIdx = 0; menuIdx < i1; menuIdx++) {
+            if (this.menuItemsCount > 200) {
+                break;
+            }
+
+            let pid = plyrs[menuIdx];
+            let gameModel = objs[menuIdx];
+
+            if (gameModel.faceTag[pid] <= 65535 || gameModel.faceTag[pid] >= 200000 && gameModel.faceTag[pid] <= 300000)  {
+                if (gameModel === this.scene.view) {
+                    let idx = gameModel.faceTag[pid] % 10000;
+                    let type = (gameModel.faceTag[pid] / 10000) | 0;
+
+                    if (type === 1) {
+                        let s = '';
+                        let k3 = 0;
+
+                        if (this.localPlayer.level > 0 && this.players[idx].level > 0) {
+                            k3 = this.localPlayer.level - this.players[idx].level;
+                        }
+
+                        if (k3 < 0) {
+                            s = '@or1@';
+                        }
+
+                        if (k3 < -3) {
+                            s = '@or2@';
+                        }
+
+                        if (k3 < -6) {
+                            s = '@or3@';
+                        }
+
+                        if (k3 < -9) {
+                            s = '@red@';
+                        }
+
+                        if (k3 > 0) {
+                            s = '@gr1@';
+                        }
+
+                        if (k3 > 3) {
+                            s = '@gr2@';
+                        }
+
+                        if (k3 > 6) {
+                            s = '@gr3@';
+                        }
+
+                        if (k3 > 9) {
+                            s = '@gre@';
+                        }
+
+                        s = ' ' + s + '(level-' + this.players[idx].level + ')';
+
+                        if (this.selectedSpell >= 0) {
+                            if (GameData.spellType[this.selectedSpell] === 1 || GameData.spellType[this.selectedSpell] === 2) {
+                                this.menuItemText1[this.menuItemsCount] = 'Cast ' + GameData.spellName[this.selectedSpell] + ' on';
+                                this.menuItemText2[this.menuItemsCount] = '@whi@' + this.players[idx].name + s;
+                                this.menuItemID[this.menuItemsCount] = 800;
+                                this.menuItemX[this.menuItemsCount] = this.players[idx].currentX;
+                                this.menuItemY[this.menuItemsCount] = this.players[idx].currentY;
+                                this.menuSourceType[this.menuItemsCount] = this.players[idx].serverIndex;
+                                this.menuSourceIndex[this.menuItemsCount] = this.selectedSpell;
+                                this.menuItemsCount++;
+                            }
+                        } else if (this.selectedItemInventoryIndex >= 0) {
+                            this.menuItemText1[this.menuItemsCount] = 'Use ' + this.selectedItemName + ' with';
+                            this.menuItemText2[this.menuItemsCount] = '@whi@' + this.players[idx].name + s;
+                            this.menuItemID[this.menuItemsCount] = 810;
+                            this.menuItemX[this.menuItemsCount] = this.players[idx].currentX;
+                            this.menuItemY[this.menuItemsCount] = this.players[idx].currentY;
+                            this.menuSourceType[this.menuItemsCount] = this.players[idx].serverIndex;
+                            this.menuSourceIndex[this.menuItemsCount] = this.selectedItemInventoryIndex;
+                            this.menuItemsCount++;
+                        } else {
+                            if (i > 0 && (((this.players[idx].currentY - 64) / this.magicLoc + this.planeHeight + this.regionY) | 0) < 2203) {
+                                this.menuItemText1[this.menuItemsCount] = 'Attack';
+                                this.menuItemText2[this.menuItemsCount] = '@whi@' + this.players[idx].name + s;
+
+                                if (k3 >= 0 && k3 < 5) {
+                                    this.menuItemID[this.menuItemsCount] = 805;
+                                } else {
+                                    this.menuItemID[this.menuItemsCount] = 2805;
+                                }
+
+                                this.menuItemX[this.menuItemsCount] = this.players[idx].currentX;
+                                this.menuItemY[this.menuItemsCount] = this.players[idx].currentY;
+                                this.menuSourceType[this.menuItemsCount] = this.players[idx].serverIndex;
+                                this.menuItemsCount++;
+                            } else if (this.members) {
+                                this.menuItemText1[this.menuItemsCount] = 'Duel with';
+                                this.menuItemText2[this.menuItemsCount] = '@whi@' + this.players[idx].name + s;
+                                this.menuItemX[this.menuItemsCount] = this.players[idx].currentX;
+                                this.menuItemY[this.menuItemsCount] = this.players[idx].currentY;
+                                this.menuItemID[this.menuItemsCount] = 2806;
+                                this.menuSourceType[this.menuItemsCount] = this.players[idx].serverIndex;
+                                this.menuItemsCount++;
+                            }
+
+                            this.menuItemText1[this.menuItemsCount] = 'Trade with';
+                            this.menuItemText2[this.menuItemsCount] = '@whi@' + this.players[idx].name + s;
+                            this.menuItemID[this.menuItemsCount] = 2810;
+                            this.menuSourceType[this.menuItemsCount] = this.players[idx].serverIndex;
+                            this.menuItemsCount++;
+                            this.menuItemText1[this.menuItemsCount] = 'Follow';
+                            this.menuItemText2[this.menuItemsCount] = '@whi@' + this.players[idx].name + s;
+                            this.menuItemID[this.menuItemsCount] = 2820;
+                            this.menuSourceType[this.menuItemsCount] = this.players[idx].serverIndex;
+                            this.menuItemsCount++;
+                        }
+                    } else if (type === 2) {
+                        if (this.selectedSpell >= 0) {
+                            if (GameData.spellType[this.selectedSpell] === 3) {
+                                this.menuItemText1[this.menuItemsCount] = 'Cast ' + GameData.spellName[this.selectedSpell] + ' on';
+                                this.menuItemText2[this.menuItemsCount] = '@lre@' + GameData.itemName[this.groundItemId[idx]];
+                                this.menuItemID[this.menuItemsCount] = 200;
+                                this.menuItemX[this.menuItemsCount] = this.groundItemX[idx];
+                                this.menuItemY[this.menuItemsCount] = this.groundItemY[idx];
+                                this.menuSourceType[this.menuItemsCount] = this.groundItemId[idx];
+                                this.menuSourceIndex[this.menuItemsCount] = this.selectedSpell;
+                                this.menuItemsCount++;
+                            }
+                        } else if (this.selectedItemInventoryIndex >= 0) {
+                            this.menuItemText1[this.menuItemsCount] = 'Use ' + this.selectedItemName + ' with';
+                            this.menuItemText2[this.menuItemsCount] = '@lre@' + GameData.itemName[groundItemId[idx]];
+                            this.menuItemID[this.menuItemsCount] = 210;
+                            this.menuItemX[this.menuItemsCount] = this.groundItemX[idx];
+                            this.menuItemY[this.menuItemsCount] = this.groundItemY[idx];
+                            this.menuSourceType[this.menuItemsCount] = this.groundItemId[idx];
+                            this.menuSourceIndex[this.menuItemsCount] = this.selectedItemInventoryIndex;
+                            this.menuItemsCount++;
+                        } else {
+                            this.menuItemText1[this.menuItemsCount] = 'Take';
+                            this.menuItemText2[this.menuItemsCount] = '@lre@' + GameData.itemName[this.groundItemId[idx]];
+                            this.menuItemID[this.menuItemsCount] = 220;
+                            this.menuItemX[this.menuItemsCount] = this.groundItemX[idx];
+                            this.menuItemY[this.menuItemsCount] = this.groundItemY[idx];
+                            this.menuSourceType[this.menuItemsCount] = this.groundItemId[idx];
+                            this.menuItemsCount++;
+                            this.menuItemText1[this.menuItemsCount] = 'Examine';
+                            this.menuItemText2[this.menuItemsCount] = '@lre@' + GameData.itemName[this.groundItemId[idx]];
+                            this.menuItemID[this.menuItemsCount] = 3200;
+                            this.menuSourceType[this.menuItemsCount] = this.groundItemId[idx];
+                            this.menuItemsCount++;
+                        }
+                    } else if (type === 3) {
+                        let s1 = '';
+                        let levelDiff = -1;
+                        let id = this.npcs[idx].npcId;
+
+                        if (GameData.npcAttackable[id] > 0) {
+                            let npcLevel = ((GameData.npcAttack[id] + GameData.npcDefense[id] + GameData.npcStrength[id] + GameData.npcHits[id]) / 4) | 0;
+                            let playerLevel = ((this.playerStatBase[0] + this.playerStatBase[1] + this.playerStatBase[2] + this.playerStatBase[3] + 27) / 4) | 0;
+
+                            levelDiff = playerLevel - npcLevel;
+                            s1 = '@yel@';
+
+                            if (levelDiff < 0) {
+                                s1 = '@or1@';
+                            }
+
+                            if (levelDiff < -3) {
+                                s1 = '@or2@';
+                            }
+
+                            if (levelDiff < -6) {
+                                s1 = '@or3@';
+                            }
+
+                            if (levelDiff < -9) {
+                                s1 = '@red@';
+                            }
+
+                            if (levelDiff > 0) {
+                                s1 = '@gr1@';
+                            }
+
+                            if (levelDiff > 3) {
+                                s1 = '@gr2@';
+                            }
+
+                            if (levelDiff > 6) {
+                                s1 = '@gr3@';
+                            }
+
+                            if (levelDiff > 9) {
+                                s1 = '@gre@';
+                            }
+
+                            s1 = ' ' + s1 + '(level-' + npcLevel + ')';
+                        }
+
+                        if (this.selectedSpell >= 0) {
+                            if (GameData.spellType[this.selectedSpell] === 2) {
+                                this.menuItemText1[this.menuItemsCount] = 'Cast ' + GameData.spellName[this.selectedSpell] + ' on';
+                                this.menuItemText2[this.menuItemsCount] = '@yel@' + GameData.npcName[this.npcs[idx].npcId];
+                                this.menuItemID[this.menuItemsCount] = 700;
+                                this.menuItemX[this.menuItemsCount] = this.npcs[idx].currentX;
+                                this.menuItemY[this.menuItemsCount] = this.npcs[idx].currentY;
+                                this.menuSourceType[this.menuItemsCount] = this.npcs[idx].serverIndex;
+                                this.menuSourceIndex[this.menuItemsCount] = this.selectedSpell;
+                                this.menuItemsCount++;
+                            }
+                        } else if (this.selectedItemInventoryIndex >= 0) {
+                            this.menuItemText1[this.menuItemsCount] = 'Use ' + this.selectedItemName + ' with';
+                            this.menuItemText2[this.menuItemsCount] = '@yel@' + GameData.npcName[this.npcs[idx].npcId];
+                            this.menuItemID[this.menuItemsCount] = 710;
+                            this.menuItemX[this.menuItemsCount] = this.npcs[idx].currentX;
+                            this.menuItemY[this.menuItemsCount] = this.npcs[idx].currentY;
+                            this.menuSourceType[this.menuItemsCount] = this.npcs[idx].serverIndex;
+                            this.menuSourceIndex[this.menuItemsCount] = this.selectedItemInventoryIndex;
+                            this.menuItemsCount++;
+                        } else {
+                            if (GameData.npcAttackable[id] > 0) {
+                                this.menuItemText1[this.menuItemsCount] = 'Attack';
+                                this.menuItemText2[this.menuItemsCount] = '@yel@' + GameData.npcName[this.npcs[idx].npcId] + s1;
+
+                                if (levelDiff >= 0) {
+                                    this.menuItemID[this.menuItemsCount] = 715;
+                                } else {
+                                    this.menuItemID[this.menuItemsCount] = 2715;
+                                }
+
+                                this.menuItemX[this.menuItemsCount] = this.npcs[idx].currentX;
+                                this.menuItemY[this.menuItemsCount] = this.npcs[idx].currentY;
+                                this.menuSourceType[this.menuItemsCount] = this.npcs[idx].serverIndex;
+                                this.menuItemsCount++;
+                            }
+
+                            this.menuItemText1[this.menuItemsCount] = 'Talk-to';
+                            this.menuItemText2[this.menuItemsCount] = '@yel@' + GameData.npcName[this.npcs[idx].npcId];
+                            this.menuItemID[this.menuItemsCount] = 720;
+                            this.menuItemX[this.menuItemsCount] = this.npcs[idx].currentX;
+                            this.menuItemY[this.menuItemsCount] = this.npcs[idx].currentY;
+                            this.menuSourceType[this.menuItemsCount] = this.npcs[idx].serverIndex;
+                            this.menuItemsCount++;
+
+                            if (GameData.npcCommand[id] !== '') {
+                                this.menuItemText1[this.menuItemsCount] = GameData.npcCommand[id];
+                                this.menuItemText2[this.menuItemsCount] = '@yel@' + GameData.npcName[this.npcs[idx].npcId];
+                                this.menuItemID[this.menuItemsCount] = 725;
+                                this.menuItemX[this.menuItemsCount] = this.npcs[idx].currentX;
+                                this.menuItemY[this.menuItemsCount] = this.npcs[idx].currentY;
+                                this.menuSourceType[this.menuItemsCount] = this.npcs[idx].serverIndex;
+                                this.menuItemsCount++;
+                            }
+
+                            this.menuItemText1[this.menuItemsCount] = 'Examine';
+                            this.menuItemText2[this.menuItemsCount] = '@yel@' + GameData.npcName[this.npcs[idx].npcId];
+                            this.menuItemID[this.menuItemsCount] = 3700;
+                            this.menuSourceType[this.menuItemsCount] = this.npcs[idx].npcId;
+                            this.menuItemsCount++;
+                        }
+                    }
+                } else if (gameModel !== null && gameModel.key >= 10000) {
+                    let idx = gameModel.key - 10000;
+                    let id = this.wallObjectId[idx];
+
+                    if (!this.wallObjectAlreadyInMenu[idx]) {
+                        if (this.selectedSpell >= 0) {
+                            if (GameData.spellType[this.selectedSpell] === 4) {
+                                this.menuItemText1[this.menuItemsCount] = 'Cast ' + GameData.spellName[this.selectedSpell] + ' on';
+                                this.menuItemText2[this.menuItemsCount] = '@cya@' + GameData.wallObjectName[id];
+                                this.menuItemID[this.menuItemsCount] = 300;
+                                this.menuItemX[this.menuItemsCount] = this.wallObjectX[idx];
+                                this.menuItemY[this.menuItemsCount] = this.wallObjectY[idx];
+                                this.menuSourceType[this.menuItemsCount] = this.wallObjectDirection[idx];
+                                this.menuSourceIndex[this.menuItemsCount] = this.selectedSpell;
+                                this.menuItemsCount++;
+                            }
+                        } else if (this.selectedItemInventoryIndex >= 0) {
+                            this.menuItemText1[this.menuItemsCount] = 'Use ' + this.selectedItemName + ' with';
+                            this.menuItemText2[this.menuItemsCount] = '@cya@' + GameData.wallObjectName[id];
+                            this.menuItemID[this.menuItemsCount] = 310;
+                            this.menuItemX[this.menuItemsCount] = this.wallObjectX[idx];
+                            this.menuItemY[this.menuItemsCount] = this.wallObjectY[idx];
+                            this.menuSourceType[this.menuItemsCount] = this.wallObjectDirection[idx];
+                            this.menuSourceIndex[this.menuItemsCount] = this.selectedItemInventoryIndex;
+                            this.menuItemsCount++;
+                        } else {
+                            if (!/^WalkTo$/i.test(GameData.wallObjectCommand1[id])) {
+                                this.menuItemText1[this.menuItemsCount] = GameData.wallObjectCommand1[id];
+                                this.menuItemText2[this.menuItemsCount] = '@cya@' + GameData.wallObjectName[id];
+                                this.menuItemID[this.menuItemsCount] = 320;
+                                this.menuItemX[this.menuItemsCount] = this.wallObjectX[idx];
+                                this.menuItemY[this.menuItemsCount] = this.wallObjectY[idx];
+                                this.menuSourceType[this.menuItemsCount] = this.wallObjectDirection[idx];
+                                this.menuItemsCount++;
+                            }
+
+                            if (!/^Examine$/i.test(GameData.wallObjectCommand2[id])) {
+                                this.menuItemText1[this.menuItemsCount] = GameData.wallObjectCommand2[id];
+                                this.menuItemText2[this.menuItemsCount] = '@cya@' + GameData.wallObjectName[id];
+                                this.menuItemID[this.menuItemsCount] = 2300;
+                                this.menuItemX[this.menuItemsCount] = this.wallObjectX[idx];
+                                this.menuItemY[this.menuItemsCount] = this.wallObjectY[idx];
+                                this.menuSourceType[this.menuItemsCount] = this.wallObjectDirection[idx];
+                                this.menuItemsCount++;
+                            }
+
+                            this.menuItemText1[this.menuItemsCount] = 'Examine';
+                            this.menuItemText2[this.menuItemsCount] = '@cya@' + GameData.wallObjectName[id];
+                            this.menuItemID[this.menuItemsCount] = 3300;
+                            this.menuSourceType[this.menuItemsCount] = id;
+                            this.menuItemsCount++;
+                        }
+
+                        this.wallObjectAlreadyInMenu[idx] = true;
+                    }
+                } else if (gameModel !== null && gameModel.key >= 0) {
+                    let idx = gameModel.key;
+                    let id = objectId[idx];
+
+                    if (!this.objectAlreadyInMenu[idx]) {
+                        if (this.selectedSpell >= 0) {
+                            if (GameData.spellType[this.selectedSpell] === 5) {
+                                this.menuItemText1[this.menuItemsCount] = 'Cast ' + GameData.spellName[this.selectedSpell] + ' on';
+                                this.menuItemText2[this.menuItemsCount] = '@cya@' + GameData.objectName[id];
+                                this.menuItemID[this.menuItemsCount] = 400;
+                                this.menuItemX[this.menuItemsCount] = this.objectX[idx];
+                                this.menuItemY[this.menuItemsCount] = this.objectY[idx];
+                                this.menuSourceType[this.menuItemsCount] = this.objectDirection[idx];
+                                this.menuSourceIndex[this.menuItemsCount] = this.objectId[idx];
+                                this.menuTargetIndex[this.menuItemsCount] = this.selectedSpell;
+                                this.menuItemsCount++;
+                            }
+                        } else if (this.selectedItemInventoryIndex >= 0) {
+                            this.menuItemText1[this.menuItemsCount] = 'Use ' + this.selectedItemName + ' with';
+                            this.menuItemText2[this.menuItemsCount] = '@cya@' + GameData.this.objectName[id];
+                            this.menuItemID[this.menuItemsCount] = 410;
+                            this.menuItemX[this.menuItemsCount] = this.objectX[idx];
+                            this.menuItemY[this.menuItemsCount] = this.objectY[idx];
+                            this.menuSourceType[this.menuItemsCount] = this.objectDirection[idx];
+                            this.menuSourceIndex[this.menuItemsCount] = this.objectId[idx];
+                            this.menuTargetIndex[this.menuItemsCount] = this.selectedItemInventoryIndex;
+                            this.menuItemsCount++;
+                        } else {
+                            if (!/^WalkTo$/i.test(GameData.this.objectCommand1[id])) {
+                                this.menuItemText1[this.menuItemsCount] = GameData.this.objectCommand1[id];
+                                this.menuItemText2[this.menuItemsCount] = '@cya@' + GameData.this.objectName[id];
+                                this.menuItemID[this.menuItemsCount] = 420;
+                                this.menuItemX[this.menuItemsCount] = this.objectX[idx];
+                                this.menuItemY[this.menuItemsCount] = this.objectY[idx];
+                                this.menuSourceType[this.menuItemsCount] = this.objectDirection[idx];
+                                this.menuSourceIndex[this.menuItemsCount] = this.objectId[idx];
+                                this.menuItemsCount++;
+                            }
+
+                            if (!/^Examine/.i(GameData.this.objectCommand2[id])) {
+                                this.menuItemText1[this.menuItemsCount] = GameData.this.objectCommand2[id];
+                                this.menuItemText2[this.menuItemsCount] = '@cya@' + GameData.this.objectName[id];
+                                this.menuItemID[this.menuItemsCount] = 2400;
+                                this.menuItemX[this.menuItemsCount] = this.objectX[idx];
+                                this.menuItemY[this.menuItemsCount] = this.objectY[idx];
+                                this.menuSourceType[this.menuItemsCount] = this.objectDirection[idx];
+                                this.menuSourceIndex[this.menuItemsCount] = this.objectId[idx];
+                                this.menuItemsCount++;
+                            }
+
+                            this.menuItemText1[this.menuItemsCount] = 'Examine';
+                            this.menuItemText2[this.menuItemsCount] = '@cya@' + GameData.objectName[id];
+                            this.menuItemID[this.menuItemsCount] = 3400;
+                            this.menuSourceType[this.menuItemsCount] = id;
+                            this.menuItemsCount++;
+                        }
+
+                        this.objectAlreadyInMenu[idx] = true;
+                    }
+                } else {
+                    if (pid >= 0) {
+                        pid = gameModel.faceTag[pid] - 200000;
+                    }
+
+                    if (pid >= 0) {
+                        j = pid;
+                    }
+                }
+            }
+        }
+
+        if (this.selectedSpell >= 0 && GameData.spellType[this.selectedSpell] <= 1) {
+            this.menuItemText1[this.menuItemsCount] = 'Cast ' + GameData.spellName[this.selectedSpell] + ' on self';
+            this.menuItemText2[this.menuItemsCount] = '';
+            this.menuItemID[this.menuItemsCount] = 1000;
+            this.menuSourceType[this.menuItemsCount] = this.selectedSpell;
+            this.menuItemsCount++;
+        }
+
+        if (j !== -1) {
+            if (this.selectedSpell >= 0) {
+                if (GameData.spellType[this.selectedSpell] === 6) {
+                    this.menuItemText1[this.menuItemsCount] = 'Cast ' + GameData.spellName[this.selectedSpell] + ' on ground';
+                    this.menuItemText2[this.menuItemsCount] = '';
+                    this.menuItemID[this.menuItemsCount] = 900;
+                    this.menuItemX[this.menuItemsCount] = this.world.localX[j];
+                    this.menuItemY[this.menuItemsCount] = this.world.localY[j];
+                    this.menuSourceType[this.menuItemsCount] = this.selectedSpell;
+                    this.menuItemsCount++;
+
+                    return;
+                }
+            } else if (this.selectedItemInventoryIndex < 0) {
+                this.menuItemText1[this.menuItemsCount] = 'Walk here';
+                this.menuItemText2[this.menuItemsCount] = '';
+                this.menuItemID[this.menuItemsCount] = 920;
+                this.menuItemX[this.menuItemsCount] = this.world.localX[j];
+                this.menuItemY[this.menuItemsCount] = this.world.localY[j];
+                this.menuItemsCount++;
+            }
+        }
+    }
+
+    async handleInputs() {
+        if (this.errorLoadingCodebase) {
+            return;
+        }
+
+        if (this.errorLoadingMemory) {
+            return;
+        }
+
+        if (this.errorLoadingData) {
+            return;
+        }
+
+        try {
+            this.loginTimer++;
+
+            if (this.loggedIn === 0) {
+                this.mouseActionTimeout = 0;
+                this.handleLoginScreenInput();
+            }
+
+            if (this.loggedIn === 1) {
+                this.mouseActionTimeout++;
+                await this.handleGameInput();
+            }
+
+            this.lastMouseButtonDown = 0;
+            this.cameraRotationTime++;
+
+            if (this.cameraRotationTime > 500) {
+                this.cameraRotationTime = 0;
+
+                let i = (Math.random() * 4) | 0;
+
+                if ((i & 1) === 1) {
+                    this.cameraRotationX += this.cameraRotationXIncrement;
+                }
+
+                if ((i & 2) === 2) {
+                    this.cameraRotationY += this.cameraRotationYIncrement;
+                }
+            }
+
+            if (this.cameraRotationX < -50) {
+                this.cameraRotationXIncrement = 2;
+            }
+
+            if (this.cameraRotationX > 50) {
+                this.cameraRotationXIncrement = -2;
+            }
+
+            if (this.cameraRotationY < -50) {
+                this.cameraRotationYIncrement = 2;
+            }
+
+            if (this.cameraRotationY > 50) {
+                this.cameraRotationYIncrement = -2;
+            }
+
+            if (this.messageTabFlashAll > 0) {
+                this.messageTabFlashAll--;
+            }
+
+            if (this.messageTabFlashHistory > 0) {
+                this.messageTabFlashHistory--;
+            }
+
+            if (this.messageTabFlashQuest > 0) {
+                this.messageTabFlashQuest--;
+            }
+
+            if (this.messageTabFlashPrivate > 0) {
+                this.messageTabFlashPrivate--;
+                return;
+            }
+        } catch (e) {
+            // OutOfMemory
+            this.disposeAndCollect();
+            this.errorLoadingMemory = true;
+        }
+    }
+
+    handleLoginScreenInput() {
+        if (this.worldFullTimeout > 0) {
+            this.worldFullTimeout--;
+        }
+
+        if (this.loginScreen === 0) {
+            this.panelLoginWelcome.handleMouse(this.mouseX, this.mouseY, this.lastMouseButtonDown, this.mouseButtonDown);
+
+            if (this.panelLoginWelcome.isClicked(this.controlWelcomeNewuser)) {
+                this.loginScreen = 1;
+            }
+
+            if (this.panelLoginWelcome.isClicked(this.controlWelcomeExistinguser)) {
+                this.loginScreen = 2;
+                this.panelLoginExistinguser.updateText(this.controlLoginStatus, 'Please enter your username and password');
+                this.panelLoginExistinguser.updateText(this.controlLoginUser, '');
+                this.panelLoginExistinguser.updateText(this.controlLoginPass, '');
+                this.panelLoginExistinguser.setFocus(this.controlLoginUser);
+                return;
+            }
+        } else if (this.loginScreen === 1) {
+            this.panelLoginNewuser.handleMouse(this.mouseX, this.mouseY, this.lastMouseButtonDown, this.mouseButtonDown);
+
+            if (this.panelLoginNewuser.isClicked(this.controlLoginNewOk)) {
+                this.loginScreen = 0;
+                return;
+            }
+        } else if (this.loginScreen === 2) {
+            this.panelLoginExistinguser.handleMouse(this.mouseX, this.mouseY, this.lastMouseButtonDown, this.mouseButtonDown);
+
+            if (this.panelLoginExistinguser.isClicked(this.controlLoginCancel)) {
+                this.loginScreen = 0;
+            }
+
+            if (this.panelLoginExistinguser.isClicked(this.controlLoginUser)) {
+                this.panelLoginExistinguser.setFocus(this.controlLoginPass);
+            }
+
+            if (this.panelLoginExistinguser.isClicked(this.controlLoginPass) || this.panelLoginExistinguser.isClicked(this.controlLoginOk)) {
+                this.loginUser = this.panelLoginExistinguser.getText(this.controlLoginUser);
+                this.loginPass = this.panelLoginExistinguser.getText(this.controlLoginPass);
+                this.login(this.loginUser, this.loginPass, false);
+            }
+        }
+    }
+
+    async loadMaps() {
+        this.world.mapPack = await readDataFile('maps' + VERSION.MAPS + '.jag', 'map', 70);
+
+        if (this.members) {
+            this.world.memberMapPack = await readDataFile('maps' + VERSION.MAPS + '.mem', 'members map', 75);
+        }
+
+        this.world.landscapePack = await readDataFile('land' + VERSION.MAPS + '.jag', 'landscape', 80);
+
+        if (this.members) {
+            this.world.memberLandscapePack = await readDataFile('land' + VERSION.MAPS + '.mem', 'members landscape', 85);
+        }
+    }
+
+    createModel(x, y, direction, id, count) {
+        let x1 = x;
+        let y1 = y;
+        let x2 = x;
+        let y2 = y;
+        let j2 = GameData.wallObjectTextureFront[id];
+        let k2 = GameData.wallObjectTextureBack[id];
+        let l2 = GameData.wallObjectHeight[id];
+        let gameModel = new GameModel(4, 1);
+
+        if (direction === 0) {
+            x2 = x + 1;
+        }
+
+        if (direction === 1) {
+            y2 = y + 1;
+        }
+
+        if (direction === 2) {
+            x1 = x + 1;
+            y2 = y + 1;
+        }
+
+        if (direction === 3) {
+            x2 = x + 1;
+            y2 = y + 1;
+        }
+
+        x1 *= this.magicLoc;
+        y1 *= this.magicLoc;
+        x2 *= this.magicLoc;
+        y2 *= this.magicLoc;
+
+        let i3 = gameModel.vertexAt(x1, -this.world.getElevation(x1, y1), y1);
+        let j3 = gameModel.vertexAt(x1, -this.world.getElevation(x1, y1) - l2, y1);
+        let k3 = gameModel.vertexAt(x2, -this.world.getElevation(x2, y2) - l2, y2);
+        let l3 = gameModel.vertexAt(x2, -this.world.getElevation(x2, y2), y2);
+        let ai = new Int32Array([i3, j3, k3, l3]);
+
+        gameModel.createFace(4, ai, j2, k2);
+        gameModel.setLight(false, 60, 24, -50, -10, -50);
+
+        if (x >= 0 && y >= 0 && x < 96 && y < 96) {
+            this.scene.addModel(gameModel);
+        }
+
+        gameModel.key = count + 10000;
+
+        return gameModel;
     }
 }
 
