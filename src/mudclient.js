@@ -1,9 +1,12 @@
 const C_OPCODES = require('./opcodes/client');
 const ChatMessage = require('./chat-message');
+const Color = require('./lib/graphics/color');
+const Font = require('./lib/graphics/font');
 const GameBuffer = require('./game-buffer');
 const GameCharacter = require('./game-character');
 const GameConnection = require('./game-connection');
 const GameData = require('./game-data');
+const GameModel = require('./game-model');
 const Long = require('long');
 const Panel = require('./panel');
 const Scene = require('./scene');
@@ -422,8 +425,8 @@ class mudclient extends GameConnection {
 
         if (s.length > 8) {
             s = '@gre@' + s.substring(0, s.length - 8) + ' million @whi@(' + s + ')';
-        } else if (s.length() > 4) {
-            s = '@cya@' + s.substring(0, s.length() - 4) + 'K @whi@(' + s + ')';
+        } else if (s.length > 4) {
+            s = '@cya@' + s.substring(0, s.length - 4) + 'K @whi@(' + s + ')';
         }
 
         return s;
@@ -790,7 +793,7 @@ class mudclient extends GameConnection {
     }
 
     drawAboveHeadStuff() {
-        for (let msgIdx = 0; msgIdx < receivedMessagesCount; msgIdx++) {
+        for (let msgIdx = 0; msgIdx < this.receivedMessagesCount; msgIdx++) {
             let txtHeight = this.surface.textHeight(1);
             let x = this.receivedMessageX[msgIdx];
             let y = this.receivedMessageY[msgIdx];
@@ -802,7 +805,7 @@ class mudclient extends GameConnection {
                 flag = false;
 
                 for (let i4 = 0; i4 < msgIdx; i4++) {
-                    if (y + msgHeight > this.receivedMessageY[i4] - txtHeight && y - txtHeight < receivedMessageY[i4] + receivedMessageHeight[i4] && x - mId < receivedMessageX[i4] + receivedMessageMidPoint[i4] && x + mId > receivedMessageX[i4] - receivedMessageMidPoint[i4] && receivedMessageY[i4] - txtHeight - msgHeight < y) {
+                    if (y + msgHeight > this.receivedMessageY[i4] - txtHeight && y - txtHeight < this.receivedMessageY[i4] + this.receivedMessageHeight[i4] && x - mId < this.receivedMessageX[i4] + this.receivedMessageMidPoint[i4] && x + mId > this.receivedMessageX[i4] - this.receivedMessageMidPoint[i4] && this.receivedMessageY[i4] - txtHeight - msgHeight < y) {
                         y = this.receivedMessageY[i4] - txtHeight - msgHeight;
                         flag = true;
                     }
@@ -1140,7 +1143,7 @@ class mudclient extends GameConnection {
         this.surface.drawString('Your Inventory', dialogX + 216, dialogY + 27, 4, 0xffffff);
 
         if (!this.tradeAccepted) {
-            this.surface.drawSprite(dialogX + 217, dialogY + 238, this.spriteMedia + 25);
+            this.surface._drawSprite_from3(dialogX + 217, dialogY + 238, this.spriteMedia + 25);
         }
 
         this.surface.drawSprite(dialogX + 394, dialogY + 238, this.spriteMedia + 26);
@@ -1258,7 +1261,7 @@ class mudclient extends GameConnection {
         let uiX = this.surface.width2 - 199;
         let uiY = 36;
 
-        this.surface.drawSprite(uiX - 49, 3, this.spriteMedia + 5);
+        this.surface._drawSprite_from3(uiX - 49, 3, this.spriteMedia + 5);
 
         let uiWidth = 196;
         let uiHeight = 182;
@@ -1591,6 +1594,7 @@ class mudclient extends GameConnection {
 
             if (this.inputTextFinal.length > 0) {
                 let s2 = this.inputTextFinal.trim();
+
                 this.inputTextCurrent = '';
                 this.inputTextFinal = '';
                 this.showDialogSocialInput = 0;
@@ -1616,6 +1620,7 @@ class mudclient extends GameConnection {
 
         let x = 140;
         let y = 34;
+
         x += 116;
         y -= 10;
 
@@ -1623,52 +1628,53 @@ class mudclient extends GameConnection {
         this.panelAppearance.addText(x, y + 110, 'Side', 3, true);
         this.panelAppearance.addText(x + 55, y + 110, 'Back', 3, true);
 
-        let xoff = 54;
+        let xOff = 54;
+
         y += 145;
 
-        this.panelAppearance.addBoxRounded(x - xoff, y, 53, 41);
-        this.panelAppearance.addText(x - xoff, y - 8, 'Head', 1, true);
-        this.panelAppearance.addText(x - xoff, y + 8, 'Type', 1, true);
-        this.panelAppearance.addSprite(x - xoff - 40, y, Panel.baseSpriteStart + 7);
-        this.controlButtonAppearanceHead1 = this.panelAppearance.addButton(x - xoff - 40, y, 20, 20);
-        this.panelAppearance.addSprite((x - xoff) + 40, y, Panel.baseSpriteStart + 6);
-        this.controlButtonAppearanceHead2 = this.panelAppearance.addButton((x - xoff) + 40, y, 20, 20);
-        this.panelAppearance.addBoxRounded(x + xoff, y, 53, 41);
-        this.panelAppearance.addText(x + xoff, y - 8, 'Hair', 1, true);
-        this.panelAppearance.addText(x + xoff, y + 8, 'Color', 1, true);
-        this.panelAppearance.addSprite((x + xoff) - 40, y, Panel.baseSpriteStart + 7);
-        this.controlButtonAppearanceHair1 = this.panelAppearance.addButton((x + xoff) - 40, y, 20, 20);
-        this.panelAppearance.addSprite(x + xoff + 40, y, Panel.baseSpriteStart + 6);
-        this.controlButtonAppearanceHair2 = this.panelAppearance.addButton(x + xoff + 40, y, 20, 20);
+        this.panelAppearance.addBoxRounded(x - xOff, y, 53, 41);
+        this.panelAppearance.addText(x - xOff, y - 8, 'Head', 1, true);
+        this.panelAppearance.addText(x - xOff, y + 8, 'Type', 1, true);
+        this.panelAppearance.addSprite(x - xOff - 40, y, Panel.baseSpriteStart + 7);
+        this.controlButtonAppearanceHead1 = this.panelAppearance.addButton(x - xOff - 40, y, 20, 20);
+        this.panelAppearance.addSprite((x - xOff) + 40, y, Panel.baseSpriteStart + 6);
+        this.controlButtonAppearanceHead2 = this.panelAppearance.addButton((x - xOff) + 40, y, 20, 20);
+        this.panelAppearance.addBoxRounded(x + xOff, y, 53, 41);
+        this.panelAppearance.addText(x + xOff, y - 8, 'Hair', 1, true);
+        this.panelAppearance.addText(x + xOff, y + 8, 'Color', 1, true);
+        this.panelAppearance.addSprite((x + xOff) - 40, y, Panel.baseSpriteStart + 7);
+        this.controlButtonAppearanceHair1 = this.panelAppearance.addButton((x + xOff) - 40, y, 20, 20);
+        this.panelAppearance.addSprite(x + xOff + 40, y, Panel.baseSpriteStart + 6);
+        this.controlButtonAppearanceHair2 = this.panelAppearance.addButton(x + xOff + 40, y, 20, 20);
         y += 50;
-        this.panelAppearance.addBoxRounded(x - xoff, y, 53, 41);
-        this.panelAppearance.addText(x - xoff, y, 'Gender', 1, true);
-        this.panelAppearance.addSprite(x - xoff - 40, y, Panel.baseSpriteStart + 7);
-        this.controlButtonAppearanceGender1 = this.panelAppearance.addButton(x - xoff - 40, y, 20, 20);
-        this.panelAppearance.addSprite((x - xoff) + 40, y, Panel.baseSpriteStart + 6);
-        this.controlButtonAppearanceGender2 = this.panelAppearance.addButton((x - xoff) + 40, y, 20, 20);
-        this.panelAppearance.addBoxRounded(x + xoff, y, 53, 41);
-        this.panelAppearance.addText(x + xoff, y - 8, 'Top', 1, true);
-        this.panelAppearance.addText(x + xoff, y + 8, 'Color', 1, true);
-        this.panelAppearance.addSprite((x + xoff) - 40, y, Panel.baseSpriteStart + 7);
-        this.controlButtonAppearanceTop1 = this.panelAppearance.addButton((x + xoff) - 40, y, 20, 20);
-        this.panelAppearance.addSprite(x + xoff + 40, y, Panel.baseSpriteStart + 6);
-        this.controlButtonAppearanceTop2 = this.panelAppearance.addButton(x + xoff + 40, y, 20, 20);
+        this.panelAppearance.addBoxRounded(x - xOff, y, 53, 41);
+        this.panelAppearance.addText(x - xOff, y, 'Gender', 1, true);
+        this.panelAppearance.addSprite(x - xOff - 40, y, Panel.baseSpriteStart + 7);
+        this.controlButtonAppearanceGender1 = this.panelAppearance.addButton(x - xOff - 40, y, 20, 20);
+        this.panelAppearance.addSprite((x - xOff) + 40, y, Panel.baseSpriteStart + 6);
+        this.controlButtonAppearanceGender2 = this.panelAppearance.addButton((x - xOff) + 40, y, 20, 20);
+        this.panelAppearance.addBoxRounded(x + xOff, y, 53, 41);
+        this.panelAppearance.addText(x + xOff, y - 8, 'Top', 1, true);
+        this.panelAppearance.addText(x + xOff, y + 8, 'Color', 1, true);
+        this.panelAppearance.addSprite((x + xOff) - 40, y, Panel.baseSpriteStart + 7);
+        this.controlButtonAppearanceTop1 = this.panelAppearance.addButton((x + xOff) - 40, y, 20, 20);
+        this.panelAppearance.addSprite(x + xOff + 40, y, Panel.baseSpriteStart + 6);
+        this.controlButtonAppearanceTop2 = this.panelAppearance.addButton(x + xOff + 40, y, 20, 20);
         y += 50;
-        this.panelAppearance.addBoxRounded(x - xoff, y, 53, 41);
-        this.panelAppearance.addText(x - xoff, y - 8, 'Skin', 1, true);
-        this.panelAppearance.addText(x - xoff, y + 8, 'Color', 1, true);
-        this.panelAppearance.addSprite(x - xoff - 40, y, Panel.baseSpriteStart + 7);
-        this.controlButtonAppearanceSkin1 = this.panelAppearance.addButton(x - xoff - 40, y, 20, 20);
-        this.panelAppearance.addSprite((x - xoff) + 40, y, Panel.baseSpriteStart + 6);
-        this.controlButtonAppearanceSkin2 = this.panelAppearance.addButton((x - xoff) + 40, y, 20, 20);
-        this.panelAppearance.addBoxRounded(x + xoff, y, 53, 41);
-        this.panelAppearance.addText(x + xoff, y - 8, 'Bottom', 1, true);
-        this.panelAppearance.addText(x + xoff, y + 8, 'Color', 1, true);
-        this.panelAppearance.addSprite((x + xoff) - 40, y, Panel.baseSpriteStart + 7);
-        this.controlButtonAppearanceBottom1 = this.panelAppearance.addButton((x + xoff) - 40, y, 20, 20);
-        this.panelAppearance.addSprite(x + xoff + 40, y, Panel.baseSpriteStart + 6);
-        this.controlButtonAppearanceBottom2 = this.panelAppearance.addButton(x + xoff + 40, y, 20, 20);
+        this.panelAppearance.addBoxRounded(x - xOff, y, 53, 41);
+        this.panelAppearance.addText(x - xOff, y - 8, 'Skin', 1, true);
+        this.panelAppearance.addText(x - xOff, y + 8, 'Color', 1, true);
+        this.panelAppearance.addSprite(x - xOff - 40, y, Panel.baseSpriteStart + 7);
+        this.controlButtonAppearanceSkin1 = this.panelAppearance.addButton(x - xOff - 40, y, 20, 20);
+        this.panelAppearance.addSprite((x - xOff) + 40, y, Panel.baseSpriteStart + 6);
+        this.controlButtonAppearanceSkin2 = this.panelAppearance.addButton((x - xOff) + 40, y, 20, 20);
+        this.panelAppearance.addBoxRounded(x + xOff, y, 53, 41);
+        this.panelAppearance.addText(x + xOff, y - 8, 'Bottom', 1, true);
+        this.panelAppearance.addText(x + xOff, y + 8, 'Color', 1, true);
+        this.panelAppearance.addSprite((x + xOff) - 40, y, Panel.baseSpriteStart + 7);
+        this.controlButtonAppearanceBottom1 = this.panelAppearance.addButton((x + xOff) - 40, y, 20, 20);
+        this.panelAppearance.addSprite(x + xOff + 40, y, Panel.baseSpriteStart + 6);
+        this.controlButtonAppearanceBottom2 = this.panelAppearance.addButton(x + xOff + 40, y, 20, 20);
         y += 82;
         y -= 35;
         this.panelAppearance.addButtonBackground(x, y, 200, 30);
@@ -1684,24 +1690,24 @@ class mudclient extends GameConnection {
     drawDialogWelcome() {
         let i = 65;
 
-        if (welcomeRecoverySetDays !== 201) {
+        if (this.welcomeRecoverySetDays !== 201) {
             i += 60;
         }
 
-        if (welcomeUnreadMessages > 0) {
+        if (this.welcomeUnreadMessages > 0) {
             i += 60;
         }
 
-        if (welcomeLastLoggedInIP !== 0) {
+        if (this.welcomeLastLoggedInIP !== 0) {
             i += 45;
         }
 
-        let y = 167 - i / 2;
+        let y = 167 - ((i / 2) | 0);
 
         this.surface.drawBox(56, 167 - ((i / 2) | 0), 400, i, 0);
         this.surface.drawBoxEdge(56, 167 - ((i / 2) | 0), 400, i, 0xffffff);
         y += 20;
-        this.surface.drawStringCenter("Welcome to RuneScape " + loginUser, 256, y, 4, 0xffff00);
+        this.surface.drawStringCenter('Welcome to RuneScape ' + this.loginUser, 256, y, 4, 0xffff00);
         y += 30;
 
         let s = null;
@@ -1825,12 +1831,12 @@ class mudclient extends GameConnection {
         this.surface._spriteClipping_from9(x, y, w, h, picture, mask, 0, 0, false);
     }
 
-    handleGameInput() {
+    async handleGameInput() {
         if (this.systemUpdate > 1) {
             this.systemUpdate--;
         }
 
-        this.checkConnection(); // TODO: async
+        await this.checkConnection(); 
 
         if (this.logoutTimeout > 0) {
             this.logoutTimeout--;
@@ -1897,6 +1903,7 @@ class mudclient extends GameConnection {
                     if (character.currentY < character.waypointsY[l2]) {
                         character.currentY += j5;
                         character.stepCount++;
+
                         if (i1 === -1) {
                             i1 = 4;
                         } else if (i1 === 2) {
@@ -2056,11 +2063,11 @@ class mudclient extends GameConnection {
 
         if (this.showUiTab !== 2) {
             if (Surface.anInt346 > 0) {
-                sleepWordDelayTimer++;
+                this.sleepWordDelayTimer++;
             }
 
             if (Surface.anInt347 > 0) {
-                sleepWordDelayTimer = 0;
+                this.sleepWordDelayTimer = 0;
             }
 
             Surface.anInt346 = 0;
@@ -2095,8 +2102,8 @@ class mudclient extends GameConnection {
             }
 
             if (this.optionCameraModeAuto) {
-                let k1 = cameraAngle * 32;
-                let j3 = k1 - cameraRotation;
+                let k1 = this.cameraAngle * 32;
+                let j3 = k1 - this.cameraRotation;
                 let byte0 = 1;
 
                 if (j3 !== 0) {
@@ -2129,7 +2136,7 @@ class mudclient extends GameConnection {
         }
 
         if (this.isSleeping) {
-            if (this.inputTextFinal.length() > 0) {
+            if (this.inputTextFinal.length > 0) {
                 if (/^::lostcon$/i.test(this.inputTextFinal)) {
                     this.clientStream.closeStream();
                 } else if (/^::closecon$/.test(this.inputTextFinal)) { 
@@ -2406,8 +2413,8 @@ class mudclient extends GameConnection {
         }
 
         // runescape logo
-        this.surface.drawSprite(((this.gameWidth / 2) | 0) - ((this.surface.spriteWidth[this.spriteMedia + 10] / 2) | 0), 15, this.spriteMedia + 10); 
-        this.surface.drawSprite(this.spriteLogo, 0, 0, this.gameWidth, 200);
+        this.surface._drawSprite_from3(((this.gameWidth / 2) | 0) - ((this.surface.spriteWidth[this.spriteMedia + 10] / 2) | 0), 15, this.spriteMedia + 10); 
+        this.surface._drawSprite_from5(this.spriteLogo, 0, 0, this.gameWidth, 200);
         this.surface.drawWorld(this.spriteLogo);
 
         x = 9216;
@@ -2437,8 +2444,8 @@ class mudclient extends GameConnection {
             this.surface.drawLineAlpha(0, i1, 0, 194 - i1, this.gameWidth, 8);
         }
 
-        this.surface.drawSprite(((this.gameWidth / 2) | 0) - ((this.surface.spriteWidth[this.spriteMedia + 10] / 2) | 0), 15, this.spriteMedia + 10);
-        this.surface.drawSprite(this.spriteLogo + 1, 0, 0, this.gameWidth, 200); 
+        this.surface._drawSprite_from3(((this.gameWidth / 2) | 0) - ((this.surface.spriteWidth[this.spriteMedia + 10] / 2) | 0), 15, this.spriteMedia + 10);
+        this.surface._drawSprite_from5(this.spriteLogo + 1, 0, 0, this.gameWidth, 200); 
         this.surface.drawWorld(this.spriteLogo + 1);
 
         for (let j1 = 0; j1 < 64; j1++) {
@@ -2475,8 +2482,8 @@ class mudclient extends GameConnection {
             this.surface.drawLineAlpha(0, l1, 0, 194, this.gameWidth, 8); 
         }
 
-        this.surface.drawSprite(((this.gameWidth / 2) | 0) - ((this.surface.spriteWidth[this.spriteMedia + 10] / 2) | 0), 15, this.spriteMedia + 10);
-        this.surface.drawSprite(this.spriteMedia + 10, 0, 0, this.gameWidth, 200);
+        this.surface._drawSprite_from3(((this.gameWidth / 2) | 0) - ((this.surface.spriteWidth[this.spriteMedia + 10] / 2) | 0), 15, this.spriteMedia + 10);
+        this.surface._drawSprite_from5(this.spriteMedia + 10, 0, 0, this.gameWidth, 200);
         this.surface.drawWorld(this.spriteMedia + 10);
     }
 
@@ -2547,7 +2554,8 @@ class mudclient extends GameConnection {
 
     drawUiTabInventory(nomenus) {
         let uiX = this.surface.width2 - 248;
-        this.surface.drawSprite(uiX, 3, this.spriteMedia + 1);
+
+        this.surface._drawSprite_from3(uiX, 3, this.spriteMedia + 1);
 
         for (let itemIndex = 0; itemIndex < this.inventoryMaxItemCount; itemIndex++) {
             let slotX = uiX + (itemIndex % 5) * 49;
@@ -2572,7 +2580,7 @@ class mudclient extends GameConnection {
             this.surface.drawLineVert(uiX + rows * 49, 36, ((this.inventoryMaxItemCount / 5) | 0) * 34, 0);
         }
 
-        for (let cols = 1; cols <= this.inventoryMaxItemCount / 5 - 1; cols++) {
+        for (let cols = 1; cols <= ((this.inventoryMaxItemCount / 5) | 0) - 1; cols++) {
             this.surface.drawLineHoriz(uiX, 36 + cols * 34, 245, 0);
         }
 
@@ -2712,8 +2720,8 @@ class mudclient extends GameConnection {
                 break;
             }
 
-            mouseButtonClick = 0;
-            showRightClickMenu = false;
+            this.mouseButtonClick = 0;
+            this.showRightClickMenu = false;
             return;
         }
 
@@ -2743,7 +2751,7 @@ class mudclient extends GameConnection {
         let uiWidth = 156;
         let uiHeight = 152;
 
-        this.surface.drawSprite(uiX - 49, 3, this.spriteMedia + 2);
+        this.surface._drawSprite_from3(uiX - 49, 3, this.spriteMedia + 2);
         uiX += 40;
         this.surface.drawBox(uiX, 36, uiWidth, uiHeight, 0);
         this.surface.setBounds(uiX, 36, uiX + uiWidth, 36 + uiHeight);
@@ -2766,6 +2774,7 @@ class mudclient extends GameConnection {
             let l1 = ((((this.objectX[i] * this.magicLoc + 64) - this.localPlayer.currentX) * 3 * k) / 2048) | 0;
             let j3 = ((((this.objectY[i] * this.magicLoc + 64) - this.localPlayer.currentY) * 3 * k) / 2048) | 0;
             let l5 = j3 * k4 + l1 * i5 >> 18;
+
             j3 = j3 * i5 - l1 * k4 >> 18;
             l1 = l5;
 
@@ -2776,6 +2785,7 @@ class mudclient extends GameConnection {
             let i2 = ((((this.groundItemX[j7] * this.magicLoc + 64) - this.localPlayer.currentX) * 3 * k) / 2048) | 0;
             let k3 = ((((this.groundItemY[j7] * this.magicLoc + 64) - this.localPlayer.currentY) * 3 * k) / 2048) | 0;
             let i6 = k3 * k4 + i2 * i5 >> 18;
+
             k3 = k3 * i5 - i2 * k4 >> 18;
             i2 = i6;
 
@@ -2787,6 +2797,7 @@ class mudclient extends GameConnection {
             let j2 = (((character.currentX - this.localPlayer.currentX) * 3 * k) / 2048) | 0;
             let l3 = (((character.currentY - this.localPlayer.currentY) * 3 * k) / 2048) | 0;
             let j6 = l3 * k4 + j2 * i5 >> 18;
+
             l3 = l3 * i5 - j2 * k4 >> 18;
             j2 = j6;
 
@@ -2798,8 +2809,10 @@ class mudclient extends GameConnection {
             let k2 = (((character_1.currentX - this.localPlayer.currentX) * 3 * k) / 2048) | 0;
             let i4 = (((character_1.currentY - this.localPlayer.currentY) * 3 * k) / 2048) | 0;
             let k6 = i4 * k4 + k2 * i5 >> 18;
+
             i4 = i4 * i5 - k2 * k4 >> 18;
             k2 = k6;
+
             let j8 = 0xffffff;
 
             for (let k8 = 0; k8 < this.friendListCount; k8++) {
@@ -2868,7 +2881,7 @@ class mudclient extends GameConnection {
             let s = GameData.itemName[this.tradeConfirmItems[j]];
 
             if (GameData.itemStackable[this.tradeConfirmItems[j]] === 0) {
-                s = s + ' x ' + this.formatNumber(this.tradeConfirmItemCount[j]);
+                s = s + ' x ' + mudclient.formatNumber(this.tradeConfirmItemCount[j]);
             }
 
             this.surface.drawStringCenter(s, dialogX + 117, dialogY + 42 + j * 12, 1, 0xffffff);
@@ -2884,7 +2897,7 @@ class mudclient extends GameConnection {
             let s1 = GameData.itemName[this.tradeRecipientConfirmItems[k]];
 
             if (GameData.itemStackable[this.tradeRecipientConfirmItems[k]] === 0) {
-                s1 = s1 + ' x ' + this.formatNumber(this.tradeRecipientConfirmItemCount[k]);
+                s1 = s1 + ' x ' + mudclient.formatNumber(this.tradeRecipientConfirmItemCount[k]);
             }
 
             this.surface.drawStringCenter(s1, dialogX + 351, dialogY + 42 + k * 12, 1, 0xffffff);
@@ -2935,8 +2948,8 @@ class mudclient extends GameConnection {
 
         if (this.showUiTab === 0 && this.mouseX >= this.surface.width2 - 35 - 33 && this.mouseY >= 3 && this.mouseX < this.surface.width2 - 3 - 33 && this.mouseY < 35) {
             this.showUiTab = 2;
-            minimapRandom_1 = ((Math.random() * 13) | 0) - 6;
-            minimapRandom_2 = ((Math.random() * 23) | 0) - 11;
+            this.minimapRandom_1 = ((Math.random() * 13) | 0) - 6;
+            this.minimapRandom_2 = ((Math.random() * 23) | 0) - 11;
         }
 
         if (this.showUiTab === 0 && this.mouseX >= this.surface.width2 - 35 - 66 && this.mouseY >= 3 && this.mouseX < this.surface.width2 - 3 - 66 && this.mouseY < 35) {
@@ -2981,7 +2994,7 @@ class mudclient extends GameConnection {
             this.showUiTab = 6;
         }
 
-        if (this.showUiTab === 1 && (this.mouseX < this.surface.width2 - 248 || this.mouseY > 36 + (inventoryMaxItemCount / 5) * 34)) {
+        if (this.showUiTab === 1 && (this.mouseX < this.surface.width2 - 248 || this.mouseY > 36 + ((this.inventoryMaxItemCount / 5) | 0) * 34)) {
             this.showUiTab = 0;
         }
 
@@ -3075,10 +3088,14 @@ class mudclient extends GameConnection {
 
                 if (i2 !== 5 || GameData.animationHasA[k3] === 1) {
                     let l4 = k4 + GameData.animationNumber[k3];
+
                     i4 = ((i4 * w) / this.surface.spriteWidthFull[l4]) | 0;
                     j4 = ((j4 * h) / this.surface.spriteHeightFull[l4]) | 0;
+
                     let i5 = ((w * this.surface.spriteWidthFull[l4]) / this.surface.spriteWidthFull[GameData.animationNumber[k3]]) | 0;
+
                     i4 -= ((i5 - w) / 2) | 0;
+
                     let col = GameData.animationCharacterColour[k3];
                     let skincol = 0;
 
@@ -3122,6 +3139,7 @@ class mudclient extends GameConnection {
                 }
 
                 let l3 = ((character.healthCurrent * 30) / character.healthMax) | 0;
+
                 this.healthBarX[this.healthBarCount] = i3 + ((w / 2) | 0);
                 this.healthBarY[this.healthBarCount] = y;
                 this.healthBarMissing[this.healthBarCount++] = l3;
@@ -3177,6 +3195,7 @@ class mudclient extends GameConnection {
             let buffbandenc = Utility.loadData('badenc.txt', 0, abyte1);
             let buffhostenc = Utility.loadData('hostenc.txt', 0, abyte1);
             let bufftldlist = Utility.loadData('tldlist.txt', 0, abyte1);
+
             WordFilter.loadFilters(new GameBuffer(buffragments), new GameBuffer(buffbandenc), new GameBuffer(buffhostenc), new GameBuffer(bufftldlist));
             return;
         }
@@ -4033,6 +4052,7 @@ class mudclient extends GameConnection {
         for (let k2 = 0; k2 < this.wallObjectCount; k2++) {
             this.wallObjectX[k2] -= offsetX;
             this.wallObjectY[k2] -= offsetY;
+
             let i3 = this.wallObjectX[k2];
             let l3 = this.wallObjectY[k2];
             let j4 = this.wallObjectId[k2];
@@ -4055,6 +4075,7 @@ class mudclient extends GameConnection {
 
         for (let i4 = 0; i4 < this.playerCount; i4++) {
             let character = this.players[i4];
+
             character.currentX -= offsetX * this.magicLoc;
             character.currentY -= offsetY * this.magicLoc;
 
@@ -4067,6 +4088,7 @@ class mudclient extends GameConnection {
 
         for (let k4 = 0; k4 < this.npcCount; k4++) {
             let character_1 = this.npcs[k4];
+
             character_1.currentX -= offsetX * this.magicLoc;
             character_1.currentY -= offsetY * this.magicLoc;
 
@@ -4307,7 +4329,7 @@ class mudclient extends GameConnection {
     }
 
     drawChatMessageTabs() {
-        this.surface.drawSprite(0, this.gameHeight - 4, this.spriteMedia + 23);
+        this.surface._drawSprite_from3(0, this.gameHeight - 4, this.spriteMedia + 23);
 
         let col = Surface.rgbToLong(200, 200, 255);
 
@@ -4377,12 +4399,12 @@ class mudclient extends GameConnection {
         }
 
         this.spriteMedia = 2000;
-        this.spriteUtil = spriteMedia + 100;
-        this.spriteItem = spriteUtil + 50;
-        this.spriteLogo = spriteItem + 1000;
-        this.spriteProjectile = spriteLogo + 10;
-        this.spriteTexture = spriteProjectile + 50;
-        this.spriteTextureWorld = spriteTexture + 10;
+        this.spriteUtil = this.spriteMedia + 100;
+        this.spriteItem = this.spriteUtil + 50;
+        this.spriteLogo = this.spriteItem + 1000;
+        this.spriteProjectile = this.spriteLogo + 10;
+        this.spriteTexture = this.spriteProjectile + 50;
+        this.spriteTextureWorld = this.spriteTexture + 10;
 
         this.graphics = this.getGraphics();
 
@@ -4541,7 +4563,7 @@ class mudclient extends GameConnection {
         }
 
         if (this.tabMagicPrayer === 1) {
-            this.panelMagic.clearList(controlListMagic);
+            this.panelMagic.clearList(this.controlListMagic);
             let j1 = 0;
 
             for (let j2 = 0; j2 < GameData.prayerCount; j2++) {
@@ -4585,14 +4607,14 @@ class mudclient extends GameConnection {
                 if (mouseX < 98 && this.tabMagicPrayer === 1) {
                     this.tabMagicPrayer = 0;
                     this.panelMagic.resetListProps(this.controlListMagic);
-                } else if (mouseX > 98 && tabMagicPrayer === 0) {
+                } else if (mouseX > 98 && this.tabMagicPrayer === 0) {
                     this.tabMagicPrayer = 1;
                     this.panelMagic.resetListProps(this.controlListMagic);
                 }
             }
 
-            if (this.mouseButtonClick === 1 && tabMagicPrayer === 0) {
-                let idx = panelMagic.getListEntryIndex(controlListMagic);
+            if (this.mouseButtonClick === 1 && this.tabMagicPrayer === 0) {
+                let idx = panelMagic.getListEntryIndex(this.controlListMagic);
 
                 if (idx !== -1) {
                     let k2 = this.playerStatCurrent[6];
@@ -4883,7 +4905,7 @@ class mudclient extends GameConnection {
             this.surface.drawStringCenter(this.inputTextCurrent + '*', (this.gameWidth / 2) | 0, 180, 5, 65535);
 
             if (this.sleepingStatusText === null) {
-                this.surface.drawSprite(((this.gameWidth / 2) | 0) - 127, 230, this.spriteTexture + 1);
+                this.surface._drawSprite_from3(((this.gameWidth / 2) | 0) - 127, 230, this.spriteTexture + 1);
             } else {
                 this.surface.drawStringCenter(this.sleepingStatusText, (this.gameWidth / 2) | 0, 260, 5, 0xff0000);
             }
@@ -4904,7 +4926,7 @@ class mudclient extends GameConnection {
         for (let i = 0; i < 64; i++) {
             this.scene.removeModel(this.world.roofModels[this.lastHeightOffset][i]);
 
-            if (lastHeightOffset === 0) {
+            if (this.lastHeightOffset === 0) {
                 this.scene.removeModel(this.world.wallModels[1][i]);
                 this.scene.removeModel(this.world.roofModels[1][i]);
                 this.scene.removeModel(this.world.wallModels[2][i]);
@@ -4913,10 +4935,10 @@ class mudclient extends GameConnection {
 
             this.fogOfWar = true;
 
-            if (lastHeightOffset === 0 && (this.world.objectAdjacency.get((this.localPlayer.currentX / 128) | 0, (this.localPlayer.currentY / 128) | 0) & 128) === 0) {
+            if (this.lastHeightOffset === 0 && (this.world.objectAdjacency.get((this.localPlayer.currentX / 128) | 0, (this.localPlayer.currentY / 128) | 0) & 128) === 0) {
                 this.scene.addModel(this.world.roofModels[this.lastHeightOffset][i]);
 
-                if (lastHeightOffset === 0) {
+                if (this.lastHeightOffset === 0) {
                     this.scene.addModel(this.world.wallModels[1][i]);
                     this.scene.addModel(this.world.roofModels[1][i]);
                     this.scene.addModel(this.world.wallModels[2][i]);
@@ -4967,7 +4989,7 @@ class mudclient extends GameConnection {
             }
         }
 
-        if (this.objectAnimationNumberClaw !== lastObjectAnimationNumberClaw) {
+        if (this.objectAnimationNumberClaw !== this.lastObjectAnimationNumberClaw) {
             this.lastObjectAnimationNumberClaw = this.objectAnimationNumberClaw;
 
             for (let l = 0; l < this.objectCount; l++) {
@@ -4989,6 +5011,7 @@ class mudclient extends GameConnection {
                 let y = character.currentY;
                 let elev = -this.world.getElevation(x, y);
                 let id = this.scene.addSprite(5000 + i, x, elev, y, 145, 220, i + 10000);
+
                 this.spriteCount++;
 
                 if (character === this.localPlayer) {
@@ -5083,6 +5106,7 @@ class mudclient extends GameConnection {
         if (this.lastHeightOffset === 3) {
             let i5 = 40 + ((Math.random() * 3) | 0);
             let k7 = 40 + ((Math.random() * 7) | 0);
+
             this.scene.setLight(i5, k7, -50, -10, -50);
         }
 
@@ -5092,13 +5116,13 @@ class mudclient extends GameConnection {
 
         if (this.cameraAutoAngleDebug) {
             if (this.optionCameraModeAuto && !this.fogOfWar) {
-                let j5 = cameraAngle;
+                let j5 = this.cameraAngle;
 
                 this.autorotateCamera();
 
-                if (cameraAngle !== j5) {
-                    cameraAutoRotatePlayerX = this.localPlayer.currentX;
-                    cameraAutoRotatePlayerY = this.localPlayer.currentY;
+                if (this.cameraAngle !== j5) {
+                    this.cameraAutoRotatePlayerX = this.localPlayer.currentX;
+                    this.cameraAutoRotatePlayerY = this.localPlayer.currentY;
                 }
             }
 
@@ -5108,10 +5132,10 @@ class mudclient extends GameConnection {
             this.scene.fogZDistance = 2800;
             this.cameraRotation = this.cameraAngle * 32;
 
-            let x = cameraAutoRotatePlayerX + cameraRotationX;
-            let y = cameraAutoRotatePlayerY + cameraRotationY;
+            let x = this.cameraAutoRotatePlayerX + this.cameraRotationX;
+            let y = this.cameraAutoRotatePlayerY + this.cameraRotationY;
 
-            this.scene.setCamera(x, -this.world.getElevation(x, y), y, 912, cameraRotation * 4, 0, 2000);
+            this.scene.setCamera(x, -this.world.getElevation(x, y), y, 912, this.cameraRotation * 4, 0, 2000);
         } else {
             if (this.optionCameraModeAuto && !this.fogOfWar) {
                 this.autorotateCamera();
@@ -5129,8 +5153,8 @@ class mudclient extends GameConnection {
                 this.scene.fogZDistance = 2100;
             }
 
-            let x = cameraAutoRotatePlayerX + cameraRotationX;
-            let y = cameraAutoRotatePlayerY + cameraRotationY;
+            let x = this.cameraAutoRotatePlayerX + this.cameraRotationX;
+            let y = this.cameraAutoRotatePlayerY + this.cameraRotationY;
 
             this.scene.setCamera(x, -this.world.getElevation(x, y), y, 912, this.cameraRotation * 4, 0, this.cameraZoom * 2);
         }
@@ -5139,16 +5163,17 @@ class mudclient extends GameConnection {
         this.drawAboveHeadStuff();
 
         if (this.mouseClickXStep > 0) {
-            this.surface.drawSprite(this.mouseClickXX - 8, this.mouseClickXY - 8, this.spriteMedia + 14 + (((24 - this.mouseClickXStep) / 6) | 0));
+            this.surface._drawSprite_from3(this.mouseClickXX - 8, this.mouseClickXY - 8, this.spriteMedia + 14 + (((24 - this.mouseClickXStep) / 6) | 0));
         }
 
         if (this.mouseClickXStep < 0) {
-            this.surface.drawSprite(this.mouseClickXX - 8, this.mouseClickXY - 8, this.spriteMedia + 18 + (((24 + this.mouseClickXStep) / 6) | 0));
+            this.surface._drawSprite_from3(this.mouseClickXX - 8, this.mouseClickXY - 8, this.spriteMedia + 18 + (((24 + this.mouseClickXStep) / 6) | 0));
         }
 
         if (this.systemUpdate !== 0) {
             let i6 = ((this.systemUpdate / 50) | 0);
             let j8 = (i6 / 60) | 0;
+
             i6 %= 60;
 
             if (i6 < 10) {
@@ -5158,7 +5183,7 @@ class mudclient extends GameConnection {
             }
         }
 
-        if (!tjos/loadingArea) {
+        if (!this.loadingArea) {
             let j6 = 2203 - (this.localRegionY + this.planeHeight + this.regionY);
 
             if (this.localRegionX + this.planeWidth + this.regionX >= 2640) {
@@ -5167,7 +5192,8 @@ class mudclient extends GameConnection {
 
             if (j6 > 0) {
                 let wildlvl = 1 + ((j6 / 6) | 0);
-                this.surface.drawSprite(453, this.gameHeight - 56, spriteMedia + 13);
+
+                this.surface._drawSprite_from3(453, this.gameHeight - 56, spriteMedia + 13);
                 this.surface.drawStringCenter('Wilderness', 465, this.gameHeight - 20, 1, 0xffff00);
                 this.surface.drawStringCenter('Level: ' + wildlvl, 465, this.gameHeight - 7, 1, 0xffff00);
 
@@ -5182,12 +5208,12 @@ class mudclient extends GameConnection {
         }
 
         if (this.messageTabSelected === 0) {
-            for (let k6 = 0; k6 < 5; k6++)
+            for (let k6 = 0; k6 < 5; k6++) {
                 if (this.messageHistoryTimeout[k6] > 0) {
                     let s = this.messageHistory[k6];
-                    this.surface.drawstring(s, 7, this.gameHeight - 18 - k6 * 12, 1, 0xffff00);
+                    this.surface.drawString(s, 7, this.gameHeight - 18 - k6 * 12, 1, 0xffff00);
                 }
-
+            }
         }
 
         this.panelMessageTabs.hide(this.controlTextListChat);
@@ -5196,20 +5222,1055 @@ class mudclient extends GameConnection {
 
         if (this.messageTabSelected === 1) {
             this.panelMessageTabs.show(this.controlTextListChat);
-        } else if (this.messageTabSelected === 2)
+        } else if (this.messageTabSelected === 2) {
             this.panelMessageTabs.show(this.controlTextListQuest);
-        else if (messageTabSelected === 3) {
+        } else if (this.messageTabSelected === 3) {
             this.panelMessageTabs.show(this.controlTextListPrivate);
         }
 
         Panel.textListEntryHeightMod = 2;
         this.panelMessageTabs.drawPanel();
         Panel.textListEntryHeightMod = 0;
-        this.surface.drawSpriteAlpha(this.surface.width2 - 3 - 197, 3, spriteMedia, 128);
+        this.surface._drawSpriteAlpha_from4(this.surface.width2 - 3 - 197, 3, this.spriteMedia, 128);
         this.drawUi();
         this.surface.loggedIn = false;
         this.drawChatMessageTabs();
         this.surface.draw(this.graphics, 0, 0);
+    }
+
+    async loadSounds() {
+        try {
+            this.soundData = await readDataFile('sounds' + VERSION.SOUNDS + '.mem', 'Sound effects', 90);
+            //this.audioPlayer = new StreamAudioPlayer();
+        } catch (e) {
+            console.log('Unable to init sounds:' + e.message);
+            console.error(e);
+        }
+    }
+
+    isItemEquipped(i) {
+        for (let j = 0; j < this.inventoryItemsCount; j++) {
+            if (this.inventoryItemId[j] === i && this.inventoryEquipped[j] === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    async loadEntities() {
+        let entityBuff = null;
+        let indexDat = null;
+
+        entityBuff = await readDataFile('entity' + VERSION.ENTITY + '.jag', 'people and monsters', 30);
+
+        if (entityBuff === null) {
+            errorLoadingData = true;
+            return;
+        }
+
+        indexDat = Utility.loadData('index.dat', 0, entityBuff);
+
+        let entityBuffMem = null;
+        let indexDatMem = null;
+
+        if (this.members) {
+            entityBuffMem = await readDataFile('entity' + VERSION.ENTITY + '.mem', 'member graphics', 45);
+
+            if (entityBuffMem === null) {
+                this.errorLoadingData = true;
+                return;
+            }
+
+            indexDatMem = Utility.loadData('index.dat', 0, entityBuffMem);
+        }
+
+        let frameCount = 0;
+
+        this.anInt659 = 0;
+        this.anInt660 = this.anInt659;
+
+        label0:
+        for (let j = 0; j < GameData.animationCount; j++) {
+            let s = GameData.animationName[j];
+
+            for (let k = 0; k < j; k++) {
+                if (GameData.animationName[k].toLowerCase() === s.toLowerCase()) {
+                    continue;
+                }
+
+                GameData.animationNumber[j] = GameData.animationNumber[k];
+                continue label0;
+            }
+
+            let abyte7 = Utility.loadData(s + '.dat', 0, entityBuff);
+            let abyte4 = indexDat;
+
+            if (abyte7 === null && this.members) {
+                abyte7 = Utility.loadData(s + '.dat', 0, entityBuffMem);
+                abyte4 = indexDatMem;
+            }
+
+            if (abyte7 !== null) {
+                this.surface.parseSprite(this.anInt660, abyte7, abyte4, 15);
+
+                frameCount += 15;
+
+                if (GameData.animationHasA[j] === 1) {
+                    let aDat = Utility.loadData(s + 'a.dat', 0, entityBuff);
+                    let aIndexDat = indexDat;
+
+                    if (aDat === null && this.members) {
+                        aDat = Utility.loadData(s + 'a.dat', 0, entityBuffMem);
+                        aIndexDat = indexDatMem;
+                    }
+
+                    this.surface.parseSprite(this.anInt660 + 15, aDat, aIndexDat, 3);
+                    frameCount += 3;
+                }
+
+                if (GameData.animationHasF[j] === 1) {
+                    let fDat = Utility.loadData(s + 'f.dat', 0, entityBuff);
+                    let fDatIndex = indexDat;
+
+                    if (fDat === null && this.members) {
+                        fDat = Utility.loadData(s + 'f.dat', 0, entityBuffMem);
+                        fDatIndex = indexDatMem;
+                    }
+
+                    this.surface.parseSprite(this.anInt660 + 18, fDat, fDatIndex, 9);
+                    frameCount += 9;
+                }
+
+                if (GameData.animationSomething[j] !== 0) {
+                    for (let l = anInt660; l < this.anInt660 + 27; l++) {
+                        this.surface.loadSprite(l);
+                    }
+                }
+            }
+
+            GameData.animationNumber[j] = this.anInt660;
+            this.anInt660 += 27;
+        }
+
+        console.log('Loaded: ' + frameCount + ' frames of animation');
+    }
+
+    handleAppearancePanelControls() {
+        this.panelAppearance.handleMouse(this.mouseX, this.mouseY, this.lastMouseButtonDown, this.mouseButtonDown);
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceHead1)) {
+            do {
+                this.appearanceHeadType = ((this.appearanceHeadType - 1) + GameData.animationCount) % GameData.animationCount;
+            } while ((GameData.animationSomething[this.appearanceHeadType] & 3) !== 1 || (GameData.animationSomething[this.appearanceHeadType] & 4 * this.appearanceHeadGender) === 0);
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceHead2)) {
+            do {
+                this.appearanceHeadType = (this.appearanceHeadType + 1) % GameData.animationCount;
+            } while ((GameData.animationSomething[this.appearanceHeadType] & 3) !== 1 || (GameData.animationSomething[this.appearanceHeadType] & 4 * this.appearanceHeadGender) === 0);
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceHair1)) {
+            this.appearanceHairColour = ((this.appearanceHairColour - 1) + this.characterHairColours.length) % this.characterHairColours.length;
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceHair2)) {
+            this.appearanceHairColour = (this.appearanceHairColour + 1) % this.characterHairColours.length;
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceGender1) || this.panelAppearance.isClicked(this.controlButtonAppearanceGender2)) {
+            for (this.appearanceHeadGender = 3 - this.appearanceHeadGender; (GameData.animationSomething[this.appearanceHeadType] & 3) !== 1 || (GameData.animationSomething[this.appearanceHeadType] & 4 * this.appearanceHeadGender) === 0; this.appearanceHeadType = (this.appearanceHeadType + 1) % GameData.animationCount);
+            for (; (GameData.animationSomething[this.appearanceBodyGender] & 3) !== 2 || (GameData.animationSomething[this.appearanceBodyGender] & 4 * this.appearanceHeadGender) === 0; this.appearanceBodyGender = (this.appearanceBodyGender + 1) % GameData.animationCount);
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceTop1)) {
+            this.appearanceTopColour = ((this.appearanceTopColour - 1) + this.characterTopBottomColours.length) % this.characterTopBottomColours.length;
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceTop2)) {
+            this.appearanceTopColour = (this.appearanceTopColour + 1) % this.characterTopBottomColours.length;
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceSkin1)) {
+            this.appearanceSkinColour = ((this.appearanceSkinColour - 1) + this.characterSkinColours.length) % this.characterSkinColours.length;
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceSkin2)) {
+            this.appearanceSkinColour = (this.appearanceSkinColour + 1) % this.characterSkinColours.length;
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceBottom1)) {
+            this.appearanceBottomColour = ((this.appearanceBottomColour - 1) + this.characterTopBottomColours.length) % this.characterTopBottomColours.length;
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceBottom2)) {
+            this.appearanceBottomColour = (this.appearanceBottomColour + 1) % this.characterTopBottomColours.length;
+        }
+
+        if (this.panelAppearance.isClicked(this.controlButtonAppearanceAccept)) {
+            this.clientStream.newPacket(C_OPCODE.APPEARANCE);
+            this.clientStream.putByte(this.appearanceHeadGender);
+            this.clientStream.putByte(this.appearanceHeadType);
+            this.clientStream.putByte(this.appearanceBodyGender);
+            this.clientStream.putByte(this.appearance2Colour);
+            this.clientStream.putByte(this.appearanceHairColour);
+            this.clientStream.putByte(this.appearanceTopColour);
+            this.clientStream.putByte(this.appearanceBottomColour);
+            this.clientStream.putByte(this.appearanceSkinColour);
+            this.clientStream.sendPacket();
+            this.surface.blackScreen();
+            this.showAppearanceChange = false;
+        }
+    }
+
+    draw() {
+        if (this.errorLoadingData) {
+            let g = this.getGraphics();
+
+            g.setColor(Color.black);
+            g.fillRect(0, 0, 512, 356);
+            g.setFont(new Font('Helvetica', 1, 16));
+            g.setColor(Color.yellow);
+
+            let i = 35;
+
+            g.drawString('Sorry, an error has occured whilst loading RuneScape', 30, i);
+            i += 50;
+            g.setColor(Color.white);
+            g.drawString('To fix this try the following (in order):', 30, i);
+            i += 50;
+            g.setColor(Color.white);
+            g.setFont(new Font('Helvetica', 1, 12));
+            g.drawString('1: Try closing ALL open web-browser windows, and reloading', 30, i);
+            i += 30;
+            g.drawString('2: Try clearing your web-browsers cache from tools->internet options', 30, i);
+            i += 30;
+            g.drawString('3: Try using a different game-world', 30, i);
+            i += 30;
+            g.drawString('4: Try rebooting your computer', 30, i);
+            i += 30;
+            g.drawString('5: Try selecting a different version of Java from the play-game menu', 30, i);
+
+            this.setTargetFps(1);
+
+            return;
+        }
+
+        if (this.errorLoadingCodebase) {
+            let g1 = this.getGraphics();
+
+            g1.setColor(Color.black);
+            g1.fillRect(0, 0, 512, 356);
+            g1.setFont(new Font('Helvetica', 1, 20));
+            g1.setColor(Color.white);
+            g1.drawString('Error - unable to load game!', 50, 50);
+            g1.drawString('To play RuneScape make sure you play from', 50, 100);
+            g1.drawString('http://www.runescape.com', 50, 150);
+
+            this.setTargetFps(1);
+
+            return;
+        }
+
+        if (this.errorLoadingMemory) {
+            let g2 = this.getGraphics();
+
+            g2.setColor(Color.black);
+            g2.fillRect(0, 0, 512, 356);
+            g2.setFont(new Font('Helvetica', 1, 20));
+            g2.setColor(Color.white);
+            g2.drawString('Error - out of memory!', 50, 50);
+            g2.drawString('Close ALL unnecessary programs', 50, 100);
+            g2.drawString('and windows before loading the game', 50, 150);
+            g2.drawString('RuneScape needs about 48meg of spare RAM', 50, 200);
+
+            this.setTargetFps(1);
+
+            return;
+        }
+
+        try {
+            if (this.loggedIn === 0) {
+                this.surface.loggedIn = false;
+                this.drawLoginScreens();
+            }
+
+            if (this.loggedIn === 1) {
+                this.surface.loggedIn = true;
+                this.drawGame();
+
+                return;
+            }
+        } catch (e) {
+            // OutOfMemory 
+            this.disposeAndCollect();
+            this.errorLoadingMemory = true;
+        }
+    }
+
+    onClosing() {
+        this.closeConnection();
+        this.disposeAndCollect();
+
+        if (this.audioPlayer !== null) {
+            this.audioPlayer.stopPlayer();
+        }
+    }
+
+    drawDialogDuelConfirm() {
+        let dialogX = 22;
+        let dialogY = 36;
+ 
+        this.surface.drawBox(dialogX, dialogY, 468, 16, 192);
+        this.surface.drawBoxAlpha(dialogX, dialogY + 16, 468, 246, 0x989898, 160);
+        this.surface.drawStringCenter('Please confirm your duel with @yel@' + Utility.hashToUsername(duelOpponentNameHash), dialogX + 234, dialogY + 12, 1, 0xffffff);
+        this.surface.drawStringCenter('Your stake:', dialogX + 117, dialogY + 30, 1, 0xffff00);
+
+        for (let itemIndex = 0; itemIndex < this.duelItemsCount; itemIndex++) {
+            let s = GameData.itemName[this.duelItems[itemIndex]];
+
+            if (GameData.itemStackable[this.duelItems[itemIndex]] === 0) {
+                s = s + ' x ' + mudclient.formatNumber(this.duelItemCount[itemIndex]);
+            }
+
+            this.surface.drawStringCenter(s, dialogX + 117, dialogY + 42 + itemIndex * 12, 1, 0xffffff);
+        }
+
+        if (this.duelItemsCount === 0) {
+            this.surface.drawStringCenter('Nothing!', dialogX + 117, dialogY + 42, 1, 0xffffff);
+        }
+
+        this.surface.drawStringCenter('Your opponent\'s stake:', dialogX + 351, dialogY + 30, 1, 0xffff00);
+
+        for (let itemIndex = 0; itemIndex < this.duelOpponentItemsCount; itemIndex++) {
+            let s1 = GameData.itemName[this.duelOpponentItems[itemIndex]];
+
+            if (GameData.itemStackable[this.duelOpponentItems[itemIndex]] === 0) {
+                s1 = s1 + ' x ' + mudclient.formatNumber(this.duelOpponentItemCount[itemIndex]);
+            }
+
+            this.surface.drawStringCenter(s1, dialogX + 351, dialogY + 42 + itemIndex * 12, 1, 0xffffff);
+        }
+
+        if (this.this.duelOpponentItemsCount === 0) {
+            this.surface.drawStringCenter('Nothing!', dialogX + 351, dialogY + 42, 1, 0xffffff);
+        }
+
+        if (this.duelOptionRetreat === 0) {
+            this.surface.drawStringCenter('You can retreat from this duel', dialogX + 234, dialogY + 180, 1, 65280);
+        } else {
+            this.surface.drawStringCenter('No retreat is possible!', dialogX + 234, dialogY + 180, 1, 0xff0000);
+        }
+
+        if (this.duelOptionMagic === 0) {
+            this.surface.drawStringCenter('Magic may be used', dialogX + 234, dialogY + 192, 1, 65280);
+        } else {
+            this.surface.drawStringCenter('Magic cannot be used', dialogX + 234, dialogY + 192, 1, 0xff0000);
+        }
+
+        if (this.duelOptionPrayer === 0) {
+            this.surface.drawStringCenter('Prayer may be used', dialogX + 234, dialogY + 204, 1, 65280);
+        } else {
+            this.surface.drawStringCenter('Prayer cannot be used', dialogX + 234, dialogY + 204, 1, 0xff0000);
+        }
+
+        if (this.duelOptionWeapons === 0) {
+            this.surface.drawStringCenter('Weapons may be used', dialogX + 234, dialogY + 216, 1, 65280);
+        } else {
+            this.surface.drawStringCenter('Weapons cannot be used', dialogX + 234, dialogY + 216, 1, 0xff0000);
+        }
+
+        this.surface.drawStringCenter('If you are sure click \'Accept\' to begin the duel', dialogX + 234, dialogY + 230, 1, 0xffffff);
+
+        if (!this.duelAccepted) {
+            this.surface.drawSprite((dialogX + 118) - 35, dialogY + 238, this.spriteMedia + 25);
+            this.surface.drawSprite((dialogX + 352) - 35, dialogY + 238, this.spriteMedia + 26);
+        } else {
+            this.surface.drawStringCenter('Waiting for other player...', dialogX + 234, dialogY + 250, 1, 0xffff00);
+        }
+
+        if (this.mouseButtonClick === 1) {
+            if (this.mouseX < dialogX || this.mouseY < dialogY || this.mouseX > dialogX + 468 || this.mouseY > dialogY + 262) {
+                this.showDialogDuelConfirm = false;
+                this.clientStream.newPacket(C_OPCODES.TRADE_DECLINE);
+                this.clientStream.sendPacket();
+            }
+
+            if (this.mouseX >= (dialogX + 118) - 35 && this.mouseX <= dialogX + 118 + 70 && this.mouseY >= dialogY + 238 && this.mouseY <= dialogY + 238 + 21) {
+                this.duelAccepted = true;
+                this.clientStream.newPacket(C_OPCODES.DUEL_CONFIRM_ACCEPT);
+                this.clientStream.sendPacket();
+            }
+
+            if (this.mouseX >= (dialogX + 352) - 35 && this.mouseX <= dialogX + 353 + 70 && this.mouseY >= dialogY + 238 && this.mouseY <= dialogY + 238 + 21) {
+                this.showDialogDuelConfirm = false;
+                this.clientStream.newPacket(C_OPCODES.DUEL_DECLINE);
+                this.clientStream.sendPacket();
+            }
+
+            this.mouseButtonClick = 0;
+        }
+    }
+
+    walkToGroundItem(i, j, k, l, walkToAction) {
+        if (this.walkTo(i, j, k, l, k, l, false, walkToAction)) {
+            return;
+        } else {
+            this._walkToActionSource_from8(i, j, k, l, k, l, true, walkToAction);
+            return;
+        }
+    }
+
+    async loadModels() {
+        GameData.getModelIndex('torcha2');
+        GameData.getModelIndex('torcha3');
+        GameData.getModelIndex('torcha4');
+        GameData.getModelIndex('skulltorcha2');
+        GameData.getModelIndex('skulltorcha3');
+        GameData.getModelIndex('skulltorcha4');
+        GameData.getModelIndex('firea2');
+        GameData.getModelIndex('firea3');
+        GameData.getModelIndex('fireplacea2');
+        GameData.getModelIndex('fireplacea3');
+        GameData.getModelIndex('firespell2');
+        GameData.getModelIndex('firespell3');
+        GameData.getModelIndex('lightning2');
+        GameData.getModelIndex('lightning3');
+        GameData.getModelIndex('clawspell2');
+        GameData.getModelIndex('clawspell3');
+        GameData.getModelIndex('clawspell4');
+        GameData.getModelIndex('clawspell5');
+        GameData.getModelIndex('spellcharge2');
+        GameData.getModelIndex('spellcharge3');
+
+        let abyte0 = await readDataFile('models' + Version.MODELS + '.jag', '3d models', 60);
+
+        if (abyte0 === null) {
+            this.errorLoadingData = true;
+            return;
+        }
+
+        for (let j = 0; j < GameData.modelCount; j++) {
+            let k = Utility.getDataFileOffset(GameData.modelName[j] + '.ob3', abyte0);
+
+            if (k !== 0) {
+                this.gameModels[j] = new GameModel(abyte0, k, true);
+            } else {
+                this.gameModels[j] = new GameModel(1, 1);
+            }
+
+            if (GameData.modelName[j].toLowerCase() === 'giantcrystal') {
+                this.gameModels[j].transparent = true;
+            }
+        }
+    }
+
+    drawDialogServermessage() {
+        let width = 400;
+        let height = 100;
+
+        if (this.serverMessageBoxTop) {
+            height = 450;
+            height = 300;
+        }
+
+        this.surface.drawBox(256 - ((width / 2) | 0), 167 - ((height / 2) | 0), width, height, 0);
+        this.surface.drawBoxEdge(256 - ((width / 2) | 0), 167 - ((height / 2) | 0), width, height, 0xffffff);
+        this.surface.centrepara(this.serverMessage, 256, (167 - ((height / 2) | 0)) + 20, 1, 0xffffff, width - 40);
+
+        let i = 157 + ((height / 2) | 0);
+        let j = 0xffffff;
+
+        if (this.mouseY > i - 12 && this.mouseY <= i && this.mouseX > 106 && this.mouseX < 406) {
+            j = 0xff0000;
+        }
+
+        this.surface.drawStringCenter("Click here to close window", 256, i, 1, j);
+
+        if (this.mouseButtonClick === 1) {
+            if (j === 0xff0000) {
+                this.showDialogServermessage = false;
+            }
+
+            if ((this.mouseX < 256 - ((width / 2) | 0) || this.mouseX > 256 + ((width / 2) | 0)) && (this.mouseY < 167 - ((height / 2) | 0) || this.mouseY > 167 + ((height / 2) | 0))) {
+                this.showDialogServermessage = false;
+            }
+        }
+
+        this.mouseButtonClick = 0;
+    }
+
+    drawDialogReportAbuseInput() {
+        if (this.inputTextFinal.length > 0) {
+            let s = this.inputTextFinal.trim();
+
+            this.inputTextCurrent = '';
+            this.inputTextFinal = '';
+
+            if (s.length > 0) {
+                let l = Utility.usernameToHash(s);
+
+                this.clientStream.newPacket(C_OPCODES.REPORT_ABUSE);
+                this.clientStream.putLong(l);
+                this.clientStream.putByte(this.reportAbuseOffence);
+                this.clientStream.putByte(this.reportAbuseMute ? 1 : 0);
+                this.clientStream.sendPacket();
+            }
+
+            this.showDialogReportAbuseStep = 0;
+            return;
+        }
+
+        this.surface.drawBox(56, 130, 400, 100, 0);
+        this.surface.drawBoxEdge(56, 130, 400, 100, 0xffffff);
+
+        let i = 160;
+
+        this.surface.drawStringCenter('Now type the name of the offending player, and press enter', 256, i, 1, 0xffff00);
+        i += 18;
+        this.surface.drawStringCenter('Name: ' + this.inputTextCurrent + '*', 256, i, 4, 0xffffff);
+
+        if (this.moderatorLevel > 0) {
+            i = 207;
+
+            if (this.reportAbuseMute) {
+                this.surface.drawStringCenter('Moderator option: Mute player for 48 hours: <ON>', 256, i, 1, 0xff8000);
+            } else {
+                this.surface.drawStringCenter('Moderator option: Mute player for 48 hours: <OFF>', 256, i, 1, 0xffffff);
+            }
+
+            if (this.mouseX > 106 && this.mouseX < 406 && this.mouseY > i - 13 && this.mouseY < i + 2 && mouseButtonClick === 1) {
+                this.mouseButtonClick = 0;
+                this.reportAbuseMute = !this.reportAbuseMute;
+            }
+        }
+
+        i = 222;
+
+        let j = 0xffffff;
+
+        if (this.mouseX > 196 && this.mouseX < 316 && this.mouseY > i - 13 && this.mouseY < i + 2) {
+            j = 0xffff00;
+
+            if (this.mouseButtonClick === 1) {
+                this.mouseButtonClick = 0;
+                this.showDialogReportAbuseStep = 0;
+            }
+        }
+
+        this.surface.drawStringCenter('Click here to cancel', 256, i, 1, j);
+
+        if (this.mouseButtonClick === 1 && (this.mouseX < 56 || this.mouseX > 456 || this.mouseY < 130 || this.mouseY > 230)) {
+            this.mouseButtonClick = 0;
+            this.showDialogReportAbuseStep = 0;
+        }
+    }
+
+    showMessage(message, type) {
+        if (type === 2 || type === 4 || type === 6) {
+            for (; message.length > 5 && message[0] === '@' && message[4] === '@'; message = message.substring(5)) ;
+
+            let j = message.indexOf(':');
+
+            if (j !== -1) {
+                let s1 = message.substring(0, j);
+                let l = Utility.usernameToHash(s1);
+
+                for (let i1 = 0; i1 < this.ignoreListCount; i1++) {
+                    if (this.ignoreList[i1].equals(l)) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (type === 2) {
+            message = '@yel@' + message;
+        }
+
+        if (type === 3 || type === 4) {
+            message = '@whi@' + message;
+        }
+
+        if (type === 6) {
+            message = '@cya@' + message;
+        }
+
+        if (this.messageTabSelected !== 0) {
+            if (type === 4 || type === 3) {
+                this.messageTabFlashAll = 200;
+            }
+
+            if (type === 2 && this.messageTabSelected !== 1) {
+                this.messageTabFlashHistory = 200;
+            }
+
+            if (type === 5 && this.messageTabSelected !== 2) {
+                this.messtageTabFlashQuest = 200;
+            }
+
+            if (type === 6 && this.messageTabSelected !== 3) {
+                this.messageTabFlashPrivate = 200;
+            }
+
+            if (type === 3 && this.messageTabSelected !== 0) {
+                this.messageTabSelected = 0;
+            }
+
+            if (type === 6 && this.messageTabSelected !== 3 && this.messageTabSelected !== 0) {
+                this.messageTabSelected = 0;
+            }
+        }
+
+        for (let k = 4; k > 0; k--) {
+            this.messageHistory[k] = this.messageHistory[k - 1];
+            this.messageHistoryTimeout[k] = this.messageHistoryTimeout[k - 1];
+        }
+
+        this.messageHistory[0] = this.message;
+        this.messageHistoryTimeout[0] = 300;
+
+        if (type === 2) {
+            if (this.panelMessageTabs.controlFlashText[this.controlTextListChat] === this.panelMessageTabs.controlListEntryCount[this.controlTextListChat] - 4) {
+                this.panelMessageTabs.removeListEntry(this.controlTextListChat, message, true);
+            } else {
+                this.panelMessageTabs.removeListEntry(this.controlTextListChat, message, false);
+            }
+        }
+
+        if (type === 5) {
+            if (this.panelMessageTabs.controlFlashText[this.controlTextListQuest] === this.panelMessageTabs.controlListEntryCount[this.controlTextListQuest] - 4) {
+                this.panelMessageTabs.removeListEntry(this.controlTextListQuest, message, true);
+            } else {
+                this.panelMessageTabs.removeListEntry(this.controlTextListQuest, message, false);
+            }
+        }
+
+        if (type === 6) {
+            if (this.panelMessageTabs.controlFlashText[this.controlTextListPrivate] === this.panelMessageTabs.controlListEntryCount[this.controlTextListPrivate] - 4) {
+                this.panelMessageTabs.removeListEntry(this.controlTextListPrivate, message, true);
+                return;
+            }
+
+            this.panelMessageTabs.removeListEntry(this.controlTextListPrivate, message, false);
+        }
+    }
+
+    walkToObject(x, y, id, index) {
+        let w = 0;
+        let h = 0;
+
+        if (id === 0 || id === 4) {
+            w = GameData.objectWidth[index];
+            h = GameData.objectHeight[index];
+        } else {
+            h = GameData.objectWidth[index];
+            w = GameData.objectHeight[index];
+        }
+
+        if (GameData.objectType[index] === 2 || GameData.objectType[index] === 3) {
+            if (id === 0) {
+                x--;
+                w++;
+            }
+
+            if (id === 2) {
+                h++;
+            }
+
+            if (id === 4) {
+                w++;
+            }
+
+            if (id === 6) {
+                y--;
+                h++;
+            }
+
+            this._walkToActionSource_from8(this.localRegionX, this.localRegionY, x, y, (x + w) - 1, (y + h) - 1, false, true);
+            return;
+        } else {
+            this._walkToActionSource_from8(this.localRegionX, this.localRegionY, x, y, (x + w) - 1, (y + h) - 1, true, true);
+            return;
+        }
+    }
+
+    getInventoryCount(id) {
+        let count = 0;
+
+        for (let k = 0; k < this.inventoryItemsCount; k++) {
+            if (this.inventoryItemId[k] === id) {
+                if (GameData.itemStackable[id] === 1) {
+                    count++;
+                } else {
+                    count += this.inventoryItemStackCount[k];
+                }
+            }
+        }
+
+        return count;
+    }
+
+    drawLoginScreens() {
+        this.welcomScreenAlreadyShown = false;
+        this.surface.interlace = false;
+
+        this.surface.blackScreen();
+
+        if (this.loginScreen === 0 || this.loginScreen === 1 || this.loginScreen === 2 || this.loginScreen === 3) {
+            let i = (this.loginTimer * 2) % 3072;
+
+            if (i < 1024) {
+                this.surface._drawSprite_from3(0, 10, this.spriteLogo);
+
+                if (i > 768) {
+                    this.surface._drawSpriteAlpha_from4(0, 10, this.spriteLogo + 1, i - 768);
+                }
+            } else if (i < 2048) {
+                this.surface._drawSprite_from3(0, 10, this.spriteLogo + 1);
+
+                if (i > 1792) {
+                    this.surface._drawSpriteAlpha_from4(0, 10, this.spriteMedia + 10, i - 1792);
+                }
+            } else {
+                this.surface._drawSprite_from3(0, 10, this.spriteMedia + 10);
+
+                if (i > 2816) {
+                    this.surface._drawSpriteAlpha_from4(0, 10, this.spriteLogo, i - 2816);
+                }
+            }
+        }
+
+        if (this.loginScreen === 0) {
+            this.panelLoginWelcome.drawPanel();
+        }
+
+        if (this.loginScreen === 1) {
+            this.panelLoginNewuser.drawPanel();
+        }
+
+        if (this.loginScreen === 2) {
+            this.panelLoginExistinguser.drawPanel();
+        }
+
+        this.surface.draw(this.graphics, 0, 0);
+    }
+
+    drawUiTabOptions(flag) {
+        let uiX = this.surface.width2 - 199;
+        let uiY = 36;
+
+        this.surface._drawSprite_from3(uiX - 49, 3, this.spriteMedia + 6);
+
+        let uiWidth = 196;
+
+        this.surface.drawBoxAlpha(uiX, 36, uiWidth, 65, Surface.rgbToLong(181, 181, 181), 160);
+        this.surface.drawBoxAlpha(uiX, 101, uiWidth, 65, Surface.rgbToLong(201, 201, 201), 160);
+        this.surface.drawBoxAlpha(uiX, 166, uiWidth, 95, Surface.rgbToLong(181, 181, 181), 160);
+        this.surface.drawBoxAlpha(uiX, 261, uiWidth, 40, Surface.rgbToLong(201, 201, 201), 160);
+
+        let x = uiX + 3;
+        let y = uiY + 15;
+
+        this.surface.drawString('Game options - click to toggle', x, y, 1, 0);
+        y += 15;
+
+        if (this.optionCameraModeAuto) {
+            this.surface.drawString('Camera angle mode - @gre@Auto', x, y, 1, 0xffffff);
+        } else {
+            this.surface.drawString('Camera angle mode - @red@Manual', x, y, 1, 0xffffff);
+        }
+
+        y += 15;
+
+        if (this.optionMouseButtonOne) {
+            this.surface.drawString('Mouse buttons - @red@One', x, y, 1, 0xffffff);
+        } else {
+            this.surface.drawString('Mouse buttons - @gre@Two', x, y, 1, 0xffffff);
+        }
+
+        y += 15;
+
+        if (this.members) {
+            if (this.optionSoundDisabled) {
+                this.surface.drawString('Sound effects - @red@off', x, y, 1, 0xffffff);
+            } else {
+                this.surface.drawString('Sound effects - @gre@on', x, y, 1, 0xffffff);
+            }
+        }
+
+        y += 15;
+        this.surface.drawString('To change your contact details,', x, y, 0, 0xffffff);
+        y += 15;
+        this.surface.drawString('password, recovery questions, etc..', x, y, 0, 0xffffff);
+        y += 15;
+        this.surface.drawString('please select \'account management\'', x, y, 0, 0xffffff);
+        y += 15;
+
+        if (this.referid === 0) {
+            this.surface.drawString('from the runescape.com front page', x, y, 0, 0xffffff);
+        } else if (referid === 1) {
+            this.surface.drawString('from the link below the gamewindow', x, y, 0, 0xffffff);
+        } else {
+            this.surface.drawString('from the runescape front webpage', x, y, 0, 0xffffff);
+        }
+
+        y += 15;
+        y += 5;
+        this.surface.drawString('Privacy settings. Will be applied to', uiX + 3, y, 1, 0);
+        y += 15;
+        this.surface.drawString('all people not on your friends list', uiX + 3, y, 1, 0);
+        y += 15;
+
+        if (this.settingsBlockChat === 0) {
+            this.surface.drawString('Block chat messages: @red@<off>', uiX + 3, y, 1, 0xffffff);
+        } else {
+            this.surface.drawString('Block chat messages: @gre@<on>', uiX + 3, y, 1, 0xffffff);
+        }
+
+        y += 15;
+
+        if (this.settingsBlockPrivate === 0) {
+            this.surface.drawString('Block private messages: @red@<off>', uiX + 3, y, 1, 0xffffff);
+        } else {
+            this.surface.drawString('Block private messages: @gre@<on>', uiX + 3, y, 1, 0xffffff);
+        }
+
+        y += 15;
+
+        if (this.settingsBlockTrade === 0) {
+            this.surface.drawString('Block trade requests: @red@<off>', uiX + 3, y, 1, 0xffffff);
+        } else {
+            this.surface.drawString('Block trade requests: @gre@<on>', uiX + 3, y, 1, 0xffffff);
+        }
+
+        y += 15;
+
+        if (this.members) {
+            if (this.settingsBlockDuel === 0) {
+                this.surface.drawString('Block duel requests: @red@<off>', uiX + 3, y, 1, 0xffffff);
+            } else {
+                this.surface.drawString('Block duel requests: @gre@<on>', uiX + 3, y, 1, 0xffffff);
+            }
+        }
+
+        y += 15;
+        y += 5;
+        this.surface.drawString('Always logout when you finish', x, y, 1, 0);
+        y += 15;
+        let k1 = 0xffffff;
+
+        if (this.mouseX > x && this.mouseX < x + uiWidth && this.mouseY > y - 12 && this.mouseY < y + 4) {
+            k1 = 0xffff00;
+        }
+
+        this.surface.drawString('Click here to logout', uiX + 3, y, 1, k1);
+
+        if (!flag) {
+            return;
+        }
+
+        let mouseX = this.mouseX - (this.surface.width2 - 199);
+        let mouseY = this.mouseY - 36;
+
+        if (mouseX >= 0 && mouseY >= 0 && mouseX < 196 && mouseY < 265) {
+            let l1 = this.surface.width2 - 199;
+            let byte0 = 36;
+            let c1 = 196;// '\304';
+            let l = l1 + 3;
+            let j1 = byte0 + 30;
+
+            if (this.mouseX > l && this.mouseX < l + c1 && this.mouseY > j1 - 12 && this.mouseY < j1 + 4 && this.mouseButtonClick === 1) {
+                this.optionCameraModeAuto = !this.optionCameraModeAuto;
+                this.clientStream.newPacket(C_OPCODES.SETTINGS_GAME);
+                this.clientStream.putByte(0);
+                this.clientStream.putByte(this.optionCameraModeAuto ? 1 : 0);
+                this.clientStream.sendPacket();
+            }
+
+            j1 += 15;
+
+            if (this.mouseX > l && this.mouseX < l + c1 && this.mouseY > j1 - 12 && this.mouseY < j1 + 4 && this.mouseButtonClick === 1) {
+                this.optionMouseButtonOne = !this.optionMouseButtonOne;
+                this.clientStream.newPacket(C_OPCODES.SETTINGS_GAME);
+                this.clientStream.putByte(2);
+                this.clientStream.putByte(this.optionMouseButtonOne ? 1 : 0);
+                this.clientStream.sendPacket();
+            }
+
+            j1 += 15;
+
+            if (this.members && this.mouseX > l && this.mouseX < l + c1 && this.mouseY > j1 - 12 && this.mouseY < j1 + 4 && this.mouseButtonClick === 1) {
+                this.optionSoundDisabled = !this.optionSoundDisabled;
+                this.clientStream.newPacket(C_OPCODES.SETTINGS_GAME);
+                this.clientStream.putByte(3);
+                this.clientStream.putByte(this.optionSoundDisabled ? 1 : 0);
+                this.clientStream.sendPacket();
+            }
+
+            j1 += 15;
+            j1 += 15;
+            j1 += 15;
+            j1 += 15;
+            j1 += 15;
+
+            let flag1 = false;
+
+            j1 += 35;
+
+            if (this.mouseX > l && this.mouseX < l + c1 && this.mouseY > j1 - 12 && this.mouseY < j1 + 4 && this.mouseButtonClick === 1) {
+                this.settingsBlockChat = 1 - this.settingsBlockChat;
+                flag1 = true;
+            }
+
+            j1 += 15;
+
+            if (this.mouseX > l && this.mouseX < l + c1 && this.mouseY > j1 - 12 && this.mouseY < j1 + 4 && this.mouseButtonClick === 1) {
+                this.settingsBlockPrivate = 1 - this.settingsBlockPrivate;
+                flag1 = true;
+            }
+
+            j1 += 15;
+
+            if (this.mouseX > l && this.mouseX < l + c1 && this.mouseY > j1 - 12 && this.mouseY < j1 + 4 && this.mouseButtonClick === 1) {
+                this.settingsBlockTrade = 1 - this.settingsBlockTrade;
+                flag1 = true;
+            }
+
+            j1 += 15;
+
+            if (this.members && this.mouseX > l && this.mouseX < l + c1 && this.mouseY > j1 - 12 && this.mouseY < j1 + 4 && this.mouseButtonClick === 1) {
+                this.settingsBlockDuel = 1 - this.settingsBlockDuel;
+                flag1 = true;
+            }
+
+            j1 += 15;
+
+            if (flag1) {
+                this.sendPrivacySettings(this.settingsBlockChat, this.settingsBlockPrivate, this.settingsBlockTrade, this.settingsBlockDuel);
+            }
+
+            j1 += 20;
+
+            if (this.mouseX > l && this.mouseX < l + c1 && this.mouseY > j1 - 12 && this.mouseY < j1 + 4 && this.mouseButtonClick === 1) {
+                this.sendLogout();
+            }
+
+            this.mouseButtonClick = 0;
+        }
+    }
+
+    async loadTextures() {
+        let buffTextures = await readDataFile('textures' + VERSION.TEXTURES + '.jag', 'Textures', 50);
+
+        if (buffTextures === null) {
+            this.errorLoadingData = true;
+            return;
+        }
+
+        let buffIndex = Utility.loadData('index.dat', 0, buffTextures);
+        this.scene.allocateTextures(GameData.textureCount, 7, 11);
+
+        for (let i = 0; i < GameData.textureCount; i++) {
+            this.name = GameData.textureName[i];
+
+            let buff1 = Utility.loadData(name + '.dat', 0, buffTextures);
+
+            this.surface.parseSprite(this.spriteTexture, buff1, buffIndex, 1);
+            this.surface.drawBox(0, 0, 128, 128, 0xff00ff);
+            this.surface.drawSprite(0, 0, this.spriteTexture);
+
+            let wh = this.surface.spriteWidthFull[this.spriteTexture];
+            let nameSub = GameData.textureSubtypeName[i];
+
+            if (nameSub !== null && nameSub.length > 0) {
+                let buff2 = Utility.loadData(nameSub + '.dat', 0, buffTextures);
+
+                this.surface.parseSprite(this.spriteTexture, buff2, buffIndex, 1);
+                this.surface.drawSprite(0, 0, this.spriteTexture);
+            }
+
+            this.surface.drawSprite(spriteTextureWorld + i, 0, 0, wh, wh);
+
+            let area = wh * wh;
+
+            for (let j = 0; j < area; j++) {
+                if (this.surface.surfacePixels[this.spriteTextureWorld + i][j] === 65280) {
+                    this.surface.surfacePixels[this.spriteTextureWorld + i][j] = 0xff00ff;
+                }
+            }
+
+            this.surface.drawWorld(this.spriteTextureWorld + i);
+            this.scene.defineTexture(i, this.surface.spriteColoursUsed[this.spriteTextureWorld + i], this.surface.spriteColourList[this.spriteTextureWorld + i], ((wh / 64) | 0) - 1);
+        }
+    }
+
+    handleMouseDown(i, j, k) {
+        this.mouseClickXHistory[this.mouseClickCount] = j;
+        this.mouseClickYHistory[this.mouseClickCount] = k;
+        this.mouseClickCount = this.mouseClickCount + 1 & 8191;
+
+        for (let l = 10; l < 4000; l++) {
+            let i1 = this.mouseClickCount - l & 8191;
+
+            if (this.mouseClickXHistory[i1] === j && this.mouseClickYHistory[i1] === k) {
+                let flag = false;
+
+                for (let j1 = 1; j1 < l; j1++) {
+                    let k1 = this.mouseClickCount - j1 & 8191;
+                    let l1 = i1 - j1 & 8191;
+
+                    if (this.mouseClickXHistory[l1] !== j || this.mouseClickYHistory[l1] !== k) {
+                        flag = true;
+                    }
+
+                    if (this.mouseClickXHistory[k1] !== this.mouseClickXHistory[l1] || this.mouseClickYHistory[k1] !== this.mouseClickYHistory[l1]) {
+                        break;
+                    }
+
+                    if (j1 === l - 1 && flag && this.combatTimeout === 0 && this.logoutTimeout === 0) {
+                        this.sendLogout();
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    drawTeleportBubble(x, y, w, h, id, tx, ty) {
+        let type = this.teleportBubbleType[id];
+        let time = this.teleportBubbleTime[id];
+
+        if (type === 0) {
+            let j2 = 255 + time * 5 * 256;
+            this.surface.drawCircle(x + ((w / 2) | 0), y + ((h / 2) | 0), 20 + time * 2, j2, 255 - time * 5);
+        }
+
+        if (type === 1) {
+            let k2 = 0xff0000 + time * 5 * 256;
+            this.surface.drawCircle(x + ((w / 2) | 0), y + ((h / 2) | 0), 10 + time, k2, 255 - time * 5);
+        }
+    }
+
+    showServerMessage(s) {
+        if (/^@bor@/.test(s)) {
+            this.showMessage(s, 4);
+            return;
+        }
+
+        if (/^@que@/.test(s)) {
+            this.showMessage('@whi@' + s, 5);
+            return;
+        }
+
+        if (/^@pri@/.test(s)) {
+            this.showMessage(s, 6);
+            return;
+        } else {
+            this.showMessage(s, 3);
+            return;
+        }
     }
 }
 

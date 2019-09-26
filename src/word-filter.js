@@ -113,6 +113,7 @@ class WordFilter {
 
     static filter(input) {
         let inputChars = toCharArray(input.toLowerCase());
+
         WordFilter.applyDotSlashFilter(inputChars);
         WordFilter.applyBadwordFilter(inputChars);
         WordFilter.applyHostFilter(inputChars);

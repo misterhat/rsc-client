@@ -136,7 +136,7 @@ class Utility {
 
     static hashToUsername(hash) {
         if (hash < 0) {
-            return "invalidName";
+            return 'invalidName';
         }
 
         let s = '';
@@ -237,8 +237,10 @@ class Utility {
             let fileSizeCompressed = ((archiveData[entry * 10 + 9] & 0xff) * 0x10000 + (archiveData[entry * 10 + 10] & 0xff) * 256 + (archiveData[entry * 10 + 11] & 0xff)) | 0;
 
             if (fileHash === wantedHash) {
-                if (fileData === null)
+                if (fileData === null) {
                     fileData = new Int8Array(fileSize + i);
+                }
+
                 if (fileSize !== fileSizeCompressed) {
                     BZLib.decompress(fileData, fileSize, archiveData, fileSizeCompressed, offset);
                 } else {
