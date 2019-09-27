@@ -368,34 +368,31 @@ class GameShell {
     }
 
     showLoadingProgress(i, s) {
-        try {
-            let j = ((this.appletWidth - 281) / 2) | 0;
-            let k = ((this.appletHeight - 148) / 2) | 0;
-            j += 2;
-            k += 90;
+        let j = ((this.appletWidth - 281) / 2) | 0;
+        let k = ((this.appletHeight - 148) / 2) | 0;
+        j += 2;
+        k += 90;
 
-            this.loadingProgressPercent = i;
-            this.loadingProgessText = s;
+        this.loadingProgressPercent = i;
+        this.loadingProgessText = s;
 
-            let l = ((277 * i) / 100) | 0;
-            this.graphics.setColor(new Color(132, 132, 132));
+        let l = ((277 * i) / 100) | 0;
+        this.graphics.setColor(new Color(132, 132, 132));
 
-            if (this.hasRefererLogoNotUsed) {
-                this.graphics.setColor(new Color(220, 0, 0));
-            }
-
-            this.graphics.fillRect(j, k, l, 20);
-            this.graphics.setColor(Color.black);
-            this.graphics.fillRect(j + l, k, 277 - l, 20);
-            this.graphics.setColor(new Color(198, 198, 198));
-
-            if (this.hasRefererLogoNotUsed) {
-                this.graphics.setColor(new Color(255, 255, 255));
-            }
-
-            this.drawString(this.graphics, s, this.fontTimesRoman15, j + 138, k + 10);
-        } catch (e) {
+        if (this.hasRefererLogoNotUsed) {
+            this.graphics.setColor(new Color(220, 0, 0));
         }
+
+        this.graphics.fillRect(j, k, l, 20);
+        this.graphics.setColor(Color.black);
+        this.graphics.fillRect(j + l, k, 277 - l, 20);
+        this.graphics.setColor(new Color(198, 198, 198));
+
+        if (this.hasRefererLogoNotUsed) {
+            this.graphics.setColor(new Color(255, 255, 255));
+        }
+
+        this.drawString(this.graphics, s, this.fontTimesRoman15, j + 138, k + 10);
     }
 
     drawString(g, s, font, i, j) {

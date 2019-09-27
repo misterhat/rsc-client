@@ -1,10 +1,10 @@
-const GameModel = require('./game-model');
 const Long = require('long');
 const Polygon = require('./polygon');
 const Scanline = require('./scanline');
+const GameModel = require('./game-model');
 const World = require('./world');
 
-console.log(GameModel);
+//console.log('GameModel from Scene', GameModel);
 
 class Scene {
     constructor(surface, i, polygons, k) {
@@ -1467,7 +1467,7 @@ class Scene {
         Scene.frustumMaxY = 0;
         Scene.frustumMinY = 0;
         Scene.frustumFarZ = 0;
-        Scene.Scene.frustumNearZ = 0;
+        Scene.frustumNearZ = 0;
 
         this.setFrustum(-i3, -j3, this.clipFar3d);
         this.setFrustum(-i3, j3, this.clipFar3d);
@@ -1507,7 +1507,7 @@ class Scene {
                     for (let vertex = 0; vertex < num_vertices; vertex++) {
                         let z = gameModel.projectVertexZ[vertices[vertex]];
 
-                        if (z <= clipNear || z >= clipFar3d) {
+                        if (z <= this.clipNear || z >= this.clipFar3d) {
                             continue;
                         }
 
@@ -1585,7 +1585,7 @@ class Scene {
             }
         }
 
-        let model_2d = view;
+        let model_2d = this.view;
 
         if (model_2d.visible) {
             for (let face = 0; face < model_2d.numFaces; face++) {
@@ -1621,12 +1621,12 @@ class Scene {
         this.polygonsQSort(this.visiblePolygons, 0, this.visiblePolygonsCount - 1);
         this.polygonsIntersectSort(100, this.visiblePolygons, this.visiblePolygonsCount);
 
-        for (let model = 0; model < visiblePolygonsCount; model++) {
-            let polygon = visiblePolygons[model];
+        for (let model = 0; model < this.visiblePolygonsCount; model++) {
+            let polygon = this.visiblePolygons[model];
             let gameModel_2 = polygon.model;
             let l = polygon.face;
 
-            if (gameModel_2 === view) {
+            if (gameModel_2 === this.view) {
                 let faceverts = gameModel_2.faceVertices[l];
                 let face_0 = faceverts[0];
                 let vx = gameModel_2.vertexViewX[face_0];
@@ -2887,7 +2887,7 @@ class Scene {
             }
 
             gameModel.normalScale[face] = faceCameraNormalScale;
-            gameModel.normalMagnitude[face] = (normalMagnitude * Math.sqrt(t1 * t1 + t2 * t2 + t3 * t3) ) | 0;
+            gameModel.normalMagnitude[face] = (this.normalMagnitude * Math.sqrt(t1 * t1 + t2 * t2 + t3 * t3) ) | 0;
         } else {
             t1 >>= faceCameraNormalScale;
             t2 >>= faceCameraNormalScale;

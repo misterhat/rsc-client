@@ -4,9 +4,9 @@
   "description": "runescape classic client in javascript",
   "main": "./dist/mudclient.js",
   "scripts": {
-    "build-dev": "browserify example.js | indexhtmlify -t rsc > res/example.html",
+    "build-dev": "browserify example.js > example.bundle.js",
     "build": "browserify -p tinyify src/mudclient.js > dist/mudclient.min.js",
-    "start": "st -p 1337 -d res"
+    "start": "st -p 1337"
   },
   "repository": {
     "type": "git",

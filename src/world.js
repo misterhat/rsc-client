@@ -1,8 +1,10 @@
 const GameData = require('./game-data');
-const GameModel = require('./game-model');
 const Scene = require('./scene');
+const GameModel = require('./game-model');
 const Utility = require('./utility');
 const ndarray = require('ndarray');
+
+console.log(Scene, 'scene from world :(');
 
 class World {
     constructor(scene, surface) {
@@ -162,7 +164,7 @@ class World {
     }
 
     getWallDiagonal(x, y) {
-        if (x < 0 || x >= regionWidth || y < 0 || y >= regionHeight) {
+        if (x < 0 || x >= this.regionWidth || y < 0 || y >= this.regionHeight) {
             return 0;
         }
 
@@ -466,8 +468,8 @@ class World {
         for (let tile = 0; tile < 2304; tile++) {
             this.terrainHeight.set(chunk, tile, 0);
             this.terrainColour.set(chunk, tile, 0);
-            this.wallsNorthsouth.set(chunk, tile, 0);
-            this.wallsEastwest.set(chunk, tile, 0);
+            this.wallsNorthSouth.set(chunk, tile, 0);
+            this.wallsEastWest.set(chunk, tile, 0);
             this.wallsDiagonal.set(chunk, tile, 0);
             this.wallsRoof.set(chunk, tile, 0);
             this.tileDecoration.set(chunk, tile, 0);
@@ -531,7 +533,7 @@ class World {
     }
 
     getTerrainColour(x, y) {
-        if (x < 0 || x >= regionWidth || y < 0 || y >= regionHeight) {
+        if (x < 0 || x >= this.regionWidth || y < 0 || y >= this.regionHeight) {
             return 0;
         }
 
@@ -902,8 +904,8 @@ class World {
             let gameModel = this.parentModel;
             gameModel.clear();
 
-            for (let j2 = 0; j2 < regionWidth; j2++) {
-                for (let i3 = 0; i3 < regionHeight; i3++) {
+            for (let j2 = 0; j2 < this.regionWidth; j2++) {
+                for (let i3 = 0; i3 < this.regionHeight; i3++) {
                     let i4 = -this.getTerrainHeight(j2, i3);
 
                     if (this.getTileDecoration(j2, i3, plane) > 0 && GameData.tileType[this.getTileDecoration(j2, i3, plane) - 1] === 4) {
@@ -1159,11 +1161,11 @@ class World {
             this.terrainModels = this.parentModel.split(0, 0, 1536, 1536, 8, 64, 233, false);
 
             for (let j6 = 0; j6 < 64; j6++) {
-                this.scene.addModel(terrainModels[j6]);
+                this.scene.addModel(this.terrainModels[j6]);
             }
 
-            for (let X = 0; X < regionWidth; X++) {
-                for (let Y = 0; Y < regionHeight; Y++) {
+            for (let X = 0; X < this.regionWidth; X++) {
+                for (let Y = 0; Y < this.regionHeight; Y++) {
                     this.terrainHeightLocal.set(X, Y, this.getTerrainHeight(X, Y));
                 }
             }
@@ -1255,7 +1257,7 @@ class World {
         this.wallModels[plane] = this.parentModel.split(0, 0, 1536, 1536, 8, 64, 338, true);
 
         for (let l2 = 0; l2 < 64; l2++) {
-            this.scene.addModel(wallModels[plane][l2]);
+            this.scene.addModel(this.wallModels[plane][l2]);
         }
 
         for (let l3 = 0; l3 < 95; l3++) {
@@ -1607,8 +1609,8 @@ class World {
             throw new EvalError('null roof!');
         }
 
-        for (let j12 = 0; j12 < regionWidth; j12++) {
-            for (let k14 = 0; k14 < regionHeight; k14++) {
+        for (let j12 = 0; j12 < this.regionWidth; j12++) {
+            for (let k14 = 0; k14 < this.regionHeight; k14++) {
                 if (this.terrainHeightLocal.get(j12, k14) >= 0x13880) {
                     const height = this.terrainHeightLocal.get(j12, k14);
                     this.terrainHeightLocal.set(j12, k14, height - 0x13880);

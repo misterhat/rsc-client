@@ -123,7 +123,7 @@ class GameModel {
         // TODO: maybe make this an int32 array
         this.faceTransStateThing = [];
 
-        for (let v = 0; v < numFaces; v++) {
+        for (let v = 0; v < this.numFaces; v++) {
             this.faceTransStateThing.push([v]);
         }
 
@@ -316,8 +316,8 @@ class GameModel {
         this.faceNumVertices = new Int32Array(numF);
 
         this.faceVertices = [];
-        this.faceVerticies.length = numF;
-        this.faceVerticies.fill(null);
+        this.faceVertices.length = numF;
+        this.faceVertices.fill(null);
         this.faceFillFront = new Int32Array(numF);
         this.faceFillBack = new Int32Array(numF);
         this.faceIntensity = new Int32Array(numF);
@@ -470,7 +470,7 @@ class GameModel {
             }
         }
 
-        if (this.numVertices >= maxVerts) {
+        if (this.numVertices >= this.maxVerts) {
             return -1;
         } else {
             this.vertexX[this.numVertices] = x;
@@ -518,7 +518,7 @@ class GameModel {
             pieceNF[i] = 0;
         }
 
-        for (let f = 0; f < numFaces; f++) {
+        for (let f = 0; f < this.numFaces; f++) {
             let sumX = 0;
             let sumZ = 0;
             let n = this.faceNumVertices[f];
@@ -542,11 +542,11 @@ class GameModel {
             }
 
             pieces.push(new GameModel(pieceNV[i], pieceNF[i], true, true, true, pickable, true));
-            pieces[i].lightDiffuse = lightDiffuse;
-            pieces[i].lightAmbience = lightAmbience;
+            pieces[i].lightDiffuse = this.lightDiffuse;
+            pieces[i].lightAmbience = this.lightAmbience;
         }
 
-        for (let f = 0; f < numFaces; f++) {
+        for (let f = 0; f < this.numFaces; f++) {
             let sumX = 0;
             let sumZ = 0;
             let n = this.faceNumVertices[f];
@@ -817,15 +817,15 @@ class GameModel {
                 this.faceBoundFar[face] = z2;
             }
 
-            if (x2 - x1 > diameter) {
+            if (x2 - x1 > this.diameter) {
                 this.diameter = x2 - x1;
             }
 
-            if (y2 - y1 > diameter) {
+            if (y2 - y1 > this.diameter) {
                 this.diameter = y2 - y1;
             }
 
-            if (z2 - z1 > diameter) {
+            if (z2 - z1 > this.diameter) {
                 this.diameter = z2 - z1;
             }
 
@@ -991,7 +991,7 @@ class GameModel {
     project(cameraX, cameraY, cameraZ, cameraPitch, cameraRoll, cameraYaw, viewDist, clipNear) {
         this.apply();
 
-        if (this.z1 > Scene.frustumNearZ || z2 < Scene.frustumFarZ || this.x1 > Scene.frustumMinX || this.x2 < Scene.frustumMaxX || this.y1 > Scene.frustumMinY || this.y2 < Scene.frustumMaxY) {
+        if (this.z1 > Scene.frustumNearZ || this.z2 < Scene.frustumFarZ || this.x1 > Scene.frustumMinX || this.x2 < Scene.frustumMaxX || this.y1 > Scene.frustumMinY || this.y2 < Scene.frustumMaxY) {
             this.visible = false;
             return;
         }

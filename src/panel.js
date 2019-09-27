@@ -161,7 +161,7 @@ class Panel {
                 if (this.controlType[i] === CONTROL_TYPES.TEXT) {
                     this.drawText(i, this.controlX[i], this.controlY[i], this.controlText[i], this.controlTextSize[i]);
                 } else if (this.controlType[i] === CONTROL_TYPES.CENTRE_TEXT) {
-                    this.drawText(i, this.controlX[i] - this.surface.textWidth(this.controlText[i], (this.controlTextSize[i]) / 2) | 0, this.controlY[i], this.controlText[i], this.controlTextSize[i]);
+                    this.drawText(i, this.controlX[i] - this.surface.textWidth(this.controlText[i], (this.controlTextSize[i] / 2) | 0), this.controlY[i], this.controlText[i], this.controlTextSize[i]);
                 } else if (this.controlType[i] === CONTROL_TYPES.GRADIENT_BG) {
                     this.drawBox(this.controlX[i], this.controlY[i], this.controlWidth[i], this.controlHeight[i]);
                 } else if (this.controlType[i] === CONTROL_TYPES.HORIZ_LINE) {
@@ -255,7 +255,7 @@ class Panel {
 
     drawBox(x, y, width, height) {
         this.surface.setBounds(x, y, x + width, y + height);
-        this.surface.drawGradient(x, y, width, height, colourBoxLeftNRight, colourBoxTopNBottom);
+        this.surface.drawGradient(x, y, width, height, this.colourBoxLeftNRight, this.colourBoxTopNBottom);
 
         if (Panel.drawBackgroundArrow) {
             for (let i1 = x - (y & 0x3f); i1 < x + width; i1 += 128) {

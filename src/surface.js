@@ -500,7 +500,7 @@ class Surface {
         let k = this.width2 * this.height2;
 
         for (let j = 0; j < k; j++) {
-            let i = pixels[j] & 0xffffff;
+            let i = this.pixels[j] & 0xffffff;
             this.pixels[j] = (i >>> 1 & 0x7f7f7f) + (i >>> 2 & 0x3f3f3f) + (i >>> 3 & 0x1f1f1f) + (i >>> 4 & 0xf0f0f);
         }
     }
@@ -532,7 +532,7 @@ class Surface {
     }
 
     clear() {
-        for (let i = 0; i < surfacePixels.length; i++) {
+        for (let i = 0; i < this.surfacePixels.length; i++) {
             this.surfacePixels[i] = null;
             this.spriteWidth[i] = 0;
             this.spriteHeight[i] = 0;
@@ -2240,7 +2240,7 @@ class Surface {
                 } else {
                     let width = Surface.characterWidth[text[idx]];
 
-                    if (loggedIn && colour !== 0) {
+                    if (this.loggedIn && colour !== 0) {
                         this.drawCharacter(width, x + 1, y, 0, fontData);
                         this.drawCharacter(width, x, y + 1, 0, fontData);
                     }
@@ -2427,7 +2427,7 @@ class Surface {
             } else if (text[idx] === '~' && idx + 4 < text.length && text[idx + 4] === '~') {
                 idx += 4;
             } else {
-                total += font[characterWidth[text[idx]] + 7];
+                total += font[Surface.characterWidth[text[idx]] + 7];
             }
         }
 

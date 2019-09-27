@@ -6,11 +6,12 @@ const GameBuffer = require('./game-buffer');
 const GameCharacter = require('./game-character');
 const GameConnection = require('./game-connection');
 const GameData = require('./game-data');
-const GameModel = require('./game-model');
 const Long = require('long');
 const Panel = require('./panel');
 const S_OPCODES = require('./opcodes/server');
+const World = require('./world');
 const Scene = require('./scene');
+const GameModel = require('./game-model');
 const Surface = require('./surface');
 const SurfaceSprite = require('./surface-sprite');
 const Utility = require('./utility');
@@ -847,7 +848,7 @@ class mudclient extends GameConnection {
     }
 
     createMessageTabPanel() {
-        this.panelMessageTabs = new Panel(surface, 10);
+        this.panelMessageTabs = new Panel(this.surface, 10);
         this.controlTextListChat = this.panelMessageTabs.addTextList(5, 269, 502, 56, 1, 20, true);
         this.controlTextListAll = this.panelMessageTabs.addTextListInput(7, 324, 498, 14, 1, 80, false, true);
         this.controlTextListQuest = this.panelMessageTabs.addTextList(5, 269, 502, 56, 1, 20, true);
@@ -876,7 +877,7 @@ class mudclient extends GameConnection {
         this.npcs = null;
         this.localPlayer = null;
 
-        if (world !== null) {
+        if (this.world !== null) {
             this.world.terrainModels = null;
             this.world.wallModels = null;
             this.world.roofModels = null;
@@ -1615,7 +1616,7 @@ class mudclient extends GameConnection {
     }
 
     createAppearancePanel() {
-        this.panelAppearance = new Panel(surface, 100);
+        this.panelAppearance = new Panel(this.surface, 100);
         this.panelAppearance.addText(256, 10, 'Please design Your Character', 4, true);
 
         let x = 140;
@@ -2536,15 +2537,15 @@ class mudclient extends GameConnection {
         y += 28;
         this.panelLoginExistinguser.addButtonBackground(x - 116, y, 200, 40);
         this.panelLoginExistinguser.addText(x - 116, y - 10, 'Username:', 4, false);
-        controlLoginUser = this.panelLoginExistinguser.addTextInput(x - 116, y + 10, 200, 40, 4, 12, false, false);
+        this.controlLoginUser = this.panelLoginExistinguser.addTextInput(x - 116, y + 10, 200, 40, 4, 12, false, false);
         y += 47;
         this.panelLoginExistinguser.addButtonBackground(x - 66, y, 200, 40);
         this.panelLoginExistinguser.addText(x - 66, y - 10, 'Password:', 4, false);
-        controlLoginPass = this.panelLoginExistinguser.addTextInput(x - 66, y + 10, 200, 40, 4, 20, true, false);
+        this.controlLoginPass = this.panelLoginExistinguser.addTextInput(x - 66, y + 10, 200, 40, 4, 20, true, false);
         y -= 55;
         this.panelLoginExistinguser.addButtonBackground(x + 154, y, 120, 25);
         this.panelLoginExistinguser.addText(x + 154, y, 'Ok', 4, false);
-        controlLoginOk = this.panelLoginExistinguser.addButton(x + 154, y, 120, 25);
+        this.controlLoginOk = this.panelLoginExistinguser.addButton(x + 154, y, 120, 25);
         y += 30;
         this.panelLoginExistinguser.addButtonBackground(x + 154, y, 120, 25);
         this.panelLoginExistinguser.addText(x + 154, y, 'Cancel', 4, false);
@@ -4464,7 +4465,7 @@ class mudclient extends GameConnection {
             return;
         }
 
-        await loadMaps();
+        await this.loadMaps();
 
         if (this.errorLoadingData) {
             return;
@@ -6176,13 +6177,13 @@ class mudclient extends GameConnection {
         this.scene.allocateTextures(GameData.textureCount, 7, 11);
 
         for (let i = 0; i < GameData.textureCount; i++) {
-            this.name = GameData.textureName[i];
+            let name = GameData.textureName[i];
 
             let buff1 = Utility.loadData(name + '.dat', 0, buffTextures);
 
             this.surface.parseSprite(this.spriteTexture, buff1, buffIndex, 1);
             this.surface.drawBox(0, 0, 128, 128, 0xff00ff);
-            this.surface.drawSprite(0, 0, this.spriteTexture);
+            this.surface._drawSprite_from3(0, 0, this.spriteTexture);
 
             let wh = this.surface.spriteWidthFull[this.spriteTexture];
             let nameSub = GameData.textureSubtypeName[i];
@@ -6191,10 +6192,10 @@ class mudclient extends GameConnection {
                 let buff2 = Utility.loadData(nameSub + '.dat', 0, buffTextures);
 
                 this.surface.parseSprite(this.spriteTexture, buff2, buffIndex, 1);
-                this.surface.drawSprite(0, 0, this.spriteTexture);
+                this.surface._drawSprite_from3(0, 0, this.spriteTexture);
             }
 
-            this.surface.drawSprite(spriteTextureWorld + i, 0, 0, wh, wh);
+            this.surface._drawSprite_from5(this.spriteTextureWorld + i, 0, 0, wh, wh);
 
             let area = wh * wh;
 
@@ -6775,14 +6776,14 @@ class mudclient extends GameConnection {
     }
 
     resetLoginScreenVariables() {
-        loggedIn = 0;
-        loginScreen = 0;
-        loginUser = '';
-        loginPass = '';
-        loginUserDesc = "Please enter a username:";
-        loginUserDisp = "*" + loginUser + "*";
-        playerCount = 0;
-        npcCount = 0;
+        this.loggedIn = 0;
+        this.loginScreen = 0;
+        this.loginUser = '';
+        this.loginPass = '';
+        this.loginUserDesc = 'Please enter a username:';
+        this.loginUserDisp = '*' + this.loginUser + '*';
+        this.playerCount = 0;
+        this.npcCount = 0;
     }
 
     // TODO: let's move each of these to its own file
