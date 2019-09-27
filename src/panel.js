@@ -161,7 +161,7 @@ class Panel {
                 if (this.controlType[i] === CONTROL_TYPES.TEXT) {
                     this.drawText(i, this.controlX[i], this.controlY[i], this.controlText[i], this.controlTextSize[i]);
                 } else if (this.controlType[i] === CONTROL_TYPES.CENTRE_TEXT) {
-                    this.drawText(i, this.controlX[i] - this.surface.textWidth(this.controlText[i], (this.controlTextSize[i] / 2) | 0), this.controlY[i], this.controlText[i], this.controlTextSize[i]);
+                    this.drawText(i, this.controlX[i] - ((this.surface.textWidth(this.controlText[i], this.controlTextSize[i]) / 2) | 0), this.controlY[i], this.controlText[i], this.controlTextSize[i]);
                 } else if (this.controlType[i] === CONTROL_TYPES.GRADIENT_BG) {
                     this.drawBox(this.controlX[i], this.controlY[i], this.controlWidth[i], this.controlHeight[i]);
                 } else if (this.controlType[i] === CONTROL_TYPES.HORIZ_LINE) {

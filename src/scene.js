@@ -1,8 +1,9 @@
+//const GameModel = require('./game-model');
 const Long = require('long');
 const Polygon = require('./polygon');
 const Scanline = require('./scanline');
-const GameModel = require('./game-model');
-const World = require('./world');
+
+const COLOUR_TRANSPARENT = 12345678
 
 //console.log('GameModel from Scene', GameModel);
 
@@ -90,7 +91,7 @@ class Scene {
         }
 
         this.spriteCount = 0;
-        this.view = new GameModel(k * 2, k);
+        //this.view = new GameModel(k * 2, k);
         this.spriteId = new Int32Array(k);
         this.spriteWidth = new Int32Array(k);
         this.spriteHeight = new Int32Array(k);
@@ -1335,7 +1336,7 @@ class Scene {
                         k1++;
                     }
 
-                    i1 = newStart;
+                    i1 = this.newStart;
                     other.index2 = polygon.index;
                 }
             }
@@ -1567,7 +1568,7 @@ class Scene {
                                     faceFill = gameModel.faceFillBack[face];
                                 }
 
-                                if (faceFill !== World.colourTransparent) {
+                                if (faceFill !== COLOUR_TRANSPARENT) {
                                     let h = 0;
 
                                     for (let vertex = 0; vertex < num_vertices; vertex++) {
@@ -1655,7 +1656,7 @@ class Scene {
                 let l10 = gameModel_2.faceNumVertices[l];
                 let ai3 = gameModel_2.faceVertices[l];
 
-                if (gameModel_2.faceIntensity[l] !== World.colourTransparent) {
+                if (gameModel_2.faceIntensity[l] !== COLOUR_TRANSPARENT) {
                     if (polygon.visibility < 0) {
                         j10 = gameModel_2.lightAmbience - gameModel_2.faceIntensity[l];
                     } else {
@@ -1670,7 +1671,7 @@ class Scene {
                     this.vertexY[k11] = gameModel_2.projectVertexY[k2];
                     this.vertexZ[k11] = gameModel_2.projectVertexZ[k2];
 
-                    if (gameModel_2.faceIntensity[l] === World.colourTransparent) {
+                    if (gameModel_2.faceIntensity[l] === COLOUR_TRANSPARENT) {
                         if (polygon.visibility < 0) {
                             j10 = (gameModel_2.lightAmbience - gameModel_2.vertexIntensity[k2]) + gameModel_2.vertexAmbience[k2];
                         } else {
@@ -1768,7 +1769,7 @@ class Scene {
             let j13 = 0;
             let l13 = 0;
             let j14 = 0;
-            let l14 = World.colourTransparent;
+            let l14 = COLOUR_TRANSPARENT;
             let j15 = 0xff439eb2;
 
             if (k3 !== k1) {
@@ -1802,7 +1803,7 @@ class Scene {
             let j16 = 0;
             let l16 = 0;
             let j17 = 0;
-            let l17 = World.colourTransparent;
+            let l17 = COLOUR_TRANSPARENT;
             let j18 = 0xff439eb2;
 
             if (k2 !== k1) {
@@ -1822,8 +1823,8 @@ class Scene {
                 }
 
                 if (l17 < 0) {
-                    l15 -= j16 * l17;
-                    l16 -= j17 * l17;
+                    l15 -= (j16 * l17) | 0;
+                    l16 -= (j17 * l17) | 0;
                     l17 = 0;
                 }
 
@@ -1836,7 +1837,7 @@ class Scene {
             let j19 = 0;
             let l19 = 0;
             let j20 = 0;
-            let l20 = World.colourTransparent;
+            let l20 = COLOUR_TRANSPARENT;
             let j21 = 0xff439eb2;
 
             if (k3 !== k2) {
@@ -1856,8 +1857,8 @@ class Scene {
                 }
 
                 if (l20 < 0) {
-                    l18 -= j19 * l20;
-                    l19 -= j20 * l20;
+                    l18 -= (j19 * l20) | 0;
+                    l19 -= (j20 * l20) | 0;
                     l20 = 0;
                 }
 
@@ -1929,6 +1930,7 @@ class Scene {
                     l19 += j20;
                 }
 
+                //console.log(this.maxY, 'scanline6: ', k, this.scanlines.length);
                 let scanline_6 = this.scanlines[k];
                 scanline_6.startX = i;
                 scanline_6.endX = j;
@@ -1957,7 +1959,7 @@ class Scene {
             let i15 = 0;
             let k15 = 0;
             let i16 = 0;
-            let k16 = World.colourTransparent;
+            let k16 = COLOUR_TRANSPARENT;
             let i17 = 0xff439eb2;
 
             if (l4 !== l1) {
@@ -1991,7 +1993,7 @@ class Scene {
             let i18 = 0;
             let k18 = 0;
             let i19 = 0;
-            let k19 = World.colourTransparent;
+            let k19 = COLOUR_TRANSPARENT;
             let i20 = 0xff439eb2;
 
             if (l2 !== l1) {
@@ -2025,7 +2027,7 @@ class Scene {
             let i21 = 0;
             let k21 = 0;
             let i22 = 0;
-            let j22 = World.colourTransparent;
+            let j22 = COLOUR_TRANSPARENT;
             let k22 = 0xff439eb2;
 
             if (l3 !== l2) {
@@ -2059,7 +2061,7 @@ class Scene {
             let i23 = 0;
             let j23 = 0;
             let k23 = 0;
-            let l23 = World.colourTransparent;
+            let l23 = COLOUR_TRANSPARENT;
             let i24 = 0xff439eb2;
 
             if (l4 !== l3) {
@@ -3373,7 +3375,7 @@ class Scene {
     }
 
     method302(i) {
-        if (i === World.colourTransparent) {
+        if (i === COLOUR_TRANSPARENT) {
             return 0;
         }
 

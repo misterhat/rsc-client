@@ -453,10 +453,6 @@ class BZLib {
                             zj_2 = BZLib.getBit(state);
                         }
 
-                        if (window._debug > 500) {
-                            throw new Error("pls god");
-                        }
-
                         nextSym = gPerm[zvec_2 - gBase[zn_2]];
                     } while (nextSym === 0 || nextSym === 1);
 

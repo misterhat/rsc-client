@@ -4,7 +4,8 @@ const GameModel = require('./game-model');
 const Utility = require('./utility');
 const ndarray = require('ndarray');
 
-console.log(Scene, 'scene from world :(');
+console.log('Scene in World', Scene);
+console.log('GameModel in World', GameModel);
 
 class World {
     constructor(scene, surface) {
@@ -299,13 +300,14 @@ class World {
     }
 
     _loadSection_from4I(x, y, plane, chunk) {
-        let mapName = 'm' + plane + x / 10 + x % 10 + y / 10 + y % 10;
+        let mapName = 'm' + plane + ((x / 10) | 0) + x % 10 + ((y / 10) | 0) + y % 10;
 
         try {
+            // fix
             if (landscapePack !== null) {
                 let mapData = Utility.loadData(mapName + '.hei', 0, this.landscapePack);
 
-                if (mapData === null && memberLandscapePack !== null) {
+                if (mapData === null && this.memberLandscapePack !== null) {
                     mapData = Utility.loadData(mapName + '.hei', 0, this.memberLandscapePack);
                 }
 
@@ -376,6 +378,7 @@ class World {
                 }
 
                 if (mapData === null || mapData.length === 0) {
+                    console.log(mapName);
                     throw new Error();
                 }
 
@@ -440,7 +443,7 @@ class World {
                     }
                 }
 
-                mapData = Utility.loadData(mapName + '.loc', 0, mapPack);
+                mapData = Utility.loadData(mapName + '.loc', 0, this.mapPack);
 
                 if (mapData !== null && mapData.length > 0) {
                     off = 0;
@@ -463,6 +466,7 @@ class World {
 
             return;
         } catch (e) {
+            console.error(e);
         }
 
         for (let tile = 0; tile < 2304; tile++) {
@@ -1345,7 +1349,7 @@ class World {
                         this.terrainHeightLocal.set(l11, i14, l23);
                     } else {
                         const height = this.terrainHeightLocal.get(l11, i14);
-                        this.terrainHeightLoca.set(l11, i14, height - 0x13880);
+                        this.terrainHeightLocal.set(l11, i14, height - 0x13880);
                     }
 
                     if (l24 < 0x13880) {
@@ -1356,7 +1360,7 @@ class World {
                     }
 
                     if (j25 < 0x13880) {
-                        this.terrainHeightLoca.set(j19, j21, l23);
+                        this.terrainHeightLocal.set(j19, j21, l23);
                     } else {
                         const height = this.terrainHeightLocal.get(j19, j21);
                         this.terrainHeightLocal.set(j19, j21, height - 0x13880);
@@ -1366,7 +1370,7 @@ class World {
                         this.terrainHeightLocal.set(l22, j23, l23);
                     } else {
                         const height = this.terrainHeightLocal.get(l22, j23);
-                        this.terrainHeightLoca.set(l22, j23, height - 0x13880);
+                        this.terrainHeightLocal.set(l22, j23, height - 0x13880);
                     }
                 }
             }
@@ -1658,8 +1662,8 @@ class World {
                     let gameModel = models[GameData.objectModelIndex[k]].copy(false, true, false, false);
                     let k1 = (((i + i + i1) * this.anInt585) / 2) | 0;
                     let i2 = (((j + j + j1) * this.anInt585) / 2) | 0;
-                    gameModel.translate(k1, -getElevation(k1, i2), i2);
-                    gameModel.orient(0, getTileDirection(i, j) * 32, 0);
+                    gameModel.translate(k1, -this.getElevation(k1, i2), i2);
+                    gameModel.orient(0, this.getTileDirection(i, j) * 32, 0);
                     this.scene.addModel(gameModel);
                     gameModel.setLight(48, 48, -50, -10, -50);
 

@@ -1,6 +1,9 @@
 const Utility = require('./utility');
-const World = require('./world');
 const Scene = require('./scene');
+
+const COLOUR_TRANSPARENT = 12345678
+
+console.log('Scene in GameModel', Scene);
 
 class GameModel {
     constructor(...args) {
@@ -109,8 +112,8 @@ class GameModel {
         this.unlit = false;
         this.unpickable = false;
         this.projected = false;
-        this.magic = World.colourTransparent;
-        this.diameter = World.colourTransparent;
+        this.magic = COLOUR_TRANSPARENT;
+        this.diameter = COLOUR_TRANSPARENT;
         this.lightDirectionX = 180;
         this.lightDirectionY = 155;
         this.lightDirectionZ = 95;
@@ -141,8 +144,8 @@ class GameModel {
         this.unlit = false;
         this.unpickable = false;
         this.projected = false;
-        this.magic = World.colourTransparent;
-        this.diameter = World.colourTransparent;
+        this.magic = COLOUR_TRANSPARENT;
+        this.diameter = COLOUR_TRANSPARENT;
         this.lightDirectionX = 180;
         this.lightDirectionY = 155;
         this.lightDirectionZ = 95;
@@ -166,8 +169,8 @@ class GameModel {
         this.unlit = false;
         this.unpickable = false;
         this.projected = false;
-        this.magic = World.colourTransparent;
-        this.diameter = World.colourTransparent;
+        this.magic = COLOUR_TRANSPARENT;
+        this.diameter = COLOUR_TRANSPARENT;
         this.lightDirectionX = 180;
         this.lightDirectionY = 155;
         this.lightDirectionZ = 95;
@@ -264,8 +267,8 @@ class GameModel {
         this.transparent = false;
         this.key = -1;
         this.projected = false;
-        this.magic = World.colourTransparent;
-        this.diameter = World.colourTransparent;
+        this.magic = COLOUR_TRANSPARENT;
+        this.diameter = COLOUR_TRANSPARENT;
         this.lightDirectionX = 180;
         this.lightDirectionY = 155;
         this.lightDirectionZ = 95;
@@ -288,8 +291,8 @@ class GameModel {
         this.textureTranslucent = false;
         this.transparent = false;
         this.key = -1;
-        this.magic = World.colourTransparent;
-        this.diameter = World.colourTransparent;
+        this.magic = COLOUR_TRANSPARENT;
+        this.diameter = COLOUR_TRANSPARENT;
         this.lightDirectionX = 180;
         this.lightDirectionY = 155;
         this.lightDirectionZ = 95;
@@ -671,7 +674,7 @@ class GameModel {
         this.baseY += y;
         this.baseZ += z;
         this.determineTransformKind();
-        transformState = 1;
+        this.transformState = 1;
     }
 
     place(x, y, z) {
@@ -1082,7 +1085,7 @@ class GameModel {
         if (!args || !args.length) {
             let pieces = [ this ]; 
             gameModel = new GameModel(pieces, 1);
-            gameModel.depth = depth;
+            gameModel.depth = this.depth;
             gameModel.transparent = transparent;
 
             return gameModel;
@@ -1092,7 +1095,7 @@ class GameModel {
 
         let pieces = [ this ];
         let gameModel = new GameModel(pieces, 1, autocommit, isolated, unlit, pickable);
-        gameModel.depth = depth;
+        gameModel.depth = this.depth;
 
         return gameModel;
     }

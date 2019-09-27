@@ -6,17 +6,17 @@ const GameBuffer = require('./game-buffer');
 const GameCharacter = require('./game-character');
 const GameConnection = require('./game-connection');
 const GameData = require('./game-data');
+const GameModel = require('./game-model');
 const Long = require('long');
 const Panel = require('./panel');
 const S_OPCODES = require('./opcodes/server');
-const World = require('./world');
 const Scene = require('./scene');
-const GameModel = require('./game-model');
 const Surface = require('./surface');
 const SurfaceSprite = require('./surface-sprite');
 const Utility = require('./utility');
 const VERSION = require('./version');
 const WordFilter = require('./word-filter');
+const World = require('./world');
 
 class mudclient extends GameConnection {
     constructor(canvas) {
@@ -2491,6 +2491,7 @@ class mudclient extends GameConnection {
 
     createLoginPanels() {
         this.panelLoginWelcome = new Panel(this.surface, 50);
+
         let y = 40;
         let x = (this.gameWidth / 2) | 0;
 
@@ -4444,6 +4445,8 @@ class mudclient extends GameConnection {
         }
 
         this.scene = new Scene(this.surface, 15000, 15000, 1000);
+        // this used to be in scene's constructor
+        this.scene.view = new GameModel(1000 * 1000, 1000); 
         this.scene.setBounds((this.gameWidth / 2) | 0, (this.gameHeight / 2) | 0, (this.gameWidth / 2) | 0, (this.gameHeight / 2) | 0, this.gameWidth, this.const_9);
         this.scene.clipFar3d = 2400;
         this.scene.clipFar2d = 2400;
@@ -6773,6 +6776,73 @@ class mudclient extends GameConnection {
             this.selectedItemInventoryIndex = -1;
             this.selectedSpell = -1;
         }
+    }
+
+    showLoginScreenStatus(s, s1) {
+        if (this.loginScreen === 1) {
+            this.panelLoginNewuser.updateText(this.anInt827, s + " " + s1);
+        }
+
+        if (this.loginScreen === 2) {
+            this.panelLoginExistinguser.updateText(this.controlLoginStatus, s + " " + s1);
+        }
+
+        this.loginUserDisp = s1;
+        this.drawLoginScreens();
+        this.resetTimings();
+    }
+
+    lostConnection() {
+        this.systemUpdate = 0;
+
+        if (logoutTimeout !== 0) {
+            this.resetLoginVars();
+            return;
+        } else {
+            super.lostConnection();
+            return;
+        }
+    }
+
+    isValidCameraAngle(i) {
+        let j = (this.localPlayer.currentX / 128) | 0;
+        let k = (this.localPlayer.currentY / 128) | 0;
+
+        for (let l = 2; l >= 1; l--) {
+            if (i === 1 && ((this.world.objectAdjacency.get(j, k - l) & 128) === 128 || (this.world.objectAdjacency.get(j - l, k) & 128) === 128 || (this.world.objectAdjacency.get(j - l, k - l) & 128) === 128)) {
+                return false;
+            }
+
+            if (i === 3 && ((this.world.objectAdjacency.get(j, k + l) & 128) === 128 || (this.world.objectAdjacency.get(j - l, k) & 128) === 128 || (this.world.objectAdjacency.get(j - l, k + l) & 128) === 128)) {
+                return false;
+            }
+
+            if (i === 5 && ((this.world.objectAdjacency.get(j, k + l) & 128) === 128 || (this.world.objectAdjacency.get(j + l, k) & 128) === 128 || (this.world.objectAdjacency.get(j + l, k + l) & 128) === 128)) {
+                return false;
+            }
+
+            if (i === 7 && ((this.world.objectAdjacency.get(j, k - l) & 128) === 128 || (this.world.objectAdjacency.get(j + l, k) & 128) === 128 || (this.world.objectAdjacency.get(j + l, k - l) & 128) === 128)) {
+                return false;
+            }
+
+            if (i === 0 && (this.world.objectAdjacency.get(j, k - l) & 128) === 128) {
+                return false;
+            }
+
+            if (i === 2 && (this.world.objectAdjacency.get(j - l, k) & 128) === 128) {
+                return false;
+            }
+
+            if (i === 4 && (this.world.objectAdjacency.get(j, k + l) & 128) === 128) {
+                return false;
+            }
+
+            if (i === 6 && (this.world.objectAdjacency.get(j + l, k) & 128) === 128) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     resetLoginScreenVariables() {

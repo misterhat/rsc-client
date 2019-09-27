@@ -2149,7 +2149,7 @@ class Surface {
                 } else if (text[index] === '~' && index + 4 < text.length && text[index + 4] === '~') {
                     index += 4;
                 } else {
-                    width += fontData[Surface.characterWidth[text[index]] + 7];
+                    width += fontData[Surface.characterWidth[text.charCodeAt(index)] + 7];
                 }
 
                 if (text[index] === ' ') {
@@ -2238,7 +2238,7 @@ class Surface {
 
                     idx += 4;
                 } else {
-                    let width = Surface.characterWidth[text[idx]];
+                    let width = Surface.characterWidth[text.charCodeAt(idx)];
 
                     if (this.loggedIn && colour !== 0) {
                         this.drawCharacter(width, x + 1, y, 0, fontData);
@@ -2427,7 +2427,7 @@ class Surface {
             } else if (text[idx] === '~' && idx + 4 < text.length && text[idx + 4] === '~') {
                 idx += 4;
             } else {
-                total += font[Surface.characterWidth[text[idx]] + 7];
+                total += font[Surface.characterWidth[text.charCodeAt(idx)] + 7];
             }
         }
 
