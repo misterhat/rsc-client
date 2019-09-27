@@ -1,5 +1,6 @@
 const C_OPCODES = require('./opcodes/client');
 const ChatMessage = require('./chat-message');
+const ClientStream = require('./client-stream');
 const Color = require('./lib/graphics/color');
 const Font = require('./lib/graphics/font');
 const GameShell = require('./game-shell');

@@ -1222,57 +1222,57 @@ class Surface {
         }
     }
 
-    _drawSprite_from10A(dest, src, i, srcPos, destPos, width, height, j1, k1, yInc) {
-        let i2 = -(width >> 2);
+   _drawSprite_from10A(target, colourIdx, colours, srcPos, destPos, width, height, w2, h2, rowInc) {
+        let l1 = -(width >> 2);
         width = -(width & 3);
 
-        for (let j2 = -height; j2 < 0; j2 += yInc) {
-            for (let k2 = i2; k2 < 0; k2++) {
-                i = src[srcPos++];
+        for (let i2 = -height; i2 < 0; i2 += rowInc) {
+            for (let j2 = l1; j2 < 0; j2++) {
+                let byte0 = colourIdx[srcPos++];
 
-                if (i !== 0) {
-                    dest[destPos++] = i;
+                if (byte0 !== 0) {
+                    target[destPos++] = colours[byte0 & 0xff];
                 } else {
                     destPos++;
                 }
 
-                i = src[srcPos++];
+                byte0 = colourIdx[srcPos++];
 
-                if (i !== 0) {
-                    dest[destPos++] = i;
+                if (byte0 !== 0) {
+                    target[destPos++] = colours[byte0 & 0xff];
                 } else {
                     destPos++;
                 }
 
-                i = src[srcPos++];
+                byte0 = colourIdx[srcPos++];
 
-                if (i !== 0) {
-                    dest[destPos++] = i;
+                if (byte0 !== 0) {
+                    target[destPos++] = colours[byte0 & 0xff];
                 } else {
                     destPos++;
                 }
 
-                i = src[srcPos++];
+                byte0 = colourIdx[srcPos++];
 
-                if (i !== 0) {
-                    dest[destPos++] = i;
-                } else {
-                    destPos++;
-                }
-            }
-
-            for (let l2 = width; l2 < 0; l2++) {
-                i = src[srcPos++];
-
-                if (i !== 0) {
-                    dest[destPos++] = i;
+                if (byte0 !== 0) {
+                    target[destPos++] = colours[byte0 & 0xff];
                 } else {
                     destPos++;
                 }
             }
 
-            destPos += j1;
-            srcPos += k1;
+            for (let k2 = width; k2 < 0; k2++) {
+                let byte1 = colourIdx[srcPos++];
+
+                if (byte1 !== 0) {
+                    target[destPos++] = colours[byte1 & 0xff];
+                } else {
+                    destPos++;
+                }
+            }
+
+            destPos += w2;
+            srcPos += h2;
         }
     }
 

@@ -3387,9 +3387,11 @@ class Scene {
 
         if (i < 0) {
             i = -(i + 1);
+
             let j = i >> 10 & 0x1f;
             let k = i >> 5 & 0x1f;
             let l = i & 0x1f;
+
             return (j << 19) + (k << 11) + (l << 3);
         } else {
             return 0;

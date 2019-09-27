@@ -126,7 +126,7 @@ class Panel {
             return;
         }
 
-        if (this.focusControlIndex !== -1 && controlText[this.focusControlIndex] !== null && this.controlShown[this.focusControlIndex]) {
+        if (this.focusControlIndex !== -1 && this.controlText[this.focusControlIndex] !== null && this.controlShown[this.focusControlIndex]) {
             let inputLen = this.controlText[this.focusControlIndex].length;
 
             if (key === 8 && inputLen > 0) {

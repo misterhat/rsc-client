@@ -378,7 +378,6 @@ class World {
                 }
 
                 if (mapData === null || mapData.length === 0) {
-                    console.log(mapName);
                     throw new Error();
                 }
 

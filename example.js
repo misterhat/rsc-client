@@ -1,7 +1,5 @@
 const mudclient = require('./src/mudclient');
 
-document.body.style.backgroundColor = '#000';
-
 const gameCanvas = document.createElement('canvas');
 gameCanvas.width = 512;
 gameCanvas.height = 346;

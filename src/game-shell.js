@@ -64,11 +64,12 @@ class GameShell {
 
         this.canvas.addEventListener('dragstart', this.mouseDragged.bind(this));
         this.canvas.addEventListener('mousedown', this.mousePressed.bind(this));
+        this.canvas.addEventListener('contextmenu', this.mousePressed.bind(this));
         this.canvas.addEventListener('mousemove', this.mouseMoved.bind(this));
         this.canvas.addEventListener('mouseup', this.mouseReleased.bind(this));
 
-        this.canvas.addEventListener('keydown', this.keyPressed.bind(this));
-        this.canvas.addEventListener('keyup', this.keyReleased.bind(this));
+        window.addEventListener('keydown', this.keyPressed.bind(this));
+        window.addEventListener('keyup', this.keyReleased.bind(this));
 
         this.loadingStep = 1;
 
@@ -89,6 +90,8 @@ class GameShell {
     }
 
     keyPressed(e) {
+        e.preventDefault();
+
         let code = e.keyCode;
         let chr = e.key.length === 1 ? e.key.charCodeAt(0) : code;
 
@@ -110,8 +113,8 @@ class GameShell {
     
         let foundText = false;
 
-        for (let i = 0; i < charMap.length; i++) {
-            if (charMap.charCodeAt(i) === chr) {
+        for (let i = 0; i < GameShell.charMap.length; i++) {
+            if (GameShell.charMap.charCodeAt(i) === chr) {
                 foundText = true;
                 break;
             }
@@ -131,9 +134,13 @@ class GameShell {
             this.inputTextFinal = this.inputTextCurrent;
             this.inputPmFinal = this.inputPmCurrent;
         }
+
+        return false;
     }
 
     keyReleased(e) {
+        e.preventDefault();
+
         let code = e.keyCode;
 
         if (code === KEYCODES.LEFT_ARROW) {
@@ -147,6 +154,8 @@ class GameShell {
         } else if (code == KEYCODES.SPACE) {
             this.keySpace = false;
         }
+
+        return false;
     }
 
     mouseMoved(e) {
@@ -162,8 +171,11 @@ class GameShell {
     }
 
     mousePressed(e) {
+        e.preventDefault();
+
         let x = e.offsetX;
         let y = e.offsetY;
+
         this.mouseX = x;
         this.mouseY = y;
 
@@ -176,6 +188,8 @@ class GameShell {
         this.lastMouseButtonDown = this.mouseButtonDown;
         this.mouseActionTimeout = 0;
         this.handleMouseDown(this.mouseButtonDown, x, y);
+
+        return false;
     }
 
     mouseDragged(e) {
@@ -463,7 +477,7 @@ class GameShell {
         return this._graphics;
     }
 
-    async createSocket() {
+    async createSocket(s, i) {
         let socket = new Socket(s, i);
         await socket.connect();
         return socket;

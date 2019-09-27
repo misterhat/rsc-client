@@ -1,6 +1,6 @@
 class WebSocketClient {
     constructor() {
-        this.socket = null;
+        this._socket = null;
 
         this._reset();
     }

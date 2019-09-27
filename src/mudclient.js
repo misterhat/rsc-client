@@ -2385,7 +2385,7 @@ class mudclient extends GameConnection {
         let rx = 50; //49;
         let ry = 50; //47;
 
-        this.world.loadSection(rx * 48 + 23, ry * 48 + 23, rh);
+        this.world._loadSection_from3(rx * 48 + 23, ry * 48 + 23, rh);
         this.world.addModels(this.gameModels);
 
         let x = 9728;
@@ -3991,8 +3991,8 @@ class mudclient extends GameConnection {
         this.drawChatMessageTabs();
         this.surface.draw(this.graphics, 0, 0);
 
-        let ax = regionX;
-        let ay = regionY;
+        let ax = this.regionX;
+        let ay = this.regionY;
         let sectionX = ((lx + 24) / 48) | 0;
         let sectionY = ((ly + 24) / 48) | 0;
 
@@ -4004,10 +4004,10 @@ class mudclient extends GameConnection {
         this.localUpperX = sectionX * 48 + 32;
         this.localUpperY = sectionY * 48 + 32;
 
-        this.world.loadSection(lx, ly, this.lastHeightOffset);
+        this.world._loadSection_from3(lx, ly, this.lastHeightOffset);
 
-        regionX -= this.planeWidth;
-        regionY -= this.planeHeight;
+        this.regionX -= this.planeWidth;
+        this.regionY -= this.planeHeight;
 
         let offsetX = regionX - ax;
         let offsetY = regionY - ay;
@@ -4475,7 +4475,7 @@ class mudclient extends GameConnection {
         }
 
         if (this.members) {
-            await loadSounds();
+            await this.loadSounds();
         }
 
         if (!this.errorLoadingData) {

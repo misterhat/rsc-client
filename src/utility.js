@@ -220,7 +220,7 @@ class Utility {
     }
 
     static unpackData(filename, i, archiveData, fileData) {
-        let numEntries = (archiveData[0] & 0xff) * 256 + (archiveData[1] & 0xff);
+        let numEntries = ((archiveData[0] & 0xff) * 256 + (archiveData[1] & 0xff)) | 0;
         let wantedHash = 0;
 
         filename = filename.toUpperCase();
