@@ -4453,7 +4453,7 @@ class mudclient extends GameConnection {
         this.scene.clipFar2d = 2400;
         this.scene.fogZFalloff = 1;
         this.scene.fogZDistance = 2300;
-        this.scene.setLight(-50, -10, -50);
+        this.scene._setLight_from3(-50, -10, -50);
         this.world = new World(this.scene, this.surface);
         this.world.baseMediaSprite = this.spriteMedia;
 
@@ -5114,7 +5114,7 @@ class mudclient extends GameConnection {
             let i5 = 40 + ((Math.random() * 3) | 0);
             let k7 = 40 + ((Math.random() * 7) | 0);
 
-            this.scene.setLight(i5, k7, -50, -10, -50);
+            this.scene._setLight_from5(i5, k7, -50, -10, -50);
         }
 
         this.itemsAboveHeadCount = 0;
@@ -6296,7 +6296,7 @@ class mudclient extends GameConnection {
             let gameModel = gameModels[j1].copy();
 
             this.scene.addModel(gameModel);
-            gameModel.setLight(true, 48, 48, -50, -10, -50);
+            gameModel._setLight_from6(true, 48, 48, -50, -10, -50);
             gameModel.copyPosition(this.objectModel[i]);
             gameModel.key = i;
             this.objectModel[i] = gameModel;
@@ -7174,7 +7174,7 @@ class mudclient extends GameConnection {
                             model.key = this.objectCount;
                             model.rotate(0, direction * 32, 0);
                             model.translate(mX, -this.world.getElevation(mX, mY), mY);
-                            model.setLight(true, 48, 48, -50, -10, -50);
+                            model._setLight_from6(true, 48, 48, -50, -10, -50);
 
                             this.world.removeObject2(lX, lY, id);
 
@@ -9114,7 +9114,7 @@ class mudclient extends GameConnection {
         let ai = new Int32Array([i3, j3, k3, l3]);
 
         gameModel.createFace(4, ai, j2, k2);
-        gameModel.setLight(false, 60, 24, -50, -10, -50);
+        gameModel._setLight_from6(false, 60, 24, -50, -10, -50);
 
         if (x >= 0 && y >= 0 && x < 96 && y < 96) {
             this.scene.addModel(gameModel);

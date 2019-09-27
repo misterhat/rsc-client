@@ -1254,7 +1254,7 @@ class World {
             this.surface.drawSpriteMinimap(this.baseMediaSprite - 1, 0, 0, 285, 285);
         }
 
-        this.parentModel.setLight(false, 60, 24, -50, -10, -50);
+        this.parentModel._setLight_from6(false, 60, 24, -50, -10, -50);
 
         this.wallModels[plane] = this.parentModel.split(0, 0, 1536, 1536, 8, 64, 338, true);
 
@@ -1600,7 +1600,7 @@ class World {
             }
         }
 
-        this.parentModel.setLight(true, 50, 50, -50, -10, -50);
+        this.parentModel._setLight_from6(true, 50, 50, -50, -10, -50);
         this.roofModels[plane] = this.parentModel.split(0, 0, 1536, 1536, 8, 64, 169, true);
 
         for (let l9 = 0; l9 < 64; l9++) {
@@ -1663,7 +1663,7 @@ class World {
                     gameModel.translate(k1, -this.getElevation(k1, i2), i2);
                     gameModel.orient(0, this.getTileDirection(i, j) * 32, 0);
                     this.scene.addModel(gameModel);
-                    gameModel.setLight(48, 48, -50, -10, -50);
+                    gameModel._setLight_from5(48, 48, -50, -10, -50);
 
                     if (i1 > 1 || j1 > 1) {
                         for (let k2 = i; k2 < i + i1; k2++) {

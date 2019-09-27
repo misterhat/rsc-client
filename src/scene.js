@@ -1165,7 +1165,7 @@ class Scene {
         if (model === null) {
             console.log('Warning tried to add null object!');
         }
-
+    
         if (this.modelCount < this.maxModelCount) {
             this.models[this.modelCount++] = model;
         }

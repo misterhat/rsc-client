@@ -591,7 +591,20 @@ class GameModel {
         model.normalMagnitude[outF] = this.normalMagnitude[inF];
     }
 
-    _setLight_from5(gouraud, ambient, diffuse, x, y, z) {
+    _setLight_from5(ambience, diffuse, x, y, z) {
+        this.lightAmbience = 256 - ambience * 4;
+        this.lightDiffuse = (64 - diffuse) * 16 + 128;
+
+        if (!this.unlit) {
+            this.lightDirectionX = x;
+            this.lightDirectionY = y;
+            this.lightDirectionZ = z;
+            this.lightDirectionMagnitude = Math.sqrt(x * x + y * y + z * z) | 0;
+            this.light();
+        }
+    }
+
+    _setLight_from6(gouraud, ambient, diffuse, x, y, z) {
         this.lightAmbience = 256 - ambient * 4;
         this.lightDiffuse = (64 - diffuse) * 16 + 128;
 
@@ -640,6 +653,8 @@ class GameModel {
     
     setLight(...args) {
         switch (args.length) {
+            case 6:
+                return this._setLight_from6(...args);
             case 5:
                 return this._setLight_from5(...args);
             case 4:
@@ -775,8 +790,8 @@ class GameModel {
     }
 
     computeBounds() {
-        this.x1 = this.y1 = this.z1 = 0xf423f;
-        this.diameter = this.x2 = this.y2 = this.z2 = 0xfff0bdc1;
+        this.x1 = this.y1 = this.z1 = 999999;
+        this.diameter = this.x2 = this.y2 = this.z2 = -999999;
 
         for (let face = 0; face < this.numFaces; face++) {
             let vs = this.faceVertices[face];
@@ -955,8 +970,8 @@ class GameModel {
                 this.vertexTransformedZ[v] = this.vertexZ[v];
             }
 
-            this.x1 = this.y1 = this.z1 = 0xff676981;
-            this.diameter = this.x2 = this.y2 = this.z2 = 0x98967f;
+            this.x1 = this.y1 = this.z1 = -9999999;
+            this.diameter = this.x2 = this.y2 = this.z2 = 9999999;
 
             return;
         }
@@ -1042,18 +1057,19 @@ class GameModel {
 
             if (cameraPitch !== 0) {
                 let Y = y * pitchCos - z * pitchSin >> 15;
+                console.log(Y);
                 z = y * pitchSin + z * pitchCos >> 15;
                 y = Y;
             }
 
             if (z >= clipNear) {
-                this.vertexViewX[v] = (x << viewDist) / z;
+                this.vertexViewX[v] = ((x << viewDist) / z) | 0;
             } else {
                 this.vertexViewX[v] = x << viewDist;
             }
 
             if (z >= clipNear) {
-                this.vertexViewY[v] = (y << viewDist) / z;
+                this.vertexViewY[v] = ((y << viewDist) / z) | 0;
             } else {
                 this.vertexViewY[v] = y << viewDist;
             }
@@ -1119,7 +1135,7 @@ class GameModel {
         let lo = GameModel.base64Alphabet[buff[this.dataPtr++] & 0xff];
         let val = ((hi * 4096 + mid * 64 + lo) - 0x20000) | 0;
 
-        if (val === 0x1e240) {
+        if (val === 123456) {
             val = this.magic;
         }
 
