@@ -17,10 +17,10 @@ class WebSocketClient {
         return this._receiveDataQueue.reduce((a,b) => a + b.byteLength, 0);
     }
 
-    async connect(url, protocols) {
+    async connect(url) {
         await this.disconnect();
         this._reset();
-        this._socket = new WebSocket(url, protocols);
+        this._socket = new WebSocket(url, 'binary');
         this._socket.binaryType = 'arraybuffer';
         return this._setupListenersOnConnect();
     }

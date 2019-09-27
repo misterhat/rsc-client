@@ -4,7 +4,10 @@ class Socket {
     constructor(host, port) {
         this.host = host;
         this.port = port;
+
         this.client = new WebSocketClient();
+        this.lastArrayBufferReceived = null;
+        this.lastArrayBufferReadIndex = 0;
     }
 
     async connect() {

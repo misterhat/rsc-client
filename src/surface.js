@@ -42,7 +42,7 @@ class Surface {
         this.surfacePixels = [];
         this.surfacePixels.length = limit;
         this.surfacePixels.fill(null);
-        this.spriteColoursUsed = []
+        this.spriteColoursUsed = [];
         this.spriteColoursUsed.length = limit;
         this.spriteColoursUsed.fill(null);
         this.spriteColourList = [];
@@ -579,7 +579,7 @@ class Surface {
             this.surfacePixels[id] = null;
             this.spriteTranslate[id] = false;
 
-            if (this.spriteTranslateX[id] !== 0 || this.spriteTranslateY[id] !== 0)  {
+            if (this.spriteTranslateX[id] !== 0 || this.spriteTranslateY[id] !== 0) {
                 this.spriteTranslate[id] = true;
             }
 
@@ -695,7 +695,7 @@ class Surface {
             let l2 = ai1[k2];
 
             if (l2 === -1) {
-                let i3 = 0x3b9ac9ff;
+                let i3 = 999999999;
                 let j3 = j2 >> 16 & 0xff;
                 let k3 = j2 >> 8 & 0xff;
                 let l3 = j2 & 0xff;
@@ -1210,7 +1210,7 @@ class Surface {
             for (let l2 = width; l2 < 0; l2++) {
                 i = src[srcPos++];
 
-                if (i !==  0) {
+                if (i !== 0) {
                     dest[destPos++] = i;
                 } else {
                     destPos++;
@@ -1769,7 +1769,7 @@ class Surface {
     }
 
     _spriteClipping_from9(x, y, w, h, sprite, colour1, colour2, l1, flag) {
-       try {
+        try {
             if (colour1 === 0) {
                 colour1 = 0xffffff;
             }
@@ -2256,7 +2256,7 @@ class Surface {
         }
     }
 
-     drawCharacter(width, x, y, colour, font) {
+    drawCharacter(width, x, y, colour, font) {
         let i1 = x + font[width + 5];
         let j1 = y - font[width + 6];
         let k1 = font[width + 3];

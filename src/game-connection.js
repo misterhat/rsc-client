@@ -89,7 +89,7 @@ class GameConnection extends GameShell {
             this.clientStream.putByte(l.shiftRight(16).and(31).toInt());
             this.clientStream.flushPacket();
 
-            let sessId = this.clientStream.getLong();
+            let sessId = await this.clientStream.getLong();
             this.sessionID = sessId;
 
             if (sessId.equals(0)) {

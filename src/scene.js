@@ -1221,8 +1221,8 @@ class Scene {
         let vs = new Int32Array([l1, i2]);
 
         this.view.createFace(2, vs, 0, 0);
-        this.view.faceTag[spriteCount] = tag;
-        this.view.isLocalPlayer[spriteCount++] = 0;
+        this.view.faceTag[this.spriteCount] = tag;
+        this.view.isLocalPlayer[this.spriteCount++] = 0;
 
         return this.spriteCount - 1;
     }
@@ -1400,7 +1400,7 @@ class Scene {
                 return false;
             }
 
-            end = newEnd;
+            end = this.newEnd;
         } while (true);
     }
 
@@ -1770,7 +1770,7 @@ class Scene {
             let l13 = 0;
             let j14 = 0;
             let l14 = COLOUR_TRANSPARENT;
-            let j15 = 0xff439eb2;
+            let j15 = -COLOUR_TRANSPARENT;
 
             if (k3 !== k1) {
                 j13 = ((j7 - k4 << 8) / (k3 - k1)) | 0;
@@ -1804,7 +1804,7 @@ class Scene {
             let l16 = 0;
             let j17 = 0;
             let l17 = COLOUR_TRANSPARENT;
-            let j18 = 0xff439eb2;
+            let j18 = -COLOUR_TRANSPARENT;
 
             if (k2 !== k1) {
                 j16 = ((l5 - k4 << 8) / (k2 - k1)) | 0;
@@ -1838,7 +1838,7 @@ class Scene {
             let l19 = 0;
             let j20 = 0;
             let l20 = COLOUR_TRANSPARENT;
-            let j21 = 0xff439eb2;
+            let j21 = -COLOUR_TRANSPARENT;
 
             if (k3 !== k2) {
                 j19 = ((j7 - l5 << 8) / (k3 - k2)) | 0;
@@ -1896,8 +1896,8 @@ class Scene {
                     l12 += j13;
                     l13 += j14;
                 } else {
-                    i = 0xa0000;
-                    j = 0xfff60000;
+                    i = 655360;
+                    j = -655360;
                 }
 
                 if (k >= l17 && k < j18) {
@@ -1960,7 +1960,7 @@ class Scene {
             let k15 = 0;
             let i16 = 0;
             let k16 = COLOUR_TRANSPARENT;
-            let i17 = 0xff439eb2;
+            let i17 = -COLOUR_TRANSPARENT;
 
             if (l4 !== l1) {
                 i15 = ((k10 - i6 << 8) / (l4 - l1)) | 0;
@@ -1994,7 +1994,7 @@ class Scene {
             let k18 = 0;
             let i19 = 0;
             let k19 = COLOUR_TRANSPARENT;
-            let i20 = 0xff439eb2;
+            let i20 = -COLOUR_TRANSPARENT;
 
             if (l2 !== l1) {
                 i18 = ((k7 - i6 << 8) / (l2 - l1)) | 0;
@@ -2028,7 +2028,7 @@ class Scene {
             let k21 = 0;
             let i22 = 0;
             let j22 = COLOUR_TRANSPARENT;
-            let k22 = 0xff439eb2;
+            let k22 = -COLOUR_TRANSPARENT;
 
             if (l3 !== l2) {
                 i21 = ((i9 - k7 << 8) / (l3 - l2)) | 0;
@@ -2062,7 +2062,7 @@ class Scene {
             let j23 = 0;
             let k23 = 0;
             let l23 = COLOUR_TRANSPARENT;
-            let i24 = 0xff439eb2;
+            let i24 = -COLOUR_TRANSPARENT;
 
             if (l4 !== l3) {
                 i23 = ((k10 - i9 << 8) / (l4 - l3)) | 0;
@@ -2128,8 +2128,8 @@ class Scene {
                     k14 += i15;
                     k15 += i16;
                 } else {
-                    i = 0xa0000;
-                    j = 0xfff60000;
+                    i = 655360;
+                    j = -655360;
                 }
 
                 if (k >= k19 && k < i20) {
@@ -2214,8 +2214,8 @@ class Scene {
 
             for (k = this.minY; k < this.maxY; k++) {
                 let scanline = this.scanlines[k];
-                scanline.startX = 0xa0000;
-                scanline.endX = 0xfff60000;
+                scanline.startX = 655360;
+                scanline.endX = -655360;
             }
 
             let j2 = i1 - 1;
@@ -2889,7 +2889,7 @@ class Scene {
             }
 
             gameModel.normalScale[face] = faceCameraNormalScale;
-            gameModel.normalMagnitude[face] = (this.normalMagnitude * Math.sqrt(t1 * t1 + t2 * t2 + t3 * t3) ) | 0;
+            gameModel.normalMagnitude[face] = (this.normalMagnitude * Math.sqrt(t1 * t1 + t2 * t2 + t3 * t3)) | 0;
         } else {
             t1 >>= faceCameraNormalScale;
             t2 >>= faceCameraNormalScale;
@@ -3122,7 +3122,7 @@ class Scene {
 
         if (l === 2) {
             ai4 = new Int32Array(4);
-            ai5 =  new Int32Array(4);
+            ai5 = new Int32Array(4);
             let k5 = ai1[0];
             let l1 = ai1[1];
             ai4[0] = gameModel_1.vertexViewX[k5] - 20;
@@ -3236,7 +3236,7 @@ class Scene {
         this.textureColours128.fill(null);
     }
 
-    defineTexture(id, usedColours, colours,  wide128) {
+    defineTexture(id, usedColours, colours, wide128) {
         this.textureColoursUsed[id] = usedColours;
         this.textureColourList[id] = colours;
         this.textureDimension[id] = wide128; // is 1 if the this.texture is 128+ pixels wide, 0 if <128
@@ -3525,8 +3525,8 @@ class Scene {
         let flag = false;
 
         if (ai1[k] < ai3[i1]) {
-            for (l = k; ai1[l] < ai3[i1]; l = (l + 1) % i) ;
-            for (; ai1[k] < ai3[i1]; k = ((k - 1) + i) % i) ;
+            for (l = k; ai1[l] < ai3[i1]; l = (l + 1) % i);
+            for (; ai1[k] < ai3[i1]; k = ((k - 1) + i) % i);
             let k1 = this.method306(ai[(k + 1) % i], ai1[(k + 1) % i], ai[k], ai1[k], ai3[i1]);
             let k6 = this.method306(ai[((l - 1) + i) % i], ai1[((l - 1) + i) % i], ai[l], ai1[l], ai3[i1]);
             let l10 = ai2[i1];
@@ -3543,8 +3543,8 @@ class Scene {
                 byte0 = 1;
             }
         } else {
-            for (j1 = i1; ai3[j1] < ai1[k]; j1 = (j1 + 1) % j) ;
-            for (; ai3[i1] < ai1[k]; i1 = ((i1 - 1) + j) % j) ;
+            for (j1 = i1; ai3[j1] < ai1[k]; j1 = (j1 + 1) % j);
+            for (; ai3[i1] < ai1[k]; i1 = ((i1 - 1) + j) % j);
             let l1 = ai[k];
             let i11 = this.method306(ai2[(i1 + 1) % j], ai3[(i1 + 1) % j], ai2[i1], ai3[i1], ai1[k]);
             let l15 = this.method306(ai2[((j1 - 1) + j) % j], ai3[((j1 - 1) + j) % j], ai2[j1], ai3[j1], ai1[k]);

@@ -21,7 +21,7 @@ class World {
         this.memberMapPack = null;
 
         this.worldInitialised = true;
-        this.objectAdjacency = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [ this.regionWidth, this.regionHeight ]);
+        this.objectAdjacency = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [this.regionWidth, this.regionHeight]);
         this.tileDirection = ndarray(new Int8Array(4 * 2304), [4, 2304]);
 
         this.wallModels = [];
@@ -44,12 +44,12 @@ class World {
         this.terrainColour = ndarray(new Int8Array(4 * 2304), [4, 2304]);
         this.localY = new Int32Array(18432);
         this.tileDecoration = ndarray(new Int8Array(4 * 2304), [4, 2304]);
-        this.routeVia = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [ this.regionWidth, this.regionHeight ]);
+        this.routeVia = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [this.regionWidth, this.regionHeight]);
         this.wallsDiagonal = ndarray(new Int32Array(4 * 2304), [4, 2304]);
         this.wallsEastWest = ndarray(new Int8Array(4 * 2304), [4, 2304])
         this.aBoolean592 = false;
         this.playerAlive = false;
-        this.terrainHeightLocal = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [ this.regionWidth, this.regionHeight ]);
+        this.terrainHeightLocal = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [this.regionWidth, this.regionHeight]);
 
         this.terrainModels = [];
         this.terrainModels.length = 64;
@@ -303,8 +303,7 @@ class World {
         let mapName = 'm' + plane + ((x / 10) | 0) + x % 10 + ((y / 10) | 0) + y % 10;
 
         try {
-            // fix
-            if (landscapePack !== null) {
+            if (this.landscapePack !== null) {
                 let mapData = Utility.loadData(mapName + '.hei', 0, this.landscapePack);
 
                 if (mapData === null && this.memberLandscapePack !== null) {
@@ -335,7 +334,7 @@ class World {
                     for (let tileY = 0; tileY < 48; tileY++) {
                         for (let tileX = 0; tileX < 48; tileX++) {
                             lastVal = this.terrainHeight.get(chunk, tileX * 48 + tileY) + lastVal & 0x7f;
-                            this.terrainHeight.set(chunk, tileX * 48 + tileY,(lastVal * 2) & 0xff);
+                            this.terrainHeight.set(chunk, tileX * 48 + tileY, (lastVal * 2) & 0xff);
                         }
                     }
 
@@ -848,7 +847,7 @@ class World {
         }
 
         if (GameData.wallObjectAdjacent[id] === 1) {
-            const adjacency  = this.objectAdjacency.get(x, y);
+            const adjacency = this.objectAdjacency.get(x, y);
 
             if (dir === 0) {
                 this.objectAdjacency.set(x, y, adjacency | 1);

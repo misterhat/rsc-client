@@ -146,8 +146,8 @@ class Packet {
         if (this.packetMaxLength <= 10000) {
             let k = this.packetData[this.packetStart + 2] & 0xff;
 
-            this.anIntArray537[k]++;
-            this.anIntArray541[k] += this.packetEnd - this.packetStart;
+            Packet.anIntArray537[k]++;
+            Packet.anIntArray541[k] += this.packetEnd - this.packetStart;
         }
 
         this.packetStart = this.packetEnd;
@@ -226,7 +226,7 @@ class Packet {
     }
 
     putByte(i) {
-        this.packetData[packetEnd++] = i & 0xff;
+        this.packetData[this.packetEnd++] = i & 0xff;
     }
 
     isaacCommand(i) {

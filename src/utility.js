@@ -1,5 +1,6 @@
 const BZLib = require('./bzlib');
 const FileDownloadStream = require('./lib/net/file-download-stream');
+const Long = require('long');
 
 const C_0 = '0'.charCodeAt(0);
 const C_9 = '9'.charCodeAt(0);

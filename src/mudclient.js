@@ -146,10 +146,10 @@ class mudclient extends GameConnection {
             new Int32Array([3, 4, 2, 9, 7, 1, 6, 10, 8, 11, 0, 5]), 
             new Int32Array([4, 3, 2, 9, 7, 1, 6, 10, 8, 11, 0, 5]), 
             new Int32Array([11, 4, 2, 9, 7, 1, 6, 10, 0, 5, 8, 3]), 
-            new Int32Array([11, 2, 9, 7, 1, 6, 10, 0, 5, 8, 4, 3]) ];
+            new Int32Array([11, 2, 9, 7, 1, 6, 10, 0, 5, 8, 4, 3])];
         this.controlWelcomeNewuser = 0;
         this.controlWelcomeExistinguser = 0;
-        this.npcWalkModel = [ 0, 1, 2, 1 ];
+        this.npcWalkModel = new Int32Array([0, 1, 2, 1]);
         this.referid = 0;
         this.anInt827 = 0;
         this.controlLoginNewOk = 0;
@@ -191,7 +191,7 @@ class mudclient extends GameConnection {
         ]);
         this.bankActivePage = 0;
         this.welcomeLastLoggedInDays = 0;
-        this.equipmentStatNames = [ 'Armour', 'WeaponAim', 'WeaponPower', 'Magic', 'Prayer' ];
+        this.equipmentStatNames = ['Armour', 'WeaponAim', 'WeaponPower', 'Magic', 'Prayer'];
         this.inventoryItemsCount = 0;
         this.skillNameShort = [ 
             'Attack', 'Defense', 'Strength', 'Hits', 'Ranged', 'Prayer', 'Magic', 'Cooking', 'Woodcut', 'Fletching',
@@ -1873,7 +1873,7 @@ class mudclient extends GameConnection {
 
                 if (l2 < k) {
                     j4 = k - l2;
-                } else  {
+                } else {
                     j4 = (10 + k) - l2;
                 }
 
@@ -2044,7 +2044,7 @@ class mudclient extends GameConnection {
             } else {
                 character_1.animationCurrent = character_1.animationNext;
 
-                if (character_1.npcId === 43) {A
+                if (character_1.npcId === 43) {
                     character_1.stepCount++;
                 }
             }
@@ -2759,7 +2759,7 @@ class mudclient extends GameConnection {
         this.surface.drawBox(uiX, 36, uiWidth, uiHeight, 0);
         this.surface.setBounds(uiX, 36, uiX + uiWidth, 36 + uiHeight);
 
-        let k = 192 + minimapRandom_2;
+        let k = 192 + this.minimapRandom_2;
         let i1 = this.cameraRotation + this.minimapRandom_1 & 0xff;
         let k1 = (((this.localPlayer.currentX - 6040) * 3 * k) / 2048) | 0;
         let i3 = (((this.localPlayer.currentY - 6040) * 3 * k) / 2048) | 0;
@@ -2978,8 +2978,8 @@ class mudclient extends GameConnection {
 
         if (this.showUiTab !== 0 && this.showUiTab !== 2 && this.mouseX >= this.surface.width2 - 35 - 33 && this.mouseY >= 3 && this.mouseX < this.surface.width2 - 3 - 33 && this.mouseY < 26) {
             this.showUiTab = 2;
-            minimapRandom_1 = ((Math.random() * 13) | 0) - 6;
-            minimapRandom_2 = ((Math.random() * 23) | 0) - 11;
+            this.minimapRandom_1 = ((Math.random() * 13) | 0) - 6;
+            this.minimapRandom_2 = ((Math.random() * 23) | 0) - 11;
         }
 
         if (this.showUiTab !== 0 && this.mouseX >= this.surface.width2 - 35 - 66 && this.mouseY >= 3 && this.mouseX < this.surface.width2 - 3 - 66 && this.mouseY < 26) {
@@ -4392,7 +4392,7 @@ class mudclient extends GameConnection {
             this.experienceArray[level] = totalExp & 0xffffffc;
         }
 
-        this.port = 43594;
+        this.port = 43595;
         this.maxReadTries = 1000;
         this.clientVersion = VERSION.CLIENT;
 
@@ -4447,6 +4447,7 @@ class mudclient extends GameConnection {
         this.scene = new Scene(this.surface, 15000, 15000, 1000);
         // this used to be in scene's constructor
         this.scene.view = new GameModel(1000 * 1000, 1000); 
+        // TODO: see if this gives a different result with parseInt
         this.scene.setBounds((this.gameWidth / 2) | 0, (this.gameHeight / 2) | 0, (this.gameWidth / 2) | 0, (this.gameHeight / 2) | 0, this.gameWidth, this.const_9);
         this.scene.clipFar3d = 2400;
         this.scene.clipFar2d = 2400;
@@ -4494,7 +4495,7 @@ class mudclient extends GameConnection {
         this.surface._drawSprite_from3(uiX - 49, 3, this.spriteMedia + 4);
         let uiWidth = 196;
         let uiHeight = 182;
-        let l = 0 ;
+        let l = 0;
         let k = l = Surface.rgbToLong(160, 160, 160);
 
         if (this.tabMagicPrayer === 0) {
@@ -8280,7 +8281,7 @@ class mudclient extends GameConnection {
             }
 
             if (opcode === S_OPCODES.SERVER_MESSAGE_ONTOP) {
-                this.serverMessage = pdata.slice( 1, psize - 1).toString();
+                this.serverMessage = pdata.slice(1, psize - 1).toString();
                 this.showDialogServermessage = true;
                 this.serverMessageBoxTop = true;
 

@@ -127,7 +127,7 @@ class GameModel {
         this.faceTransStateThing = [];
 
         for (let v = 0; v < this.numFaces; v++) {
-            this.faceTransStateThing.push([v]);
+            this.faceTransStateThing.push([0]);
         }
 
         return this;
@@ -244,7 +244,7 @@ class GameModel {
         for (let l2 = 0; l2 < k; l2++) {
             this.faceVertices[l2] = new Int32Array(this.faceNumVertices[l2]);
 
-            for (let i3 = 0; i3 < faceNumVertices[l2]; i3++) {
+            for (let i3 = 0; i3 < this.faceNumVertices[l2]; i3++) {
                 if (j < 256) {
                     this.faceVertices[l2][i3] = data[offset++] & 0xff;
                 } else {
@@ -386,7 +386,7 @@ class GameModel {
 
     clear() {
         this.numFaces = 0;
-        this.numVertices = 0;    
+        this.numVertices = 0;
     }
 
     reduce(df, dz) {
@@ -595,7 +595,7 @@ class GameModel {
         this.lightAmbience = 256 - ambient * 4;
         this.lightDiffuse = (64 - diffuse) * 16 + 128;
 
-        if (this.unlit) { 
+        if (this.unlit) {
             return;
         }
 
@@ -728,8 +728,8 @@ class GameModel {
             }
 
             if (roll !== 0) {
-                let sin = sine9[roll];
-                let cos = sine9[roll + 256];
+                let sin = GameModel.sine9[roll];
+                let cos = GameModel.sine9[roll + 256];
                 let x = this.vertexTransformedZ[v] * sin + this.vertexTransformedX[v] * cos >> 15;
 
                 this.vertexTransformedZ[v] = this.vertexTransformedZ[v] * cos - this.vertexTransformedX[v] * sin >> 15;
@@ -885,7 +885,7 @@ class GameModel {
 
         for (let face = 0; face < this.numFaces; face++) {
             if (this.faceIntensity[face] === this.magic) {
-                for (let v = 0; v < faceNumVertices[face]; v++) {
+                for (let v = 0; v < this.faceNumVertices[face]; v++) {
                     let k1 = this.faceVertices[face][v];
 
                     normalX[k1] += this.faceNormalX[face];
@@ -1083,17 +1083,17 @@ class GameModel {
     // TODO see if we have to call .slice() anywhere here
     copy(...args) {
         if (!args || !args.length) {
-            let pieces = [ this ]; 
+            let pieces = [this]; 
             gameModel = new GameModel(pieces, 1);
             gameModel.depth = this.depth;
-            gameModel.transparent = transparent;
+            gameModel.transparent = this.transparent;
 
             return gameModel;
         }
 
-        const [ autocommit, isolated, unlit, pickable ] = args;
+        const [autocommit, isolated, unlit, pickable] = args;
 
-        let pieces = [ this ];
+        let pieces = [this];
         let gameModel = new GameModel(pieces, 1, autocommit, isolated, unlit, pickable);
         gameModel.depth = this.depth;
 
@@ -1112,11 +1112,11 @@ class GameModel {
     }
 
     readBase64(buff) {
-        for (; buff[dataPtr] === 10 || buff[dataPtr] === 13; dataPtr++) ;
+        for (; buff[this.dataPtr] === 10 || buff[this.dataPtr] === 13; this.dataPtr++) ;
 
-        let hi = GameModel.base64Alphabet[buff[dataPtr++] & 0xff];
-        let mid = GameModel.base64Alphabet[buff[dataPtr++] & 0xff];
-        let lo = GameModel.base64Alphabet[buff[dataPtr++] & 0xff];
+        let hi = GameModel.base64Alphabet[buff[this.dataPtr++] & 0xff];
+        let mid = GameModel.base64Alphabet[buff[this.dataPtr++] & 0xff];
+        let lo = GameModel.base64Alphabet[buff[this.dataPtr++] & 0xff];
         let val = ((hi * 4096 + mid * 64 + lo) - 0x20000) | 0;
 
         if (val === 0x1e240) {
