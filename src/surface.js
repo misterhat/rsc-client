@@ -298,104 +298,6 @@ class Surface {
         }
     }
 
-    drawBoxAlpha(x, y, width, height, colour, alpha) {
-        if (x < this.boundsTopX) {
-            width -= this.boundsTopX - x;
-            x = this.boundsTopX;
-        }
-
-        if (y < this.boundsTopY) {
-            height -= this.boundsTopY - y;
-            y = this.boundsTopY;
-        }
-
-        if (x + width > this.boundsBottomX) {
-            width = this.boundsBottomX - x;
-        }
-
-        if (y + height > this.boundsBottomY) {
-            height = this.boundsBottomY - y;
-        }
-
-        let bgAlpha = 256 - alpha;
-        let red = (colour >> 16 & 0xff) * alpha;
-        let green = (colour >> 8 & 0xff) * alpha;
-        let blue = (colour & 0xff) * alpha;
-        let j3 = this.width2 - width; // wat
-        let vertInc = 1;
-
-        if (this.interlace) {
-            vertInc = 2;
-
-            j3 += this.width2;
-
-            if ((y & 1) !== 0) {
-                y++;
-                height--;
-            }
-        }
-
-        let pixelIdx = x + y * this.width2;
-
-        for (let l3 = 0; l3 < height; l3 += vertInc) {
-            for (let i4 = -width; i4 < 0; i4++) {
-                let bgRed = (this.pixels[pixelIdx] >> 16 & 0xff) * bgAlpha;
-                let bgGreen = (this.pixels[pixelIdx] >> 8 & 0xff) * bgAlpha;
-                let bgBlue = (this.pixels[pixelIdx] & 0xff) * bgAlpha;
-                let newColour = ((red + bgRed >> 8) << 16) + ((green + bgGreen >> 8) << 8) + (blue + bgBlue >> 8);
-                this.pixels[pixelIdx++] = newColour;
-            }
-
-            pixelIdx += j3;
-        }
-    }
-
-    drawGradient(x, y, width, height, colourTop, colourBottom) {
-        if (x < this.boundsTopX) {
-            width -= this.boundsTopX - x;
-            x = this.boundsTopX;
-        }
-
-        if (x + width > this.boundsBottomX) {
-            width = this.boundsBottomX - x;
-        }
-
-        let btmRed = colourBottom >> 16 & 0xff;
-        let btmGreen = colourBottom >> 8 & 0xff;
-        let btmBlue = colourBottom & 0xff;
-        let topRed = colourTop >> 16 & 0xff;
-        let topGreen = colourTop >> 8 & 0xff;
-        let topBlue = colourTop & 0xff;
-        let i3 = this.width2 - width;// wat
-        let vertInc = 1;
-
-        if (this.interlace) {
-            vertInc = 2;
-            i3 += this.width2;
-
-            if ((y & 1) !== 0) {
-                y++;
-                height--;
-            }
-        }
-
-        let pixelIdx = x + y * this.width2;
-
-        for (let k3 = 0; k3 < height; k3 += vertInc) {
-            if (k3 + y >= this.boundsTopY && k3 + y < this.boundsBottomY) {
-                let newColour = ((btmRed * k3 + topRed * (height - k3)) / height << 16) + ((btmGreen * k3 + topGreen * (height - k3)) / height << 8) + (((btmBlue * k3 + topBlue * (height - k3)) / height) | 0);
-
-                for (let i4 = -width; i4 < 0; i4++) {
-                    this.pixels[pixelIdx++] = newColour;
-                }
-
-                pixelIdx += i3;
-            } else {
-                pixelIdx += this.width2;
-            }
-        }
-    }
-
     drawBox(x, y, w, h, colour) {
         if (x < this.boundsTopX) {
             w -= this.boundsTopX - x;
@@ -746,7 +648,7 @@ class Surface {
                 colour = 0;
             }
 
-            this.pixels[pixel] = colour;
+            pixels[pixel] = colour;
         }
 
         this.surfacePixels[spriteId] = pixels;
@@ -1319,7 +1221,7 @@ class Surface {
 
                 if (i !== 0) {
                     let i3 = dest[size];
-                    dest[size++] = ((i & 0xff00ff) * alpha + (i3 & 0xff00ff) * j2 & 0xff00ff00) + ((i & 0xff00) * alpha + (i3 & 0xff00) * j2 & 0xff0000) >> 8;
+                    dest[size++] = ((i & 0xff00ff) * alpha + (i3 & 0xff00ff) * j2 & -16711936) + ((i & 0xff00) * alpha + (i3 & 0xff00) * j2 & 0xff0000) >> 8;
                 } else {
                     size++;
                 }
@@ -1340,7 +1242,7 @@ class Surface {
                 if (l2 !== 0) {
                     l2 = colourList[l2 & 0xff];
                     let i3 = dest[size];
-                    dest[size++] = ((l2 & 0xff00ff) * alpha + (i3 & 0xff00ff) * i2 & 0xff00ff00) + ((l2 & 0xff00) * alpha + (i3 & 0xff00) * i2 & 0xff0000) >> 8;
+                    dest[size++] = ((l2 & 0xff00ff) * alpha + (i3 & 0xff00ff) * i2 & -16711936) + ((l2 & 0xff00) * alpha + (i3 & 0xff00) * i2 & 0xff0000) >> 8;
                 } else {
                     size++;
                 }
@@ -1365,7 +1267,7 @@ class Surface {
 
                     if (i !== 0) {
                         let j4 = dest[destPos];
-                        dest[destPos++] = ((i & 0xff00ff) * alpha + (j4 & 0xff00ff) * i3 & 0xff00ff00) + ((i & 0xff00) * alpha + (j4 & 0xff00) * i3 & 0xff0000) >> 8;
+                        dest[destPos++] = ((i & 0xff00ff) * alpha + (j4 & 0xff00ff) * i3 & -16711936) + ((i & 0xff00) * alpha + (j4 & 0xff00) * i3 & 0xff0000) >> 8;
                     } else {
                         destPos++;
                     }
