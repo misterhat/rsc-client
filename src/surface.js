@@ -1,7 +1,7 @@
 const Utility = require('./utility');
 
-const C_0 = '0'.charAt(0);
-const C_9 = '9'.charAt(0);
+const C_0 = '0'.charCodeAt(0);
+const C_9 = '9'.charCodeAt(0);
 
 function fixPixel(pixel) {
     let c = (pixel >> 24) & 255;
@@ -2145,7 +2145,7 @@ class Surface {
                     let c2 = text.charCodeAt(idx + 3);
 
                     if (c >= C_0 && c <= C_9 && c1 >= C_0 && c1 <= C_9 && c2 >= C_0 && c2 <= C_9) {
-                        x = parseInt(text.slice(idx + 1, idx + 4), 10);
+                        x = Number(text.substring(idx + 1, idx + 4)) | 0;
                     }
 
                     idx += 4;

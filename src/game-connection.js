@@ -106,8 +106,6 @@ class GameConnection extends GameShell {
             ai[2] = sessId.shiftRight(32).toInt();
             ai[3] = sessId.toInt();
 
-            console.log(ai);
-
             this.clientStream.newPacket(C_OPCODES.LOGIN);
 
             if (reconnecting) {

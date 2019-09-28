@@ -10,7 +10,7 @@ const CONTROL_TYPES = {
     TEXT_INPUT: 6,
     HORIZ_OPTION: 7,
     VERT_OPTION: 8,
-    TEXT_LIST: 9,
+    I_TEXT_LIST: 9,
     BUTTON: 10,
     ROUND_BOX: 11,
     IMAGE: 12,
@@ -137,7 +137,7 @@ class Panel {
                 this.controlClicked[this.focusControlIndex] = true;
             }
 
-            let s = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"£$%^&*()-_=+[{]};:\'@#~,<.>/?\\| ';
+            let s = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"£$%^&*()-_=+[{]};:\'@#~,<.>/?\\| ';
 
             if (inputLen < this.controlInputMaxLen[this.focusControlIndex]) {
                 for (let k = 0; k < s.length; k++) {
@@ -174,7 +174,7 @@ class Panel {
                     this.drawOptionListHoriz(i, this.controlX[i], this.controlY[i], this.controlTextSize[i], this.controlListEntries[i]);
                 } else if (this.controlType[i] === CONTROL_TYPES.VERT_OPTION) {
                     this.drawOptionListVert(i, this.controlX[i], this.controlY[i], this.controlTextSize[i], this.controlListEntries[i]);
-                } else if (this.controlType[i] === CONTROL_TYPES.TEXT_LIST) {
+                } else if (this.controlType[i] === CONTROL_TYPES.I_TEXT_LIST) {
                     this.drawTextListInteractive(i, this.controlX[i], this.controlY[i], this.controlWidth[i], this.controlHeight[i], this.controlTextSize[i], this.controlListEntries[i], this.controlListEntryCount[i], this.controlFlashText[i]);
                 } else if (this.controlType[i] === CONTROL_TYPES.ROUND_BOX) {
                     this.drawRoundedBox(this.controlX[i], this.controlY[i], this.controlWidth[i], this.controlHeight[i]);
@@ -337,7 +337,7 @@ class Panel {
             if (this.mouseButtonDown === 1 && (this.mouseX >= cornerTopRight && this.mouseX <= cornerTopRight + 12 || this.mouseX >= cornerTopRight - 12 && this.mouseX <= cornerTopRight + 24 && this.controlListScrollbarHandleDragged[control])) {
                 if (this.mouseY > y + 12 && this.mouseY < (y + height) - 12) {
                     this.controlListScrollbarHandleDragged[control] = true;
-                    let l3 = (this.mouseY - y - 12 - cornerBottomLeft / 2) | 0;
+                    let l3 = this.mouseY - y - 12 - ((cornerBottomLeft / 2) | 0);
                     l1 = ((l3 * listEntryCount) / (height - 24)) | 0;
 
                     if (l1 > listEntryCount - displayedEntryCount) {
@@ -530,7 +530,8 @@ class Panel {
 
         this.controlListEntryMouseOver[control] = -1;
         let k2 = height - displayedEntryCount * this.surface.textHeight(textSize);
-        let i3 = y + (((((surface.textHeight(textSize) * 5) / 6) | 0) + k2 / 2) | 0);
+        let i3 = y + (((((this.surface.textHeight(textSize) * 5) / 6) | 0) + k2 / 2) | 0);
+        
 
         for (let k3 = l1; k3 < listEntryCount; k3++) {
             let i4;
@@ -677,7 +678,7 @@ class Panel {
     }
 
     addTextListInteractive(x, y, width, height, textSize, maxLength, flag) {
-        this.controlType[this.controlCount] = CONTROL_TYPES.TEXT_LIST;
+        this.controlType[this.controlCount] = CONTROL_TYPES.I_TEXT_LIST;
         this.controlShown[this.controlCount] = true;
         this.controlClicked[this.controlCount] = false;
         this.controlTextSize[this.controlCount] = textSize;
@@ -807,7 +808,7 @@ class Panel {
 
     getText(control) {
         if (this.controlText[control] === null) {
-            return "null";
+            return 'null';
         } else {
             return this.controlText[control];
         }

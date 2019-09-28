@@ -4927,7 +4927,6 @@ class mudclient extends GameConnection {
         }
 
         if (!this.world.playerAlive) {
-            console.log('we\'re not alive?');
             return;
         }
 

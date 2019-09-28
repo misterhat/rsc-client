@@ -1930,7 +1930,6 @@ class Scene {
                     l19 += j20;
                 }
 
-                //console.log(this.maxY, 'scanline6: ', k, this.scanlines.length);
                 let scanline_6 = this.scanlines[k];
                 scanline_6.startX = i;
                 scanline_6.endX = j;
@@ -2822,7 +2821,7 @@ class Scene {
         pitch &= 0x3ff;
         yaw &= 0x3ff;
         roll &= 0x3ff;
-        this.cameraYaw = 1025 - pitch & 0x3ff;
+        this.cameraYaw = 1024 - pitch & 0x3ff;
         this.cameraPitch = 1024 - yaw & 0x3ff;
         this.cameraRoll = 1024 - roll & 0x3ff;
 
@@ -3420,10 +3419,10 @@ class Scene {
 
     setLight(...args) {
         switch (args.length) {
-            case 3:
-                return this._setLight_from3(...args);
-            case 5:
-                return this._setLight_from5(...args);
+        case 3:
+            return this._setLight_from3(...args);
+        case 5:
+            return this._setLight_from5(...args);
         }
     }
 

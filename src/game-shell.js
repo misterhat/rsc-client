@@ -74,9 +74,6 @@ class GameShell {
         this.loadingStep = 1;
 
         await this.run();
-        /*appletThread = new Thread(this);
-        appletThread.start();
-        appletThread.setPriority(1);*/
     }
 
     setTargetFps(i) {
@@ -93,7 +90,11 @@ class GameShell {
         e.preventDefault();
 
         let code = e.keyCode;
-        let chr = e.key.length === 1 ? e.key.charCodeAt(0) : code;
+        let chr = e.key.length === 1 ? e.key.charCodeAt(0) : 65535;
+
+        if ([8, 10, 13, 9].indexOf(code) > -1 ) {
+            chr = code;
+        }
 
         this.handleKeyPress(chr);
 
@@ -168,6 +169,7 @@ class GameShell {
     mouseReleased(e) {
         this.mouseX = e.offsetX;
         this.mouseY = e.offsetY;
+        this.mouseButtonDown = 0;
     }
 
     mousePressed(e) {
@@ -487,6 +489,6 @@ class GameShell {
 }
 
 GameShell.gameFrame = null;
-GameShell.charMap = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:\'@#~,<.>/?\\| ';
+GameShell.charMap = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"\243$%^&*()-_=+[{]};:\'@#~,<.>/?\\| ';
 
 module.exports = GameShell;

@@ -127,7 +127,7 @@ class GameModel {
         this.faceTransStateThing = [];
 
         for (let v = 0; v < this.numFaces; v++) {
-            this.faceTransStateThing.push([0]);
+            this.faceTransStateThing.push(new Int32Array([0]));
         }
 
         return this;

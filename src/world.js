@@ -159,7 +159,7 @@ class World {
             aY = this.anInt585 - aY;
         }
 
-        let elevation = h + (hx * aX) / this.anInt585 + (hy * aY) / this.anInt585;
+        let elevation = h + (((hx * aX) / this.anInt585) | 0) + (((hy * aY) / this.anInt585) | 0);
 
         return elevation;
     }
