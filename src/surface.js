@@ -1,5 +1,8 @@
 const Utility = require('./utility');
 
+const C_0 = '0'.charAt(0);
+const C_9 = '9'.charAt(0);
+
 function fixPixel(pixel) {
     let c = (pixel >> 24) & 255;
     let r = (pixel >> 16) & 255;
@@ -936,7 +939,7 @@ class Surface {
                 }
             }
 
-            this.plotScale(this.pixels, this.surfacePixels[spriteId], 0, l1, i2, i3, k3, width, height, j2, k2, spriteWidth, yInc);
+            this._plotScale_from13(this.pixels, this.surfacePixels[spriteId], 0, l1, i2, i3, k3, width, height, j2, k2, spriteWidth, yInc);
         } catch (e) {
             console.log('error in sprite clipping routine');
         }
@@ -1161,10 +1164,11 @@ class Surface {
                 }
             }
 
-            this.plotScale(this.pixels, this.surfacePixels[spriteId], 0, i2, j2, j3, l3, width, height, k2, l2, k1, yInc, colour);
+            this._plotScale_from14(this.pixels, this.surfacePixels[spriteId], 0, i2, j2, j3, l3, width, height, k2, l2, k1, yInc, colour);
             return;
         } catch (e) {
             console.log('error in sprite clipping routine');
+            console.error(e);
         }
     }
 
@@ -1276,7 +1280,7 @@ class Surface {
         }
     }
 
-    plotScale(dest, src, i, j, k, destPos, i1, j1, k1, l1, i2, j2, k2) {
+    _plotScale_from13(dest, src, i, j, k, destPos, i1, j1, k1, l1, i2, j2, k2) {
         try {
             let l2 = j;
 
@@ -1380,7 +1384,7 @@ class Surface {
         }
     }
 
-    plotScale(target, pixels, i, j, k, l, i1, width, height, l1, i2, j2, yInc, colour) {
+    _plotScale_from14(target, pixels, i, j, k, l, i1, width, height, l1, i2, j2, yInc, colour) {
         let i3 = colour >> 16 & 0xff;
         let j3 = colour >> 8 & 0xff;
         let k3 = colour & 0xff;
@@ -1509,7 +1513,7 @@ class Surface {
 
         for (let i7 = k6; i7 <= l6; i7++) {
             this.anIntArray340[i7] = 99999999;
-            this.anIntArray341[i7] = 0xfa0a1f01;
+            this.anIntArray341[i7] = -99999999;
         }
 
         let i8 = 0;
@@ -1517,6 +1521,7 @@ class Surface {
         let i9 = 0;
         let j9 = this.spriteWidth[sprite];
         let k9 = this.spriteHeight[sprite];
+
         i2 = 0;
         j2 = 0;
         i3 = j9 - 1;
@@ -1647,6 +1652,7 @@ class Surface {
                 this.anIntArray342[j10] = j8;
                 this.anIntArray344[j10] = l8;
             }
+
             if (l7 > this.anIntArray341[j10]) {
                 this.anIntArray341[j10] = l7;
                 this.anIntArray343[j10] = j8;
@@ -1754,7 +1760,7 @@ class Surface {
             i = ai1[(k >> 17) + (l >> 17) * l1];
 
             if (i !== 0) {
-                pixels[j++] = i;
+                this.pixels[j++] = i;
             } else {
                 j++;
             }
@@ -1812,8 +1818,8 @@ class Surface {
                     l2 = ((fullHeight - (k5 * h) % fullHeight << 16) / h) | 0;
                 }
 
-                w = (((((spriteWidth[sprite] << 16) - k2) + j3) - 1) / j3) | 0;
-                h = (((((spriteHeight[sprite] << 16) - l2) + k3) - 1) / k3) | 0;
+                w = (((((this.spriteWidth[sprite] << 16) - k2) + j3) - 1) / j3) | 0;
+                h = (((((this.spriteHeight[sprite] << 16) - l2) + k3) - 1) / k3) | 0;
             }
 
             let j4 = y * this.width2;
@@ -1853,7 +1859,7 @@ class Surface {
                     this._transparentSpritePlot_from16A(pixels, this.spriteColoursUsed[sprite], this.spriteColourList[sprite], 0, k2, l2, j4, w, h, j3, k3, width, colour1, i3, l3, i5);
                     return;
                 } else {
-                    this.transparentSpritePlot_from16A(pixels, this.spriteColoursUsed[sprite], this.spriteColourList[sprite], 0, (this.spriteWidth[sprite] << 16) - k2 - 1, l2, j4, w, h, -j3, k3, width, colour1, i3, l3, i5);
+                    this._transparentSpritePlot_from16A(pixels, this.spriteColoursUsed[sprite], this.spriteColourList[sprite], 0, (this.spriteWidth[sprite] << 16) - k2 - 1, l2, j4, w, h, -j3, k3, width, colour1, i3, l3, i5);
                     return;
                 }
             }
@@ -1877,6 +1883,7 @@ class Surface {
             }
         } catch (e) {
             console.log('error in sprite clipping routine');
+            console.error(e);
         }
     }
 
@@ -1893,15 +1900,17 @@ class Surface {
                 let k5 = k2 >> 16;
                 let l5 = i1;
 
-                if (k5 < boundsTopX) {
-                    let i6 = boundsTopX - k5;
+                if (k5 < this.boundsTopX) {
+                    let i6 = this.boundsTopX - k5;
+
                     l5 -= i6;
-                    k5 = boundsTopX;
+                    k5 = this.boundsTopX;
                     j += k1 * i6;
                 }
 
-                if (k5 + l5 >= boundsBottomX) {
-                    let j6 = (k5 + l5) - boundsBottomX;
+                if (k5 + l5 >= this.boundsBottomX) {
+                    let j6 = (k5 + l5) - this.boundsBottomX;
+
                     l5 -= j6;
                 }
 
@@ -2016,15 +2025,15 @@ class Surface {
                 let k5 = k2 >> 16;
                 let l5 = i1;
 
-                if (k5 < boundsTopX) {
-                    let i6 = boundsTopX - k5;
+                if (k5 < this.boundsTopX) {
+                    let i6 = this.boundsTopX - k5;
                     l5 -= i6;
-                    k5 = boundsTopX;
+                    k5 = this.boundsTopX;
                     j += k1 * i6;
                 }
 
-                if (k5 + l5 >= boundsBottomX) {
-                    let j6 = (k5 + l5) - boundsBottomX;
+                if (k5 + l5 >= this.boundsBottomX) {
+                    let j6 = (k5 + l5) - this.boundsBottomX;
                     l5 -= j6;
                 }
                 
@@ -2036,6 +2045,7 @@ class Surface {
 
                         if (i !== 0) {
                             i = colours[i];
+
                             let j3 = i >> 16 & 0xff;
                             let k3 = i >> 8 & 0xff;
                             let l3 = i & 0xff;

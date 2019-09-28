@@ -496,7 +496,7 @@ class mudclient extends GameConnection {
 
         let textColour = 0;
 
-        if (reportAbuseOffence === 1) {
+        if (this.reportAbuseOffence === 1) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -506,7 +506,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('1: Offensive language', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 2) {
+        if (this.reportAbuseOffence === 2) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -516,7 +516,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('2: Item scamming', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 3) {
+        if (this.reportAbuseOffence === 3) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -526,7 +526,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('3: Password scamming', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 4) {
+        if (this.reportAbuseOffence === 4) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -536,7 +536,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('4: Bug abuse', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 5) {
+        if (this.reportAbuseOffence === 5) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -546,7 +546,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('5: Jagex Staff impersonation', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 6) {
+        if (this.reportAbuseOffence === 6) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -556,7 +556,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('6: Account sharing/trading', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 7) {
+        if (this.reportAbuseOffence === 7) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -566,7 +566,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('7: Macroing', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 8) {
+        if (this.reportAbuseOffence === 8) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -576,7 +576,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('8: Mutiple logging in', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 9) {
+        if (this.reportAbuseOffence === 9) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -586,7 +586,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('9: Encouraging others to break rules', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 10) {
+        if (this.reportAbuseOffence === 10) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -596,7 +596,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('10: Misuse of customer support', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 11) {
+        if (this.reportAbuseOffence === 11) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -606,7 +606,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringCenter('11: Advertising / website', 256, y, 1, textColour);
         y += 14;
 
-        if (reportAbuseOffence === 12) {
+        if (this.reportAbuseOffence === 12) {
             this.surface.drawBoxEdge(66, y - 12, 380, 15, 0xffffff);
             textColour = 0xff8000;
         } else {
@@ -4652,7 +4652,7 @@ class mudclient extends GameConnection {
             }
 
             if (this.mouseButtonClick === 1 && this.tabMagicPrayer === 1) {
-                let l1 = this.panelMagic.getListEntryIndex(controlListMagic);
+                let l1 = this.panelMagic.getListEntryIndex(this.controlListMagic);
 
                 if (l1 !== -1) {
                     let l2 = this.playerStatBase[5];
@@ -5837,7 +5837,7 @@ class mudclient extends GameConnection {
             this.messageHistoryTimeout[k] = this.messageHistoryTimeout[k - 1];
         }
 
-        this.messageHistory[0] = this.message;
+        this.messageHistory[0] = message;
         this.messageHistoryTimeout[0] = 300;
 
         if (type === 2) {
