@@ -62,7 +62,7 @@ class GameShell {
 
         GameShell.gameFrame = this.canvas.getContext('2d');
 
-        this.canvas.addEventListener('dragstart', this.mouseDragged.bind(this));
+        this.canvas.addEventListener('drag', this.mouseDragged.bind(this));
         this.canvas.addEventListener('mousedown', this.mousePressed.bind(this));
         this.canvas.addEventListener('contextmenu', this.mousePressed.bind(this));
         this.canvas.addEventListener('mousemove', this.mouseMoved.bind(this));
@@ -237,8 +237,10 @@ class GameShell {
         while (this.stopTimeout >= 0) {
             let k1 = j;
             let lastSleep = sleep;
+
             j = 300;
             sleep = 1;
+
             let time = Date.now();
 
             if (this.timings[i] === 0) {
@@ -277,7 +279,7 @@ class GameShell {
             let k2 = 0;
 
             while (i1 < 256) {
-                this.handleInputs();
+                await this.handleInputs();
                 i1 += j;
 
                 if (++k2 > this.maxDrawTime) {

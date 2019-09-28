@@ -818,7 +818,7 @@ class World {
 
         let stride;
 
-        for (let step = stride = this.routeVia.get(x, y); x !== startX || y !== startY; step = this.routeVia.get.get(x, y)) {
+        for (let step = stride = this.routeVia.get(x, y); x !== startX || y !== startY; step = this.routeVia.get(x, y)) {
             if (step !== stride) {
                 stride = step;
                 routeX[readPtr] = x;

@@ -85,6 +85,7 @@ class GameConnection extends GameShell {
             this.clientStream.maxReadTries = GameConnection.maxReadTries;
 
             let l = Utility.usernameToHash(u);
+
             this.clientStream.newPacket(C_OPCODES.SESSION);
             this.clientStream.putByte(l.shiftRight(16).and(31).toInt());
             this.clientStream.flushPacket();
@@ -102,8 +103,10 @@ class GameConnection extends GameShell {
             let ai = new Int32Array(4);
             ai[0] = (Math.random() * 99999999) | 0;
             ai[1] = (Math.random() * 99999999) | 0;
-            ai[2] = (sessId >> 32);
-            ai[3] = sessId;
+            ai[2] = sessId.shiftRight(32).toInt();
+            ai[3] = sessId.toInt();
+
+            console.log(ai);
 
             this.clientStream.newPacket(C_OPCODES.LOGIN);
 
@@ -121,14 +124,14 @@ class GameConnection extends GameShell {
             this.clientStream.putInt(ai[1]);
             this.clientStream.putInt(ai[2]);
             this.clientStream.putInt(ai[3]);
-            this.clientStream.putInt(this.getLinkUID());
+            this.clientStream.putInt(0); // uuid
             this.clientStream.putString(u);
             this.clientStream.putString(p);
 
             this.clientStream.flushPacket();
             this.clientStream.seedIsaac(ai);
 
-            let resp = await clientStream.readStream();
+            let resp = await this.clientStream.readStream();
             console.log('login response:' + resp);
 
             if (resp === 25) {
@@ -316,16 +319,16 @@ class GameConnection extends GameShell {
         }
 
         //try {
-            clientStream.writePacket(20);
+        this.clientStream.writePacket(20);
         //} catch (e) {
         //    this.lostConnection();
         //    return;
         //}
 
-        let psize = clientStream.readPacket(incomingPacket);
+        let psize = await this.clientStream.readPacket(this.incomingPacket);
 
         if (psize > 0) {
-            let ptype = clientStream.isaacCommand(incomingPacket[0] & 0xff);
+            let ptype = this.clientStream.isaacCommand(this.incomingPacket[0] & 0xff);
             this.handlePacket(ptype, ptype, psize);
         }
     }

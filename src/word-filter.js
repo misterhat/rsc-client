@@ -124,8 +124,8 @@ class WordFilter {
         WordFilter.heywhathteufck(inputChars);
 
         for (let ignoreIdx = 0; ignoreIdx < WordFilter.ignoreList.length; ignoreIdx++) {
-            for (let inputIgnoreIdx = -1; (inputIgnoreIdx = input.indexOf(ignoreList[ignoreIdx], inputIgnoreIdx + 1)) !== -1;) {
-                let ignoreWordChars = toCharArray(ignoreList[ignoreIdx]);
+            for (let inputIgnoreIdx = -1; (inputIgnoreIdx = input.indexOf(WordFilter.ignoreList[ignoreIdx], inputIgnoreIdx + 1)) !== -1;) {
+                let ignoreWordChars = toCharArray(WordFilter.ignoreList[ignoreIdx]);
 
                 for (let ignorewordIdx = 0; ignorewordIdx < ignoreWordChars.length; ignorewordIdx++) {
                     inputChars[ignorewordIdx + inputIgnoreIdx] = ignoreWordChars[ignorewordIdx];
@@ -160,7 +160,7 @@ class WordFilter {
                     if (WordFilter.isLowerCase(current)) {
                         isUpperCase = false;
                     }
-                } else if (isUpperCase(current)) {
+                } else if (WordFilter.isUpperCase(current)) {
                     input[i] = ((current + 97) - 65);
                 }
             } else {
@@ -171,15 +171,15 @@ class WordFilter {
 
     static applyBadwordFilter(input) {
         for (let i = 0; i < 2; i++) {
-            for (let j = badList.length - 1; j >= 0; j--) {
-                WordFilter.applyWordFilter(input, badList[j], badCharIds[j]);
+            for (let j = WordFilter.badList.length - 1; j >= 0; j--) {
+                WordFilter.applyWordFilter(input, WordFilter.badList[j], WordFilter.badCharIds[j]);
             }
         }
     }
 
     static applyHostFilter(input) {
-        for (let i = hostList.length - 1; i >= 0; i--) {
-            WordFilter.applyWordFilter(input, hostList[i], hostCharIds[i]);
+        for (let i = WordFilter.hostList.length - 1; i >= 0; i--) {
+            WordFilter.applyWordFilter(input, WordFilter.hostList[i], WordFilter.hostCharIds[i]);
         }
     }
 

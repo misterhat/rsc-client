@@ -1057,7 +1057,6 @@ class GameModel {
 
             if (cameraPitch !== 0) {
                 let Y = y * pitchCos - z * pitchSin >> 15;
-                console.log(Y);
                 z = y * pitchSin + z * pitchCos >> 15;
                 y = Y;
             }

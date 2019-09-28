@@ -89,7 +89,7 @@ class ChatMessage {
             let currentChar = s.charCodeAt(k);
             let foundCharMapIdx = 0;
 
-            for (let n = 0; n < charmap.length; n++) {
+            for (let n = 0; n < ChatMessage.charMap.length; n++) {
                 if (currentChar !== ChatMessage.charMap[n]) {
                     continue;
                 }

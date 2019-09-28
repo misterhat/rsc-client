@@ -285,14 +285,14 @@ class Panel {
         this.surface.drawBoxEdge(x, y, width, height, this.colourRoundedBoxOut);
         this.surface.drawBoxEdge(x + 1, y + 1, width - 2, height - 2, this.colourRoundedBoxMid);
         this.surface.drawBoxEdge(x + 2, y + 2, width - 4, height - 4, this.colourRoundedBoxIn);
-        this.surface.drawSprite(x, y, 2 + Panel.baseSpriteStart);
-        this.surface.drawSprite((x + width) - 7, y, 3 + Panel.baseSpriteStart);
-        this.surface.drawSprite(x, (y + height) - 7, 4 + Panel.baseSpriteStart);
-        this.surface.drawSprite((x + width) - 7, (y + height) - 7, 5 + Panel.baseSpriteStart);
+        this.surface._drawSprite_from3(x, y, 2 + Panel.baseSpriteStart);
+        this.surface._drawSprite_from3((x + width) - 7, y, 3 + Panel.baseSpriteStart);
+        this.surface._drawSprite_from3(x, (y + height) - 7, 4 + Panel.baseSpriteStart);
+        this.surface._drawSprite_from3((x + width) - 7, (y + height) - 7, 5 + Panel.baseSpriteStart);
     }
 
     drawPicture(x, y, size) {
-        this.surface.drawSprite(x, y, size);
+        this.surface._drawSprite_from3(x, y, size);
     }
 
     drawLineHoriz(x, y, width) {
@@ -374,8 +374,8 @@ class Panel {
     drawListContainer(x, y, width, height, corner1, corner2) {
         let x2 = (x + width) - 12;
         this.surface.drawBoxEdge(x2, y, 12, height, 0);
-        this.surface.drawSprite(x2 + 1, y + 1, Panel.baseSpriteStart); // up arrow?
-        this.surface.drawSprite(x2 + 1, (y + height) - 12, 1 + Panel.baseSpriteStart); // down arrow?
+        this.surface._drawSprite_from3(x2 + 1, y + 1, Panel.baseSpriteStart); // up arrow?
+        this.surface._drawSprite_from3(x2 + 1, (y + height) - 12, 1 + Panel.baseSpriteStart); // down arrow?
         this.surface.drawLineHoriz(x2, y + 13, 12, 0);
         this.surface.drawLineHoriz(x2, (y + height) - 13, 12, 0);
         this.surface.drawGradient(x2 + 1, y + 14, 11, height - 27, this.colourScrollbarTop, this.colourScrollbarBottom);
@@ -782,9 +782,9 @@ class Panel {
     }
 
     removeListEntry(control, text, flag) {
-        let j = controlListEntryCount[control]++;
+        let j = this.controlListEntryCount[control]++;
 
-        if (j >= controlInputMaxLen[control]) {
+        if (j >= this.controlInputMaxLen[control]) {
             j--;
 
             this.controlListEntryCount[control]--;

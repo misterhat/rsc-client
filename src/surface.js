@@ -2303,7 +2303,9 @@ class Surface {
     plotLetter(ai, abyte0, i, j, k, l, i1, j1, k1) {
         try {
             let l1 = -(l >> 2);
+
             l = -(l & 3);
+
             for (let i2 = -i1; i2 < 0; i2++) {
                 for (let j2 = l1; j2 < 0; j2++) {
                     if (abyte0[j++] !== 0) {

@@ -41,7 +41,7 @@ class Packet {
         await this.readStreamBytes(len, 0, buff);
     }
 
-    readPacket(buff) {
+    async readPacket(buff) {
         try {
             this.readTries++;
 
@@ -54,25 +54,26 @@ class Packet {
             }
 
             if (this.length === 0 && this.availableStream() >= 2) {
-                this.length = this.readStream();
+                this.length = await this.readStream();
 
                 if (this.length >= 160) {
-                    this.length = (this.length - 160) * 256 + this.readStream();
+                    this.length = (this.length - 160) * 256 + await this.readStream();
                 }
             }
 
-            if (this.length > 0 && availableStream() >= this.length) {
+            if (this.length > 0 && this.availableStream() >= this.length) {
                 if (this.length >= 160) { 
-                    this.readBytes(this.length, buff);
+                    await this.readBytes(this.length, buff);
                 } else {
-                    buff[this.length - 1] = this.readStream() & 0xff;
+                    buff[this.length - 1] = await this.readStream() & 0xff;
 
                     if (this.length > 1) {
-                        this.readBytes(this.length - 1, buff);
+                        await this.readBytes(this.length - 1, buff);
                     }
                 }
 
-                let i = length;
+                let i = this.length;
+
                 this.length = 0;
                 this.readTries = 0;
 
@@ -198,7 +199,7 @@ class Packet {
         let l2 = await this.getShort();
         let l3 = await this.getShort();
 
-        return Long.fromInt(l).shiftLeft(48).add(l1 << 32).add(l2 << 16).add(l3);
+        return Long.fromInt(l).shiftLeft(48).add(Long.fromInt(l1).shiftLeft(32)).add(l2 << 16).add(l3);
     }
 
     putShort(i) {
@@ -210,7 +211,7 @@ class Packet {
         this.packetData[this.packetEnd++] = (i >> 24) & 0xff;
         this.packetData[this.packetEnd++] = (i >> 16) & 0xff;
         this.packetData[this.packetEnd++] = (i >> 8) & 0xff;
-        this.packetData[this.packetEnd++] =  i & 0xff;
+        this.packetData[this.packetEnd++] = i & 0xff;
     }
 
     async getShort() {
@@ -236,7 +237,7 @@ class Packet {
     }
 
     async getByte() {
-        return await this.readStream();
+        return await this.readStream() & 0xff;
     }
 
     flushPacket() {

@@ -1639,7 +1639,7 @@ class Scene {
                 let x = vx - ((w / 2) | 0);
                 let y = (this.baseY + vy) - h;
 
-                this.surface.spriteClipping(x + this.baseX, y, w, h, this.spriteId[l], tx, ((256 << this.viewDistance) / vz) | 0);
+                this.surface._spriteClipping_from7(x + this.baseX, y, w, h, this.spriteId[l], tx, ((256 << this.viewDistance) / vz) | 0);
 
                 if (this.mousePickingActive && this.mousePickedCount < this.mousePickedMax) {
                     x += ((this.spriteTranslateX[l] << this.viewDistance) / vz) | 0;
