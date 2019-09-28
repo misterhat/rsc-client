@@ -1,7 +1,7 @@
 const Utility = require('./utility');
 const Scene = require('./scene');
 
-const COLOUR_TRANSPARENT = 12345678
+const COLOUR_TRANSPARENT = 12345678;
 
 console.log('Scene in GameModel', Scene);
 
@@ -88,16 +88,16 @@ class GameModel {
         this.faceBoundFar = null;
 
         switch (args.length) {
-            case 2:
-                if (Array.isArray(args[0])) {
-                    return this._from2A(...args);
-                }
+        case 2:
+            if (Array.isArray(args[0])) {
+                return this._from2A(...args);
+            }
 
-                return this._from2(...args);
-            case 3:
-                return this._from3(...args);
-            case 7:
-                return this._from7(...args);
+            return this._from2(...args);
+        case 3:
+            return this._from3(...args);
+        case 7:
+            return this._from7(...args);
         }
     }
 
@@ -653,14 +653,14 @@ class GameModel {
     
     setLight(...args) {
         switch (args.length) {
-            case 6:
-                return this._setLight_from6(...args);
-            case 5:
-                return this._setLight_from5(...args);
-            case 4:
-                return this._setLight_from4(...args);
-            case 3:
-                return this._setLight_from3(...args);
+        case 6:
+            return this._setLight_from6(...args);
+        case 5:
+            return this._setLight_from5(...args);
+        case 4:
+            return this._setLight_from4(...args);
+        case 3:
+            return this._setLight_from3(...args);
         }
     }
 

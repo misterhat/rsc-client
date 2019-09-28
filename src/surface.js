@@ -137,8 +137,8 @@ class Surface {
 
         let k = 0;
 
-        for (let l = -height2; l < 0; l += 2) {
-            for (let i1 = -width2; i1 < 0; i1++) {
+        for (let l = -this.height2; l < 0; l += 2) {
+            for (let i1 = -this.width2; i1 < 0; i1++) {
                 this.pixels[k++] = 0;
             }
 
@@ -938,7 +938,7 @@ class Surface {
                 }
 
                 if ((this.spriteTranslateY[sprite] * scaleY) % k3 !== 0) {
-                    j2 = ((k3 - (spriteTranslateY[sprite] * scaleY) % k3 << 16) / scaleY) | 0;
+                    j2 = ((k3 - (this.spriteTranslateY[sprite] * scaleY) % k3 << 16) / scaleY) | 0;
                 }
 
                 scaleX = ((scaleX * (this.spriteWidth[sprite] - (i2 >> 16))) / i3) | 0;
@@ -1128,7 +1128,7 @@ class Surface {
         }
     }
 
-   _drawSprite_from10A(target, colourIdx, colours, srcPos, destPos, width, height, w2, h2, rowInc) {
+    _drawSprite_from10A(target, colourIdx, colours, srcPos, destPos, width, height, w2, h2, rowInc) {
         let l1 = -(width >> 2);
         width = -(width & 3);
 
@@ -1758,10 +1758,10 @@ class Surface {
                 }
 
                 if (!flag) {
-                    this._transparentSpritePlot_from16A(pixels, this.spriteColoursUsed[sprite], this.spriteColourList[sprite], 0, k2, l2, j4, w, h, j3, k3, width, colour1, i3, l3, i5);
+                    this._transparentSpritePlot_from16A(this.pixels, this.spriteColoursUsed[sprite], this.spriteColourList[sprite], 0, k2, l2, j4, w, h, j3, k3, width, colour1, i3, l3, i5);
                     return;
                 } else {
-                    this._transparentSpritePlot_from16A(pixels, this.spriteColoursUsed[sprite], this.spriteColourList[sprite], 0, (this.spriteWidth[sprite] << 16) - k2 - 1, l2, j4, w, h, -j3, k3, width, colour1, i3, l3, i5);
+                    this._transparentSpritePlot_from16A(this.pixels, this.spriteColoursUsed[sprite], this.spriteColourList[sprite], 0, (this.spriteWidth[sprite] << 16) - k2 - 1, l2, j4, w, h, -j3, k3, width, colour1, i3, l3, i5);
                     return;
                 }
             }
@@ -2090,7 +2090,7 @@ class Surface {
                 return;
             }
         } catch (e) {
-            console.error(e)
+            console.error(e);
         }
     }
 
@@ -2359,7 +2359,7 @@ Surface.gameFonts.fill(null);
 
 Surface.characterWidth = new Int32Array(256);
 
-let s = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:\'@#~,<.>/?\\| ';
+let s = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"\243$%^&*()-_=+[{]};:\'@#~,<.>/?\\| ';
 
 for (let i = 0; i < 256; i++) {
     let j = s.indexOf(String.fromCharCode(i));

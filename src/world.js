@@ -46,7 +46,7 @@ class World {
         this.tileDecoration = ndarray(new Int8Array(4 * 2304), [4, 2304]);
         this.routeVia = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [this.regionWidth, this.regionHeight]);
         this.wallsDiagonal = ndarray(new Int32Array(4 * 2304), [4, 2304]);
-        this.wallsEastWest = ndarray(new Int8Array(4 * 2304), [4, 2304])
+        this.wallsEastWest = ndarray(new Int8Array(4 * 2304), [4, 2304]);
         this.aBoolean592 = false;
         this.playerAlive = false;
         this.terrainHeightLocal = ndarray(new Int32Array(this.regionWidth * this.regionHeight), [this.regionWidth, this.regionHeight]);
@@ -490,14 +490,14 @@ class World {
 
     loadSection(...args) {
         switch (args.length) {
-            case 3:
-                return this._loadSection_from3(...args);
-            case 4:
-                if (typeof args[3] === 'number') {
-                    return this._loadSection_from4I(...args);
-                }
+        case 3:
+            return this._loadSection_from3(...args);
+        case 4:
+            if (typeof args[3] === 'number') {
+                return this._loadSection_from4I(...args);
+            }
 
-                return this._loadSection_from4(...args);
+            return this._loadSection_from4(...args);
         }
     }
 
@@ -531,7 +531,7 @@ class World {
 
     method407(i, j, k) {
         const adjacency = this.objectAdjacency.get(i, j);
-        this.objectAdjacency.set(i, j, adjacency & 0xffff - k)
+        this.objectAdjacency.set(i, j, adjacency & 0xffff - k);
     }
 
     getTerrainColour(x, y) {
@@ -671,10 +671,10 @@ class World {
 
     getTileDecoration(...args) {
         switch (args.length) {
-            case 3:
-                return this._getTileDecoration_from3(...args);
-            case 4:
-                return this._getTileDecoration_from4(...args);
+        case 3:
+            return this._getTileDecoration_from3(...args);
+        case 4:
+            return this._getTileDecoration_from4(...args);
         }
     }
 
@@ -873,10 +873,10 @@ class World {
 
     setObjectAdjacency(...args) {
         switch (args.length) {
-            case 4:
-                return this._setObjectAdjacency_from4(...args);
-            case 3:
-                return this._setObjectAdjacency_from3(...args);
+        case 4:
+            return this._setObjectAdjacency_from4(...args);
+        case 3:
+            return this._setObjectAdjacency_from3(...args);
         }
     }
 
@@ -1790,7 +1790,7 @@ class World {
         }
 
         if (GameData.objectType[id] === 1 || GameData.objectType[id] === 2) {
-            let l = getTileDirection(x, y);
+            let l = this.getTileDirection(x, y);
             let i1 = 0;
             let j1 = 0;
 

@@ -265,11 +265,12 @@ class GameConnection extends GameShell {
     }
 
     closeConnection() {
-        if (clientStream !== null) {
+        if (this.clientStream !== null) {
             try {
                 this.clientStream.newPacket(C_OPCODES.CLOSE_CONNECTION);
                 this.clientStream.flushPacket();
             } catch (e) {
+                console.error(e);
             }
         }
 
@@ -281,7 +282,7 @@ class GameConnection extends GameShell {
 
     lostConnection() {
         try {
-            throw new Exception('');
+            throw new Error('');
         } catch (e) {
             console.log('loast connection: ');
             console.error(e);
@@ -353,7 +354,7 @@ class GameConnection extends GameShell {
         if (opcode === S_OPCODES.FRIEND_LIST) {
             this.friendListCount = Utility.getUnsignedByte(this.incomingPacket[1]);
 
-            for (let k = 0; k < friendListCount; k++) {
+            for (let k = 0; k < this.friendListCount; k++) {
                 this.friendListHashes[k] = Utility.getUnsignedLong(this.incomingPacket, 2 + k * 9);
                 this.friendListOnline[k] = Utility.getUnsignedByte(this.incomingPacket[10 + k * 9]);
             }
@@ -367,12 +368,12 @@ class GameConnection extends GameShell {
             let online = this.incomingPacket[9] & 0xff;
 
             for (let i2 = 0; i2 < this.friendListCount; i2++) {
-                if (this.friendListHashes[i2] === hash) {
+                if (this.friendListHashes[i2].equals(hash)) {
                     if (this.friendListOnline[i2] === 0 && online !== 0) {
                         this.showServerMessage('@pri@' + Utility.hashToUsername(hash) + ' has logged in');
                     }
 
-                    if (friendListOnline[i2] !== 0 && online === 0) {
+                    if (this.friendListOnline[i2] !== 0 && online === 0) {
                         this.showServerMessage('@pri@' + Utility.hashTousername(hash) + ' has logged out');
                     }
 
@@ -412,7 +413,7 @@ class GameConnection extends GameShell {
             let from = Utility.getUnsignedLong(this.incomingPacket, 1);
             let k1 = Utility.getUnsignedInt(this.incomingPacket, 9); // is this some sort of message id ?
 
-            for (let j2 = 0; j2 < maxSocialListSize; j2++) {
+            for (let j2 = 0; j2 < this.maxSocialListSize; j2++) {
                 if (this.anIntArray629[j2] === k1) {
                     return;
                 }
@@ -467,7 +468,7 @@ class GameConnection extends GameShell {
         this.clientStream.putLong(l);
         this.clientStream.sendPacket();
 
-        for (let i = 0; i < ignoreListCount; i++) {
+        for (let i = 0; i < this.ignoreListCount; i++) {
             if (this.ignoreList[i].equals(l)) {
                 return;
             }
@@ -501,12 +502,12 @@ class GameConnection extends GameShell {
 
     friendAdd(s) {
         this.clientStream.newPacket(C_OPCODES.FRIEND_ADD);
-        this.clientStream.putLong(Utility.username2hash(s));
+        this.clientStream.putLong(Utility.usernameToHash(s));
         this.clientStream.sendPacket();
 
         let l = Utility.usernameToHash(s);
 
-        for (let i = 0; i < friendListCount; i++) {
+        for (let i = 0; i < this.friendListCount; i++) {
             if (this.friendListHashes[i].equals(l)) {
                 return;
             }
@@ -546,7 +547,7 @@ class GameConnection extends GameShell {
     }
 
     sendPrivateMessage(u, buff, len) {
-        this.clientStream.newPacket(C_OPCODES_PM);
+        this.clientStream.newPacket(C_OPCODES.PM);
         this.clientStream.putLong(u);
         this.clientStream.putBytes(buff, 0, len);
         this.clientStream.sendPacket();

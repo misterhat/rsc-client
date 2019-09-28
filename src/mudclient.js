@@ -671,7 +671,7 @@ class mudclient extends GameConnection {
     }
 
     walkTo(startX, startY, x1, y1, x2, y2, checkObjects, walkToAction) {
-        let steps = world.route(startX, startY, x1, y1, x2, y2, this.walkPathX, this.walkPathY, checkObjects);
+        let steps = this.world.route(startX, startY, x1, y1, x2, y2, this.walkPathX, this.walkPathY, checkObjects);
 
         if (steps === -1) {
             return false;
@@ -983,7 +983,7 @@ class mudclient extends GameConnection {
                 if (mouseX > 216 && mouseY > 30 && mouseX < 462 && mouseY < 235) {
                     let slot = (((mouseX - 217) / 49) | 0) + (((mouseY - 31) / 34) | 0) * 5;
 
-                    if (slot >= 0 && slot < inventoryItemsCount) {
+                    if (slot >= 0 && slot < this.inventoryItemsCount) {
                         let sendUpdate = false;
                         let itemCountAdd = 0;
                         let itemType = this.inventoryItemId[slot];
@@ -1028,7 +1028,7 @@ class mudclient extends GameConnection {
 
                             for (let j4 = 0; j4 < this.tradeItemsCount; j4++) {
                                 this.clientStream.putShort(this.tradeItems[j4]);
-                                this.clientStream.putInt(tradeItemCount[j4]);
+                                this.clientStream.putInt(this.tradeItemCount[j4]);
                             }
 
                             this.clientStream.sendPacket();
@@ -1159,7 +1159,7 @@ class mudclient extends GameConnection {
             this.surface.drawStringCenter('other player', dialogX + 217 + 35, dialogY + 256, 1, 0xffffff);
         }
 
-        for (let itemIndex = 0; itemIndex < inventoryItemsCount; itemIndex++) {
+        for (let itemIndex = 0; itemIndex < this.inventoryItemsCount; itemIndex++) {
             let slotX = 217 + dialogX + (itemIndex % 5) * 49;
             let slotY = 31 + dialogY + ((itemIndex / 5) | 0) * 34;
 
@@ -1185,13 +1185,13 @@ class mudclient extends GameConnection {
             }
         }
 
-        for (let itemIndex = 0; itemIndex < tradeRecipientItemsCount; itemIndex++) {
+        for (let itemIndex = 0; itemIndex < this.tradeRecipientItemsCount; itemIndex++) {
             let slotX = 9 + dialogX + (itemIndex % 4) * 49;
             let slotY = 156 + dialogY + ((itemIndex / 4) | 0) * 34;
 
             this.surface._spriteClipping_from9(slotX, slotY, 48, 32, this.spriteItem + GameData.itemPicture[this.tradeRecipientItems[itemIndex]], GameData.itemMask[this.tradeRecipientItems[itemIndex]], 0, 0, false);
 
-            if (GameData.itemStackable[tradeRecipientItems[itemIndex]] === 0) {
+            if (GameData.itemStackable[this.tradeRecipientItems[itemIndex]] === 0) {
                 this.surface.drawString(String.valueOf(this.tradeRecipientItemCount[itemIndex]), slotX + 1, slotY + 10, 1, 0xffff00);
             }
 
@@ -1572,12 +1572,12 @@ class mudclient extends GameConnection {
 
             if (this.inputPmFinal.length > 0) {
                 let s1 = this.inputPmFinal;
-                this.inputPmCurrent = "";
-                this.inputPmFinal = "";
+                this.inputPmCurrent = '';
+                this.inputPmFinal = '';
                 this.showDialogSocialInput = 0;
 
                 let k = ChatMessage.scramble(s1);
-                this.sendPrivateMessage(privateMessageTarget, ChatMessage.scrambledBytes, k);
+                this.sendPrivateMessage(this.privateMessageTarget, ChatMessage.scrambledBytes, k);
                 s1 = ChatMessage.descramble(ChatMessage.scrambledBytes, 0, k);
                 s1 = WordFilter.filter(s1);
 
@@ -1585,7 +1585,7 @@ class mudclient extends GameConnection {
             }
         }
 
-        if (showDialogSocialInput === 3) {
+        if (this.showDialogSocialInput === 3) {
             this.surface.drawBox(106, i, 300, 70, 0);
             this.surface.drawBoxEdge(106, i, 300, 70, 0xffffff);
             i += 20;
@@ -1766,11 +1766,11 @@ class mudclient extends GameConnection {
                 let s1 = null;
 
                 if (this.welcomeRecoverySetDays === 0) {
-                    s1 = "Earlier today";
+                    s1 = 'Earlier today';
                 } else if (this.welcomeRecoverySetDays === 1) {
-                    s1 = "Yesterday";
+                    s1 = 'Yesterday';
                 } else {
-                    s1 = this.welcomeRecoverySetDays + " days ago";
+                    s1 = this.welcomeRecoverySetDays + ' days ago';
                 }
 
                 this.surface.drawStringCenter(s1 + ' you changed your recovery questions', 256, y, 1, 0xff8000);
@@ -2170,7 +2170,7 @@ class mudclient extends GameConnection {
                 this.clientStream.sendPacket();
                 this.inputTextCurrent = '';
                 this.inputTextFinal = '';
-                sleepingStatusText = 'Please wait...';
+                this.sleepingStatusText = 'Please wait...';
             }
 
             this.lastMouseButtonDown = 0;
@@ -2621,7 +2621,7 @@ class mudclient extends GameConnection {
                         return;
                     }
 
-                    if (inventoryEquipped[itemIndex] === 1) {
+                    if (this.inventoryEquipped[itemIndex] === 1) {
                         this.menuItemText1[this.menuItemsCount] = 'Remove';
                         this.menuItemText2[this.menuItemsCount] = '@lre@' + GameData.itemName[i2];
                         this.menuItemID[this.menuItemsCount] = 620;
@@ -2745,7 +2745,7 @@ class mudclient extends GameConnection {
                 k1 = 0xffff00;
             }
 
-            this.surface.drawString(this.menuItemText1[this.menuIndices[j]] + " " + this.menuItemText2[this.menuIndices[j]], l, j1, 1, k1);
+            this.surface.drawString(this.menuItemText1[this.menuIndices[j]] + ' ' + this.menuItemText2[this.menuIndices[j]], l, j1, 1, k1);
         }
     }
 
@@ -3061,24 +3061,24 @@ class mudclient extends GameConnection {
             flag = true;
         }
 
-        let j2 = i2 * 3 + npcWalkModel[((character.stepCount / GameData.npcWalkModel[character.npcId]) | 0) % 4];
+        let j2 = i2 * 3 + this.npcWalkModel[((character.stepCount / GameData.npcWalkModel[character.npcId]) | 0) % 4];
 
         if (character.animationCurrent === 8) {
             i2 = 5;
             l1 = 2;
             flag = false;
             x -= ((GameData.npcCombatAnimation[character.npcId] * ty) / 100) | 0;
-            j2 = i2 * 3 + npcCombatModelArray1[(((loginTimer / (GameData.npcCombatModel[character.npcId]) | 0) - 1)) % 8];
+            j2 = i2 * 3 + this.npcCombatModelArray1[(((this.loginTimer / (GameData.npcCombatModel[character.npcId]) | 0) - 1)) % 8];
         } else if (character.animationCurrent === 9) {
             i2 = 5;
             l1 = 2;
             flag = true;
             x += ((GameData.npcCombatAnimation[character.npcId] * ty) / 100) | 0;
-            j2 = i2 * 3 + npcCombatModelArray2[((loginTimer / GameData.npcCombatModel[character.npcId]) | 0) % 8];
+            j2 = i2 * 3 + this.npcCombatModelArray2[((this.loginTimer / GameData.npcCombatModel[character.npcId]) | 0) % 8];
         }
 
         for (let k2 = 0; k2 < 12; k2++) {
-            let l2 = npcAnimationArray[l1][k2];
+            let l2 = this.npcAnimationArray[l1][k2];
             let k3 = GameData.npcSprite[character.npcId][l2];
 
             if (k3 >= 0) {
@@ -3931,13 +3931,13 @@ class mudclient extends GameConnection {
             this.surface.drawStringCenter('other player', dialogX + 217 + 35, dialogY + 256, 1, 0xffffff);
         }
 
-        for (let i = 0; i < inventoryItemsCount; i++) {
+        for (let i = 0; i < this.inventoryItemsCount; i++) {
             let x = 217 + dialogX + (i % 5) * 49;
             let y = 31 + dialogY + ((i / 5) | 0) * 34;
             this.surface._spriteClipping_from9(x, y, 48, 32, this.spriteItem + GameData.itemPicture[this.inventoryItemId[i]], GameData.itemMask[this.inventoryItemId[i]], 0, 0, false);
 
-            if (GameData.itemStackable[inventoryItemId[i]] === 0) {
-                this.surface.drawString(inventoryItemStackCount[i].toString(), x + 1, y + 10, 1, 0xffff00);
+            if (GameData.itemStackable[this.inventoryItemId[i]] === 0) {
+                this.surface.drawString(this.inventoryItemStackCount[i].toString(), x + 1, y + 10, 1, 0xffff00);
             }
         }
 
@@ -4023,7 +4023,7 @@ class mudclient extends GameConnection {
             let gameModel = this.objectModel[objIdx];
 
             try {
-                let objType = objectDirection[objIdx];
+                let objType = this.objectDirection[objIdx];
                 let objW = 0;
                 let objH = 0;
 
@@ -4767,7 +4767,7 @@ class mudclient extends GameConnection {
         this.surface.drawStringRight('Close window', dialogX + 406, dialogY + 10, 1, colour);
         this.surface.drawString('Shops stock in green', dialogX + 2, dialogY + 24, 1, 65280);
         this.surface.drawString('Number you own in blue', dialogX + 135, dialogY + 24, 1, 65535);
-        this.surface.drawString('Your money: ' + getInventoryCount(10) + 'gp', dialogX + 280, dialogY + 24, 1, 0xffff00);
+        this.surface.drawString('Your money: ' + this.getInventoryCount(10) + 'gp', dialogX + 280, dialogY + 24, 1, 0xffff00);
         let itemIndex = 0;
 
         for (let row = 0; row < 5; row++) {
@@ -5055,9 +5055,9 @@ class mudclient extends GameConnection {
                     let dx = character.currentX;
                     let dy = character.currentY;
                     let delev = -((this.world.getElevation(dx, dy) - GameData.npcHeight[character.npcId] / 2) | 0);
-                    let rx = ((sx * player.projectileRange + dx * (projectileMaxRange - player.projectileRange)) / this.projectileMaxRange) | 0;
-                    let rz = ((selev * player.projectileRange + delev * (projectileMaxRange - player.projectileRange)) / this.projectileMaxRange) | 0;
-                    let ry = ((sy * player.projectileRange + dy * (projectileMaxRange - player.projectileRange)) / this.projectileMaxRange) | 0;
+                    let rx = ((sx * player.projectileRange + dx * (this.projectileMaxRange - player.projectileRange)) / this.projectileMaxRange) | 0;
+                    let rz = ((selev * player.projectileRange + delev * (this.projectileMaxRange - player.projectileRange)) / this.projectileMaxRange) | 0;
+                    let ry = ((sy * player.projectileRange + dy * (this.projectileMaxRange - player.projectileRange)) / this.projectileMaxRange) | 0;
 
                     this.scene.addSprite(this.spriteProjectile + player.incomingProjectileSprite, rx, rz, ry, 32, 32, 0);
                     this.spriteCount++;
@@ -5201,7 +5201,7 @@ class mudclient extends GameConnection {
             if (j6 > 0) {
                 let wildlvl = 1 + ((j6 / 6) | 0);
 
-                this.surface._drawSprite_from3(453, this.gameHeight - 56, spriteMedia + 13);
+                this.surface._drawSprite_from3(453, this.gameHeight - 56, this.spriteMedia + 13);
                 this.surface.drawStringCenter('Wilderness', 465, this.gameHeight - 20, 1, 0xffff00);
                 this.surface.drawStringCenter('Level: ' + wildlvl, 465, this.gameHeight - 7, 1, 0xffff00);
 
@@ -5417,7 +5417,7 @@ class mudclient extends GameConnection {
         }
 
         if (this.panelAppearance.isClicked(this.controlButtonAppearanceAccept)) {
-            this.clientStream.newPacket(C_OPCODE.APPEARANCE);
+            this.clientStream.newPacket(C_OPCODES.APPEARANCE);
             this.clientStream.putByte(this.appearanceHeadGender);
             this.clientStream.putByte(this.appearanceHeadType);
             this.clientStream.putByte(this.appearanceBodyGender);
@@ -5695,7 +5695,7 @@ class mudclient extends GameConnection {
             j = 0xff0000;
         }
 
-        this.surface.drawStringCenter("Click here to close window", 256, i, 1, j);
+        this.surface.drawStringCenter('Click here to close window', 256, i, 1, j);
 
         if (this.mouseButtonClick === 1) {
             if (j === 0xff0000) {
@@ -6021,7 +6021,7 @@ class mudclient extends GameConnection {
 
         if (this.referid === 0) {
             this.surface.drawString('from the runescape.com front page', x, y, 0, 0xffffff);
-        } else if (referid === 1) {
+        } else if (this.referid === 1) {
             this.surface.drawString('from the link below the gamewindow', x, y, 0, 0xffffff);
         } else {
             this.surface.drawString('from the runescape front webpage', x, y, 0, 0xffffff);
@@ -6296,7 +6296,7 @@ class mudclient extends GameConnection {
             this.scene.removeModel(this.objectModel[i]);
 
             let j1 = GameData.getModelIndex(s);
-            let gameModel = gameModels[j1].copy();
+            let gameModel = this.gameModels[j1].copy();
 
             this.scene.addModel(gameModel);
             gameModel._setLight_from6(true, 48, 48, -50, -10, -50);
@@ -6784,11 +6784,11 @@ class mudclient extends GameConnection {
 
     showLoginScreenStatus(s, s1) {
         if (this.loginScreen === 1) {
-            this.panelLoginNewuser.updateText(this.anInt827, s + " " + s1);
+            this.panelLoginNewuser.updateText(this.anInt827, s + ' ' + s1);
         }
 
         if (this.loginScreen === 2) {
-            this.panelLoginExistinguser.updateText(this.controlLoginStatus, s + " " + s1);
+            this.panelLoginExistinguser.updateText(this.controlLoginStatus, s + ' ' + s1);
         }
 
         this.loginUserDisp = s1;
@@ -6799,7 +6799,7 @@ class mudclient extends GameConnection {
     lostConnection() {
         this.systemUpdate = 0;
 
-        if (logoutTimeout !== 0) {
+        if (this.logoutTimeout !== 0) {
             this.resetLoginVars();
             return;
         } else {
@@ -7476,7 +7476,7 @@ class mudclient extends GameConnection {
                 offset += 8;
 
                 for (let l20 = 0; l20 < j16; l20++) {
-                    let character_1 = npcsCache[l20];
+                    let character_1 = this.npcsCache[l20];
                     let l27 = Utility.getBitMask(pdata, offset, 1);
 
                     offset++;
@@ -7581,7 +7581,7 @@ class mudclient extends GameConnection {
 
                     i10 += 2;
 
-                    let character = npcsServer[i21];
+                    let character = this.npcsServer[i21];
                     let j28 = Utility.getUnsignedByte(pdata[i10]);
 
                     i10++;
@@ -7812,7 +7812,7 @@ class mudclient extends GameConnection {
 
                 let l3 = 2;
 
-                for (let i11 = 0; i11 < tradeRecipientItemsCount; i11++) {
+                for (let i11 = 0; i11 < this.tradeRecipientItemsCount; i11++) {
                     this.tradeRecipientItems[i11] = Utility.getUnsignedShort(pdata, l3);
                     l3 += 2;
                     this.tradeRecipientItemCount[i11] = Utility.getUnsignedInt(pdata, l3);
@@ -7893,7 +7893,7 @@ class mudclient extends GameConnection {
 
                 }
 
-                if (this.shopSelectedItemIndex >= 0 && this.shopSelectedItemIndex < 40 && shopItem[this.shopSelectedItemIndex] !== this.shopSelectedItemType) {
+                if (this.shopSelectedItemIndex >= 0 && this.shopSelectedItemIndex < 40 && this.shopItem[this.shopSelectedItemIndex] !== this.shopSelectedItemType) {
                     this.shopSelectedItemIndex = -1;
                     this.shopSelectedItemType = -2;
                 }
@@ -8264,7 +8264,7 @@ class mudclient extends GameConnection {
             }
 
             if (opcode === S_OPCODES.WELCOME) {
-                if (!welcomScreenAlreadyShown) {
+                if (!this.welcomScreenAlreadyShown) {
                     this.welcomeLastLoggedInIP = Utility.getUnsignedInt(pdata, 1);
                     this.welcomeLastLoggedInDays = Utility.getUnsignedShort(pdata, 5);
                     this.welcomeRecoverySetDays = pdata[7] & 0xff;
@@ -8306,7 +8306,7 @@ class mudclient extends GameConnection {
                 this.isSleeping = true;
                 this.inputTextCurrent = '';
                 this.inputTextFinal = '';
-                this.surface.readSleepWord(spriteTexture + 1, pdata);
+                this.surface.readSleepWord(this.spriteTexture + 1, pdata);
                 this.sleepingStatusText = null;
 
                 return;
@@ -8649,7 +8649,7 @@ class mudclient extends GameConnection {
                             }
                         } else if (this.selectedItemInventoryIndex >= 0) {
                             this.menuItemText1[this.menuItemsCount] = 'Use ' + this.selectedItemName + ' with';
-                            this.menuItemText2[this.menuItemsCount] = '@lre@' + GameData.itemName[groundItemId[idx]];
+                            this.menuItemText2[this.menuItemsCount] = '@lre@' + GameData.itemName[this.groundItemId[idx]];
                             this.menuItemID[this.menuItemsCount] = 210;
                             this.menuItemX[this.menuItemsCount] = this.groundItemX[idx];
                             this.menuItemY[this.menuItemsCount] = this.groundItemY[idx];
@@ -8836,7 +8836,7 @@ class mudclient extends GameConnection {
                     }
                 } else if (gameModel !== null && gameModel.key >= 0) {
                     let idx = gameModel.key;
-                    let id = objectId[idx];
+                    let id = this.objectId[idx];
 
                     if (!this.objectAlreadyInMenu[idx]) {
                         if (this.selectedSpell >= 0) {

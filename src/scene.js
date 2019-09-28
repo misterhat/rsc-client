@@ -3,7 +3,7 @@ const Long = require('long');
 const Polygon = require('./polygon');
 const Scanline = require('./scanline');
 
-const COLOUR_TRANSPARENT = 12345678
+const COLOUR_TRANSPARENT = 12345678;
 
 //console.log('GameModel from Scene', GameModel);
 
