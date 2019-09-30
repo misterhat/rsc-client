@@ -998,7 +998,7 @@ class WordFilter {
 
         return hash;
     }
-};
+}
 
 WordFilter.DEBUGTLD = false;
 WordFilter.DEBUGWORD = false;

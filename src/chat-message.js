@@ -1,7 +1,7 @@
 const C_A = 'a'.charCodeAt(0);
 const C_AT = '@'.charCodeAt(0);
 const C_DOT = '.'.charCodeAt(0);
-const C_EXCLM = '.'.charCodeAt(0);
+const C_EXCLM = '!'.charCodeAt(0);
 const C_PRCNT = '%'.charCodeAt(0);
 const C_SPACE = ' '.charCodeAt(0);
 const C_Z = 'z'.charCodeAt(0);
@@ -69,7 +69,7 @@ class ChatMessage {
                 }
             }
 
-            return fromCharArray(ChatMessage.chars).slice(0, newLen);
+            return fromCharArray(ChatMessage.chars.slice(0, newLen));
         } catch (e) {
             return '.';
         }

@@ -81,6 +81,8 @@ class GameConnection extends GameShell {
                 this.showLoginScreenStatus('Please wait...', 'Connecting to server');
             }
 
+            console.log('test');
+
             this.clientStream = new ClientStream(await this.createSocket(this.server, this.port), this);
             this.clientStream.maxReadTries = GameConnection.maxReadTries;
 
@@ -92,6 +94,8 @@ class GameConnection extends GameShell {
 
             let sessId = await this.clientStream.getLong();
             this.sessionID = sessId;
+
+            console.log('test2');
 
             if (sessId.equals(0)) {
                 this.showLoginScreenStatus('Login server offline.', 'Please try again in a few mins');
@@ -260,6 +264,20 @@ class GameConnection extends GameShell {
         } catch (e) {
             console.error(e);
         }
+
+        if (this.autoLoginTimeout > 0) {
+            await sleep(5000);
+            this.autoLoginTimeout--;
+            await this.login(this.username, this.password, reconnecting);
+        }
+
+        if (reconnecting) {
+            this.username = '';
+            this.password = '';
+            this.resetLoginVars();
+        } else {
+            this.showLoginScreenStatus('Sorry! Unable to connect.', 'Check internet settings or try another world');
+        }
     }
 
     closeConnection() {
@@ -278,7 +296,7 @@ class GameConnection extends GameShell {
         this.resetLoginVars();
     }
 
-    lostConnection() {
+    async lostConnection() {
         try {
             throw new Error('');
         } catch (e) {
@@ -288,7 +306,7 @@ class GameConnection extends GameShell {
 
         console.log('Lost connection');
         this.autoLoginTimeout = 10;
-        this.login(this.username, this.password, true);
+        await this.login(this.username, this.password, true);
     }
 
     drawTextBox(s, s1) {
@@ -317,12 +335,12 @@ class GameConnection extends GameShell {
             this.clientStream.sendPacket();
         }
 
-        //try {
-        this.clientStream.writePacket(20);
-        //} catch (e) {
-        //    this.lostConnection();
-        //    return;
-        //}
+        try {
+            this.clientStream.writePacket(20);
+        } catch (e) {
+            await this.lostConnection();
+            return;
+        }
 
         let psize = await this.clientStream.readPacket(this.incomingPacket);
 

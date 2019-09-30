@@ -6,20 +6,35 @@ class ClientStream extends Packet {
         this.closing = false;
         this.closed = false;
         this.socket = socket;
-        /*instream = socket.getInputStream();
-        outstream = socket.getOutputStream();
-        closed = false;*/
+    }
+
+    closeStream() {
+        this.closing = true;
+        this.socket.close();
+        this.closed = true;
     }
 
     async readStream() {
+        if (this.closing) {
+            return 0;
+        }
+
         return await this.socket.read();
     } 
 
     availableStream() {
+        if (this.closing) {
+            return 0;
+        }
+
         return this.socket.available();
     }
 
     async readStreamBytes(len, off, buff) {
+        if (this.closing) {
+            return;
+        }
+
         await this.socket.readBytes(buff, off, len);
     }
 

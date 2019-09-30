@@ -103,6 +103,7 @@ class Packet {
             this.packetetStart = 0;
             this.packetetEnd = 3;
             this.socketException = false;
+
             throw Error(this.socketExceptionMessage);
         }
 
@@ -124,7 +125,7 @@ class Packet {
     sendPacket() {
         if (this.isaacOutgoing !== null) {
             let i = this.packetData[this.packetStart + 2] & 0xff;
-            this.packetData[this.packetStart + 2] = (i + isaacOutgoing.getNextValue()) & 0xff;
+            this.packetData[this.packetStart + 2] = (i + this.isaacOutgoing.getNextValue()) & 0xff;
         }
 
         // what the fuck is this even for? legacy?
@@ -135,7 +136,7 @@ class Packet {
         let j = this.packetEnd - this.packetStart - 2;
 
         if (j >= 160) {
-            this.packetData[this.packetStart] = (160 + j / 256) & 0xff;
+            this.packetData[this.packetStart] = (160 + ((j / 256) | 0)) & 0xff;
             this.packetData[this.packetStart + 1] = (j & 0xff);
         } else {
             this.packetData[this.packetStart] = j & 0xff;

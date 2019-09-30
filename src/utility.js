@@ -31,7 +31,7 @@ class Utility {
     }
 
     static getSignedShort(abyte0, i) {
-        let j = Utility.getUnsignedByte(abyte0[i]) * 256 + Utility.getUnsignedByte(abyte0[i + 1]);
+        let j = (Utility.getUnsignedByte(abyte0[i]) * 256 + Utility.getUnsignedByte(abyte0[i + 1])) | 0;
 
         if (j > 32767) {
             j -= 0x10000;
@@ -169,7 +169,7 @@ class Utility {
         filename = filename.toUpperCase();
 
         for (let k = 0; k < filename.length; k++) {
-            wantedHash = (((wantedHash * 61) | 0) + filename.charAt(k)) - 32;
+            wantedHash = (((wantedHash * 61) | 0) + filename.charCodeAt(k)) - 32;
         }
 
         let offset = 2 + numEntries * 10;
@@ -195,7 +195,7 @@ class Utility {
         filename = filename.toUpperCase();
 
         for (let k = 0; k < filename.length; k++) {
-            wantedHash = (((wantedHash * 61) | 0) + filename.charAt(k)) - 32;
+            wantedHash = (((wantedHash * 61) | 0) + filename.charCodeAt(k)) - 32;
         }
 
         let offset = 2 + numEntries * 10;

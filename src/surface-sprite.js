@@ -11,14 +11,17 @@ class SurfaceSprite extends Surface {
             this.mudclientref.drawTeleportBubble(x, y, w, h, id - 50000, tx, ty);
             return;
         }
+
         if (id >= 40000) {
             this.mudclientref.drawItem(x, y, w, h, id - 40000, tx, ty);
             return;
         }
+
         if (id >= 20000) {
             this.mudclientref.drawNpc(x, y, w, h, id - 20000, tx, ty);
             return;
         }
+
         if (id >= 5000) {
             this.mudclientref.drawPlayer(x, y, w, h, id - 5000, tx, ty);
             return;

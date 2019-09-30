@@ -1,74 +1,200 @@
-const WebSocketClient = require('./web-socket-client');
-
 class Socket {
     constructor(host, port) {
         this.host = host;
         this.port = port;
 
-        this.client = new WebSocketClient();
-        this.lastArrayBufferReceived = null;
-        this.lastArrayBufferReadIndex = 0;
+        this.client = null;
+        this.connected = false;
+
+        // amount of bytes are left to read since last read call (in total)
+        this.bytesAvailable = 0; 
+        // the message buffers that arrive from the websocket
+        this.buffers = [];
+        // the current buffer we're reading
+        this.currentBuffer = null;
+        // amount of bytes we read in current buffer
+        this.offset = 0;
+        // amount of bytes left in current buffer
+        this.bytesLeft = 0;
     }
 
-    async connect() {
-        await this.client.connect(`ws://${this.host}:${this.port}`);
+    connect() {
+        return new Promise((resolve, reject) => {
+            this.client = new WebSocket(`ws://${this.host}:${this.port}`, 'binary');
+            this.client.binaryType = 'arraybuffer';
+
+            const onError = err => {
+                this.client.removeEventListener('error', onError);
+                reject(err);
+            };
+
+            this.client.addEventListener('error', onError);
+
+            this.client.addEventListener('close', () => {
+                this.connected = false;
+                this.clear();
+            });
+
+            this.client.addEventListener('message', msg => {
+                this.buffers.push(new Int8Array(msg.data));
+                this.bytesAvailable += msg.data.byteLength;
+                this.refreshCurrentBuffer();
+            });
+
+            this.client.addEventListener('open', () => {
+                this.connected = true;
+                this.client.removeEventListener('error', onError);
+                resolve();
+            });
+        });
     }
 
-    write(bytes, off = 0, len) {
-        len = len || bytes.length;
+    write(bytes, off = 0, len = -1) {
+        if (!this.connected) {
+            throw new Error('attempting to write to closed socket');
+        }
+
+        len = len === -1 ? bytes.length : len;
         this.client.send(bytes.slice(off, off + len));
     }
 
+    refreshCurrentBuffer() {
+        if (this.bytesLeft === 0) {
+            this.currentBuffer = this.buffers.pop();
+            console.log('refreshing buffers and setting it to ', this.currentBuffer);
+
+            this.offset = 0;
+
+            if (this.currentBuffer && this.currentBuffer.length) {
+                this.bytesLeft = this.currentBuffer.length;
+            } else {
+                this.bytesLeft = 0;
+            }
+        }
+    }
+
+    // read the first byte available in the buffer, or wait for one to be sent
+    // if none are available.
     async read() {
-        if (this.lastArrayBufferReceived !== null && this.lastArrayBufferReadIndex < this.lastArrayBufferReceived.length) {
-            // if last byte in array then reset lastArrayBufferReadIndex
-            return this.readFromLastArray();
+        if (!this.connected) {
+            return -1;
         }
 
-        const received = await this.client.receive();
+        if (this.bytesLeft > 0) {
+            this.bytesLeft--;
+            this.bytesAvailable--;
 
-        if (received instanceof Error) {
-            throw received;
+            return this.currentBuffer[this.offset++];
         }
 
-        this.lastArrayBufferReceived = new Int8Array(received);
-        this.lastArrayBufferReadIndex = 0;
+        return new Promise((resolve, reject) => {
+            let onClose, onError, onNextMessage;
 
-        return this.readFromLastArray();
+            onClose = () => {
+                this.client.removeEventListener('error', onError);
+                this.client.removeEventListener('close', onClose);
+                this.client.removeEventListener('message', onNextMessage);
+                resolve(-1);
+            };
+
+            onError = err => {
+                this.client.removeEventListener('error', onError);
+                this.client.removeEventListener('close', onClose);
+                this.client.removeEventListener('message', onNextMessage);
+                reject(err);
+            };
+
+            onNextMessage = () => {
+                this.client.removeEventListener('error', onError);
+                this.client.removeEventListener('close', onClose);
+                this.client.removeEventListener('message', onNextMessage);
+                Promise.resolve().then(async () => {
+                    resolve(await this.read());
+                });
+            };
+
+            this.client.addEventListener('error', onError);
+            this.client.addEventListener('close', onClose);
+            this.client.addEventListener('message', onNextMessage);
+        });
     }
 
-    readFromLastArray() {
-        // if last byte in array then reset lastArrayBufferReadIndex
-        if (this.lastArrayBufferReadIndex === this.lastArrayBufferReceived.length - 1) {
-            const lastByte = this.lastArrayBufferReceived[this.lastArrayBufferReadIndex];
-            this.lastArrayBufferReadIndex = 0;
-            this.lastArrayBufferReceived = null;
-
-            return lastByte;
+    // read multiple bytes (specified by `len`) and put them into the `dest` 
+    // array at specified `off` (0 by default).
+    async readBytes(dest, off = 0, len = -1) {
+        if (!this.connected) {
+            return -1;
         }
 
-        return this.lastArrayBufferReceived[this.lastArrayBufferReadIndex++];
-    }
+        len = len === -1 ? dest.length : len;
 
-    async readBytes(b, off, len) {
-        let c = await this.read();
-        b[off] = c;
-        let i = 1;
+        if (this.bytesAvailable >= len) {
+            while (len > 0) {
+                dest[off++] = this.currentBuffer[this.offset++];
+                this.bytesLeft -= 1;
+                this.bytesAvailable -= 1;
+                len -= 1;
 
-        for (; i < len; i++) {
-            c = await this.read();
-            b[off + i] = c;
+                if (this.bytesLeft === 0) {
+                    this.refreshCurrentBuffer();
+                }
+            }
+
+            return;
         }
 
-        return i;
+        return new Promise((resolve, reject) => {
+            let onClose, onError, onNextMessage;
+
+            onClose = () => {
+                this.client.removeEventListener('error', onError);
+                this.client.removeEventListener('close', onClose);
+                this.client.removeEventListener('message', onNextMessage);
+                resolve(-1);
+            };
+
+            onError = err => {
+                this.client.removeEventListener('error', onError);
+                this.client.removeEventListener('close', onClose);
+                this.client.removeEventListener('message', onNextMessage);
+                reject(err);
+            };
+
+            onNextMessage = () => {
+                this.client.removeEventListener('error', onError);
+                this.client.removeEventListener('close', onClose);
+                this.client.removeEventListener('message', onNextMessage);
+                Promise.resolve().then(async () => {
+                    resolve(await this.readBytes(dest, off, len));
+                });
+            };
+
+            this.client.addEventListener('error', onError);
+            this.client.addEventListener('close', onClose);
+            this.client.addEventListener('message', onNextMessage);
+        });
     }
 
-    async close() {
-        await this.client.disconnect();
+    close() {
+        if (!this.connected) {
+            return;
+        }
+
+        this.client.close();
     }
 
     available() {
-        return this.client.dataBytesAvailable;
+        return this.bytesAvailable;
+    }
+
+    clear() {
+        if (this.connected) {
+            this.client.close();
+        }
+
+        this.currentBuffer = null;
+        this.buffers.length = 0;
+        this.bytesLeft = 0;
     }
 }
 

@@ -1864,6 +1864,11 @@ class mudclient extends GameConnection {
 
         for (let i = 0; i < this.playerCount; i++) {
             let character = this.players[i];
+
+            if (!character) {
+                console.log('null character at ', i, this.playerCount);
+            }
+
             let k = (character.waypointCurrent + 1) % 10;
 
             if (character.movingStep !== k) {
@@ -2224,12 +2229,13 @@ class mudclient extends GameConnection {
                 } else if (/^::logout/i.test(s)) {
                     this.closeConnection();
                 } else if (/^::lostcon$/i.test(s)) {
-                    this.lostConnection();
+                    await this.lostConnection();
                 } else {
                     this.sendCommandString(s.substring(2));
                 }
             } else {
                 let k3 = ChatMessage.scramble(s);
+                console.log('chat message length ', k3);
                 this.sendChatMessage(ChatMessage.scrambledBytes, k3);
                 s = ChatMessage.descramble(ChatMessage.scrambledBytes, 0, k3);
                 s = WordFilter.filter(s);
@@ -6795,14 +6801,14 @@ class mudclient extends GameConnection {
         this.resetTimings();
     }
 
-    lostConnection() {
+    async lostConnection() {
         this.systemUpdate = 0;
 
         if (this.logoutTimeout !== 0) {
             this.resetLoginVars();
             return;
         } else {
-            super.lostConnection();
+            await super.lostConnection();
             return;
         }
     }
@@ -6861,8 +6867,6 @@ class mudclient extends GameConnection {
 
     // TODO: let's move each of these to its own file
     handleIncomingPacket(opcode, ptype, psize, pdata) {
-        console.log('incoming packet ', opcode, ptype, psize);
-
         try {
             if (opcode === S_OPCODES.REGION_PLAYERS) {
                 this.knownPlayerCount = this.playerCount;
@@ -8954,7 +8958,7 @@ class mudclient extends GameConnection {
 
             if (this.loggedIn === 0) {
                 this.mouseActionTimeout = 0;
-                this.handleLoginScreenInput();
+                await this.handleLoginScreenInput();
             }
 
             if (this.loggedIn === 1) {
@@ -9019,7 +9023,7 @@ class mudclient extends GameConnection {
         }
     }
 
-    handleLoginScreenInput() {
+    async handleLoginScreenInput() {
         if (this.worldFullTimeout > 0) {
             this.worldFullTimeout--;
         }
@@ -9060,7 +9064,7 @@ class mudclient extends GameConnection {
             if (this.panelLoginExistinguser.isClicked(this.controlLoginPass) || this.panelLoginExistinguser.isClicked(this.controlLoginOk)) {
                 this.loginUser = this.panelLoginExistinguser.getText(this.controlLoginUser);
                 this.loginPass = this.panelLoginExistinguser.getText(this.controlLoginPass);
-                this.login(this.loginUser, this.loginPass, false);
+                await this.login(this.loginUser, this.loginPass, false);
             }
         }
     }
