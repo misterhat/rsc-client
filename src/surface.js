@@ -3,19 +3,12 @@ const Utility = require('./utility');
 const C_0 = '0'.charCodeAt(0);
 const C_9 = '9'.charCodeAt(0);
 
+// canvas imagedata needs an alpha channel, but the client only uses rgb
 function fixPixel(pixel) {
-    //let c = (pixel >> 24) & 255;
     let r = (pixel >> 16) & 255;
     let g = (pixel >> 8) & 255;
     let b = pixel & 255;
-
-    /*if (c !== 0) {
-        return pixel;
-    }*/
-
-    // //invert
-    let a = 255;
-    //const black = (255 << 24);
+    let a = 255; // alpha always 255
 
     return (a << 24) + (b << 16) + (g << 8) + r;
 }
@@ -61,13 +54,7 @@ class Surface {
 
         this.imageData = component._graphics.ctx.getImageData(0, 0, width, height);
         this.bufferedPixels = new Int32Array(width * height);
-        //this.image = component.createImage();
-
-        //this.ctx = component.canvas.getContext('2d);
-        //this.imageData = this.ctx.getImageData(0, 0, width, height)
-        // or...
-        // this.canvas = document.createElement('canvas');
-        // this.canvas.width = width; this.canvas.height = height; etc..
+        this.pixelBytes = new Uint8ClampedArray(this.bufferedPixels.buffer);
 
         this.setComplete();
     }
@@ -85,7 +72,7 @@ class Surface {
             this.bufferedPixels[i] = fixPixel(this.pixels[i]);
         }
 
-        this.imageData.data.set(new Uint8ClampedArray(this.bufferedPixels.buffer), 0, 0);
+        this.imageData.data.set(this.pixelBytes, 0, 0);
     }
 
     setBounds(x1, y1, x2, y2) {

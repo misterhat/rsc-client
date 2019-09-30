@@ -1185,7 +1185,7 @@ class World {
 
                     if (flag && GameData.wallObjectAdjacent[k3 - 1] !== 0) {
                         const adjacency = this.objectAdjacency.get(i2, k2);
-                        this.objectAdjacency.set(adjacency | 1);
+                        this.objectAdjacency.set(i2, k2, adjacency | 1);
 
                         if (k2 > 0) {
                             this._setObjectAdjacency_from3(i2, k2 - 1, 4);
@@ -1204,7 +1204,7 @@ class World {
 
                     if (flag && GameData.wallObjectAdjacent[k3 - 1] !== 0) {
                         const adjacency = this.objectAdjacency.get(i2, k2);
-                        this.objectAdjacency.set(adjacency | 2);
+                        this.objectAdjacency.set(i2, k2, adjacency | 2);
 
                         if (i2 > 0) {
                             this._setObjectAdjacency_from3(i2 - 1, k2, 8); 
@@ -1223,7 +1223,7 @@ class World {
 
                     if (flag && GameData.wallObjectAdjacent[k3 - 1] !== 0) { 
                         const adjacency = this.objectAdjacency.get(i2, k2);
-                        this.objectAdjacency.set(adjacency | 0x20);
+                        this.objectAdjacency.set(i2, k2, adjacency | 0x20);
                     }
 
                     if (flag) {
@@ -1238,7 +1238,7 @@ class World {
 
                     if (flag && GameData.wallObjectAdjacent[k3 - 12001] !== 0) {
                         const adjacency = this.objectAdjacency.get(i2, k2);
-                        this.objectAdjacency.set(adjacency | 0x10);
+                        this.objectAdjacency.set(i2, k2, adjacency | 0x10);
                     }
 
                     if (flag) {
