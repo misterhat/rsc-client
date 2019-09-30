@@ -59,10 +59,8 @@ class Socket {
     }
 
     refreshCurrentBuffer() {
-        if (this.bytesLeft === 0) {
-            this.currentBuffer = this.buffers.pop();
-            console.log('refreshing buffers and setting it to ', this.currentBuffer);
-
+        if (this.bytesLeft === 0 && this.bytesAvailable > 0) {
+            this.currentBuffer = this.buffers.shift();
             this.offset = 0;
 
             if (this.currentBuffer && this.currentBuffer.length) {

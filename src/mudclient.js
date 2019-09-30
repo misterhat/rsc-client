@@ -1865,8 +1865,10 @@ class mudclient extends GameConnection {
         for (let i = 0; i < this.playerCount; i++) {
             let character = this.players[i];
 
+            // TODO figure out why this is happening
             if (!character) {
                 console.log('null character at ', i, this.playerCount);
+                return;
             }
 
             let k = (character.waypointCurrent + 1) % 10;
@@ -2235,7 +2237,6 @@ class mudclient extends GameConnection {
                 }
             } else {
                 let k3 = ChatMessage.scramble(s);
-                console.log('chat message length ', k3);
                 this.sendChatMessage(ChatMessage.scrambledBytes, k3);
                 s = ChatMessage.descramble(ChatMessage.scrambledBytes, 0, k3);
                 s = WordFilter.filter(s);
@@ -5308,7 +5309,7 @@ class mudclient extends GameConnection {
             let s = GameData.animationName[j];
 
             for (let k = 0; k < j; k++) {
-                if (GameData.animationName[k].toLowerCase() === s.toLowerCase()) {
+                if (GameData.animationName[k].toLowerCase() !== s.toLowerCase()) {
                     continue;
                 }
 

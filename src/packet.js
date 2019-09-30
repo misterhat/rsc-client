@@ -159,8 +159,6 @@ class Packet {
         for (let k = 0; k < len; k++) {
             this.packetData[this.packetEnd++] = src[srcPos + k] & 0xff;
         }
-
-        this.packetEnd += len;
     }
 
     putLong(l) {
@@ -224,7 +222,6 @@ class Packet {
 
     putString(s) {
         this.putBytes(toCharArray(s), 0, s.length);
-        this.packetEnd += s.length;
     }
 
     putByte(i) {

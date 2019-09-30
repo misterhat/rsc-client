@@ -60,6 +60,7 @@ class Surface {
         this.spriteTranslateY = new Int32Array(limit);
 
         this.imageData = component._graphics.ctx.getImageData(0, 0, width, height);
+        this.bufferedPixels = new Int32Array(width * height);
         //this.image = component.createImage();
 
         //this.ctx = component.canvas.getContext('2d);
@@ -80,11 +81,11 @@ class Surface {
     }
 
     setComplete() {
-        //imageconsumer.setPixels(0, 0, width2, height2, colorModel, pixels, 0, width2);
-        //imageconsumer.imageComplete(2)
-        // TODO: put pixels into our instance of canvas...
+        for (let i = 0; i < this.area; i += 1) {
+            this.bufferedPixels[i] = fixPixel(this.pixels[i]);
+        }
 
-        this.imageData.data.set(new Uint8ClampedArray(this.pixels.map(fixPixel).buffer), 0, 0);
+        this.imageData.data.set(new Uint8ClampedArray(this.bufferedPixels.buffer), 0, 0);
     }
 
     setBounds(x1, y1, x2, y2) {
