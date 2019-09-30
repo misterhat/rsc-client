@@ -891,7 +891,7 @@ class World {
         this.setTiles();
 
         if (this.parentModel === null) {
-            this.parentModel = new GameModel(18688, 18688, true, true, false, false, true);
+            this.parentModel = GameModel._from7(18688, 18688, true, true, false, false, true);
         }
 
         if (flag) {

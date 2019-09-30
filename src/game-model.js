@@ -6,7 +6,7 @@ const COLOUR_TRANSPARENT = 12345678;
 console.log('Scene in GameModel', Scene);
 
 class GameModel {
-    constructor(...args) {
+    constructor() {
         this.numVertices = 0;
         this.numFaces = 0;
         this.transformState = 0;
@@ -87,7 +87,7 @@ class GameModel {
         this.faceBoundNear = null;
         this.faceBoundFar = null;
 
-        switch (args.length) {
+        /*switch (args.length) {
         case 2:
             if (Array.isArray(args[0])) {
                 return this._from2A(...args);
@@ -98,136 +98,142 @@ class GameModel {
             return this._from3(...args);
         case 7:
             return this._from7(...args);
+        }*/
+    }
+
+    static _from2(numVertices, numFaces) {
+        let gameModel = new GameModel();
+
+        gameModel.transformState = 1;
+        gameModel.visible = true;
+        gameModel.textureTranslucent = false;
+        gameModel.transparent = false;
+        gameModel.key = -1;
+        gameModel.autocommit = false;
+        gameModel.isolated = false;
+        gameModel.unlit = false;
+        gameModel.unpickable = false;
+        gameModel.projected = false;
+        gameModel.magic = COLOUR_TRANSPARENT;
+        gameModel.diameter = COLOUR_TRANSPARENT;
+        gameModel.lightDirectionX = 180;
+        gameModel.lightDirectionY = 155;
+        gameModel.lightDirectionZ = 95;
+        gameModel.lightDirectionMagnitude = 256;
+        gameModel.lightDiffuse = 512;
+        gameModel.lightAmbience = 32;
+
+        gameModel.allocate(numVertices, numFaces);
+
+        // TODO: maybe make gameModel an int32 array
+        gameModel.faceTransStateThing = [];
+
+        for (let v = 0; v < gameModel.numFaces; v++) {
+            gameModel.faceTransStateThing.push(new Int32Array([0]));
         }
+
+        return gameModel;
     }
 
-    _from2(numVertices, numFaces) {
-        this.transformState = 1;
-        this.visible = true;
-        this.textureTranslucent = false;
-        this.transparent = false;
-        this.key = -1;
-        this.autocommit = false;
-        this.isolated = false;
-        this.unlit = false;
-        this.unpickable = false;
-        this.projected = false;
-        this.magic = COLOUR_TRANSPARENT;
-        this.diameter = COLOUR_TRANSPARENT;
-        this.lightDirectionX = 180;
-        this.lightDirectionY = 155;
-        this.lightDirectionZ = 95;
-        this.lightDirectionMagnitude = 256;
-        this.lightDiffuse = 512;
-        this.lightAmbience = 32;
+    static _from2A(pieces, count) {
+        let gameModel = new GameModel();
 
-        this.allocate(numVertices, numFaces);
+        gameModel.transformState = 1;
+        gameModel.visible = true;
+        gameModel.textureTranslucent = false;
+        gameModel.transparent = false;
+        gameModel.key = -1;
+        gameModel.autocommit = false;
+        gameModel.isolated = false;
+        gameModel.unlit = false;
+        gameModel.unpickable = false;
+        gameModel.projected = false;
+        gameModel.magic = COLOUR_TRANSPARENT;
+        gameModel.diameter = COLOUR_TRANSPARENT;
+        gameModel.lightDirectionX = 180;
+        gameModel.lightDirectionY = 155;
+        gameModel.lightDirectionZ = 95;
+        gameModel.lightDirectionMagnitude = 256;
+        gameModel.lightDiffuse = 512;
+        gameModel.lightAmbience = 32;
 
-        // TODO: maybe make this an int32 array
-        this.faceTransStateThing = [];
+        gameModel.merge(pieces, count, true);
 
-        for (let v = 0; v < this.numFaces; v++) {
-            this.faceTransStateThing.push(new Int32Array([0]));
-        }
-
-        return this;
+        return gameModel;
     }
 
-    _from2A(pieces, count) {
-        this.transformState = 1;
-        this.visible = true;
-        this.textureTranslucent = false;
-        this.transparent = false;
-        this.key = -1;
-        this.autocommit = false;
-        this.isolated = false;
-        this.unlit = false;
-        this.unpickable = false;
-        this.projected = false;
-        this.magic = COLOUR_TRANSPARENT;
-        this.diameter = COLOUR_TRANSPARENT;
-        this.lightDirectionX = 180;
-        this.lightDirectionY = 155;
-        this.lightDirectionZ = 95;
-        this.lightDirectionMagnitude = 256;
-        this.lightDiffuse = 512;
-        this.lightAmbience = 32;
+    static _from3(data, offset, unused) {
+        let gameModel = new GameModel();
 
-        this.merge(pieces, count, true);
-
-        return this;
-    }
-
-    _from3(data, offset, unused) {
-        this.transformState = 1;
-        this.visible = true;
-        this.textureTranslucent = false;
-        this.transparent = false;
-        this.key = -1;
-        this.autocommit = false;
-        this.isolated = false;
-        this.unlit = false;
-        this.unpickable = false;
-        this.projected = false;
-        this.magic = COLOUR_TRANSPARENT;
-        this.diameter = COLOUR_TRANSPARENT;
-        this.lightDirectionX = 180;
-        this.lightDirectionY = 155;
-        this.lightDirectionZ = 95;
-        this.lightDirectionMagnitude = 256;
-        this.lightDiffuse = 512;
-        this.lightAmbience = 32;
+        gameModel.transformState = 1;
+        gameModel.visible = true;
+        gameModel.textureTranslucent = false;
+        gameModel.transparent = false;
+        gameModel.key = -1;
+        gameModel.autocommit = false;
+        gameModel.isolated = false;
+        gameModel.unlit = false;
+        gameModel.unpickable = false;
+        gameModel.projected = false;
+        gameModel.magic = COLOUR_TRANSPARENT;
+        gameModel.diameter = COLOUR_TRANSPARENT;
+        gameModel.lightDirectionX = 180;
+        gameModel.lightDirectionY = 155;
+        gameModel.lightDirectionZ = 95;
+        gameModel.lightDirectionMagnitude = 256;
+        gameModel.lightDiffuse = 512;
+        gameModel.lightAmbience = 32;
 
         let j = Utility.getUnsignedShort(data, offset);
         offset += 2;
         let k = Utility.getUnsignedShort(data, offset);
         offset += 2;
 
-        this.allocate(j, k);
+        gameModel.allocate(j, k);
 
-        this.faceTransStateThing = [];
-        this.faceTransStateThing.length = k;
+        gameModel.faceTransStateThing = [];
+        gameModel.faceTransStateThing.length = k;
         
         for (let i = 0; i < k; i += 1) {
-            this.faceTransStateThing[i] = [0];
+            gameModel.faceTransStateThing[i] = [0];
         }
 
         for (let l = 0; l < j; l++) {
-            this.vertexX[l] = Utility.getSignedShort(data, offset);
+            gameModel.vertexX[l] = Utility.getSignedShort(data, offset);
             offset += 2;
         }
 
         for (let i1 = 0; i1 < j; i1++) {
-            this.vertexY[i1] = Utility.getSignedShort(data, offset);
+            gameModel.vertexY[i1] = Utility.getSignedShort(data, offset);
             offset += 2;
         }
 
         for (let j1 = 0; j1 < j; j1++) {
-            this.vertexZ[j1] = Utility.getSignedShort(data, offset);
+            gameModel.vertexZ[j1] = Utility.getSignedShort(data, offset);
             offset += 2;
         }
 
-        this.numVertices = j;
+        gameModel.numVertices = j;
 
         for (let k1 = 0; k1 < k; k1++) {
-            this.faceNumVertices[k1] = data[offset++] & 0xff;
+            gameModel.faceNumVertices[k1] = data[offset++] & 0xff;
         }
 
         for (let l1 = 0; l1 < k; l1++) {
-            this.faceFillFront[l1] = Utility.getSignedShort(data, offset);
+            gameModel.faceFillFront[l1] = Utility.getSignedShort(data, offset);
             offset += 2;
 
-            if (this.faceFillFront[l1] === 32767) {
-                this.faceFillFront[l1] = this.magic;
+            if (gameModel.faceFillFront[l1] === 32767) {
+                gameModel.faceFillFront[l1] = gameModel.magic;
             }
         }
 
         for (let i2 = 0; i2 < k; i2++) {
-            this.faceFillBack[i2] = Utility.getSignedShort(data, offset);
+            gameModel.faceFillBack[i2] = Utility.getSignedShort(data, offset);
             offset += 2;
 
-            if (this.faceFillBack[i2] === 32767) {
-                this.faceFillBack[i2] = this.magic;
+            if (gameModel.faceFillBack[i2] === 32767) {
+                gameModel.faceFillBack[i2] = gameModel.magic;
             }
         }
 
@@ -235,79 +241,83 @@ class GameModel {
             let k2 = data[offset++] & 0xff;
 
             if (k2 === 0) {
-                this.faceIntensity[j2] = 0;
+                gameModel.faceIntensity[j2] = 0;
             } else {
-                this.faceIntensity[j2] = this.magic;
+                gameModel.faceIntensity[j2] = gameModel.magic;
             }
         }
 
         for (let l2 = 0; l2 < k; l2++) {
-            this.faceVertices[l2] = new Int32Array(this.faceNumVertices[l2]);
+            gameModel.faceVertices[l2] = new Int32Array(gameModel.faceNumVertices[l2]);
 
-            for (let i3 = 0; i3 < this.faceNumVertices[l2]; i3++) {
+            for (let i3 = 0; i3 < gameModel.faceNumVertices[l2]; i3++) {
                 if (j < 256) {
-                    this.faceVertices[l2][i3] = data[offset++] & 0xff;
+                    gameModel.faceVertices[l2][i3] = data[offset++] & 0xff;
                 } else {
-                    this.faceVertices[l2][i3] = Utility.getUnsignedShort(data, offset);
+                    gameModel.faceVertices[l2][i3] = Utility.getUnsignedShort(data, offset);
                     offset += 2;
                 }
             }
         }
 
-        this.numFaces = k;
-        this.transformState = 1;
+        gameModel.numFaces = k;
+        gameModel.transformState = 1;
         
-        return this;
+        return gameModel;
     }
 
-    _from6(pieces, count, autocommit, isolated, unlit, unpickable) {
-        this.transformState = 1;
-        this.visible = true;
-        this.textureTranslucent = false;
-        this.transparent = false;
-        this.key = -1;
-        this.projected = false;
-        this.magic = COLOUR_TRANSPARENT;
-        this.diameter = COLOUR_TRANSPARENT;
-        this.lightDirectionX = 180;
-        this.lightDirectionY = 155;
-        this.lightDirectionZ = 95;
-        this.lightDirectionMagnitude = 256;
-        this.lightDiffuse = 512;
-        this.lightAmbience = 32;
-        this.autocommit = autocommit;
-        this.isolated = isolated;
-        this.unlit = unlit;
-        this.unpickable = unpickable;
+    static _from6(pieces, count, autocommit, isolated, unlit, unpickable) {
+        let gameModel = new GameModel();
 
-        this.merge(pieces, count, false);
+        gameModel.transformState = 1;
+        gameModel.visible = true;
+        gameModel.textureTranslucent = false;
+        gameModel.transparent = false;
+        gameModel.key = -1;
+        gameModel.projected = false;
+        gameModel.magic = COLOUR_TRANSPARENT;
+        gameModel.diameter = COLOUR_TRANSPARENT;
+        gameModel.lightDirectionX = 180;
+        gameModel.lightDirectionY = 155;
+        gameModel.lightDirectionZ = 95;
+        gameModel.lightDirectionMagnitude = 256;
+        gameModel.lightDiffuse = 512;
+        gameModel.lightAmbience = 32;
+        gameModel.autocommit = autocommit;
+        gameModel.isolated = isolated;
+        gameModel.unlit = unlit;
+        gameModel.unpickable = unpickable;
 
-        return this;
+        gameModel.merge(pieces, count, false);
+
+        return gameModel;
     }
 
-    _from7(numVertices, numFaces, autocommit, isolated, unlit, unpickable, projected) {
-        this.transformState = 1;
-        this.visible = true;
-        this.textureTranslucent = false;
-        this.transparent = false;
-        this.key = -1;
-        this.magic = COLOUR_TRANSPARENT;
-        this.diameter = COLOUR_TRANSPARENT;
-        this.lightDirectionX = 180;
-        this.lightDirectionY = 155;
-        this.lightDirectionZ = 95;
-        this.lightDirectionMagnitude = 256;
-        this.lightDiffuse = 512;
-        this.lightAmbience = 32;
-        this.autocommit = autocommit;
-        this.isolated = isolated;
-        this.unlit = unlit;
-        this.unpickable = unpickable;
-        this.projected = projected;
+    static _from7(numVertices, numFaces, autocommit, isolated, unlit, unpickable, projected) {
+        let gameModel = new GameModel();
 
-        this.allocate(numVertices, numFaces);
+        gameModel.transformState = 1;
+        gameModel.visible = true;
+        gameModel.textureTranslucent = false;
+        gameModel.transparent = false;
+        gameModel.key = -1;
+        gameModel.magic = COLOUR_TRANSPARENT;
+        gameModel.diameter = COLOUR_TRANSPARENT;
+        gameModel.lightDirectionX = 180;
+        gameModel.lightDirectionY = 155;
+        gameModel.lightDirectionZ = 95;
+        gameModel.lightDirectionMagnitude = 256;
+        gameModel.lightDiffuse = 512;
+        gameModel.lightAmbience = 32;
+        gameModel.autocommit = autocommit;
+        gameModel.isolated = isolated;
+        gameModel.unlit = unlit;
+        gameModel.unpickable = unpickable;
+        gameModel.projected = projected;
 
-        return this;
+        gameModel.allocate(numVertices, numFaces);
+
+        return gameModel;
     }
 
     allocate(numV, numF) {
@@ -544,7 +554,7 @@ class GameModel {
                 pieceNV[i] = pieceMaxVertices;
             }
 
-            pieces.push(new GameModel(pieceNV[i], pieceNF[i], true, true, true, pickable, true));
+            pieces.push(GameModel._from7(pieceNV[i], pieceNF[i], true, true, true, pickable, true));
             pieces[i].lightDiffuse = this.lightDiffuse;
             pieces[i].lightAmbience = this.lightAmbience;
         }
@@ -1099,7 +1109,7 @@ class GameModel {
     copy(...args) {
         if (!args || !args.length) {
             let pieces = [this]; 
-            gameModel = new GameModel(pieces, 1);
+            gameModel = GameModel._from2A(pieces, 1);
             gameModel.depth = this.depth;
             gameModel.transparent = this.transparent;
 
@@ -1109,7 +1119,7 @@ class GameModel {
         const [autocommit, isolated, unlit, pickable] = args;
 
         let pieces = [this];
-        let gameModel = new GameModel(pieces, 1, autocommit, isolated, unlit, pickable);
+        let gameModel = GameModel._from6(pieces, 1, autocommit, isolated, unlit, pickable);
         gameModel.depth = this.depth;
 
         return gameModel;

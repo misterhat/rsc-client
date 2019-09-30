@@ -4453,7 +4453,7 @@ class mudclient extends GameConnection {
 
         this.scene = new Scene(this.surface, 15000, 15000, 1000);
         // this used to be in scene's constructor
-        this.scene.view = new GameModel(1000 * 1000, 1000); 
+        this.scene.view = GameModel._from2(1000 * 1000, 1000); 
         // TODO: see if this gives a different result with parseInt
         this.scene.setBounds((this.gameWidth / 2) | 0, (this.gameHeight / 2) | 0, (this.gameWidth / 2) | 0, (this.gameHeight / 2) | 0, this.gameWidth, this.const_9);
         this.scene.clipFar3d = 2400;
@@ -5670,9 +5670,9 @@ class mudclient extends GameConnection {
             let k = Utility.getDataFileOffset(GameData.modelName[j] + '.ob3', abyte0);
 
             if (k !== 0) {
-                this.gameModels[j] = new GameModel(abyte0, k, true);
+                this.gameModels[j] = GameModel._from3(abyte0, k, true);
             } else {
-                this.gameModels[j] = new GameModel(1, 1);
+                this.gameModels[j] = GameModel._from2(1, 1);
             }
 
             if (GameData.modelName[j].toLowerCase() === 'giantcrystal') {
@@ -9092,7 +9092,7 @@ class mudclient extends GameConnection {
         let j2 = GameData.wallObjectTextureFront[id];
         let k2 = GameData.wallObjectTextureBack[id];
         let l2 = GameData.wallObjectHeight[id];
-        let gameModel = new GameModel(4, 1);
+        let gameModel = GameModel._from2(4, 1);
 
         if (direction === 0) {
             x2 = x + 1;
