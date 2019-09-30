@@ -9,6 +9,7 @@ document.body.appendChild(gameCanvas);
 (async () => {
     const mc = new mudclient(gameCanvas);
     mc.members = false;
+    mc.threadSleep = 10;
     await mc.startApplication(512, 334, 'Runescape by Andrew Gower', false);
 })();
 
