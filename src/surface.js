@@ -4,14 +4,14 @@ const C_0 = '0'.charCodeAt(0);
 const C_9 = '9'.charCodeAt(0);
 
 function fixPixel(pixel) {
-    let c = (pixel >> 24) & 255;
+    //let c = (pixel >> 24) & 255;
     let r = (pixel >> 16) & 255;
     let g = (pixel >> 8) & 255;
     let b = pixel & 255;
 
-    if (c !== 0) {
+    /*if (c !== 0) {
         return pixel;
-    }
+    }*/
 
     // //invert
     let a = 255;
