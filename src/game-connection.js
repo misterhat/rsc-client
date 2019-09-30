@@ -81,7 +81,6 @@ class GameConnection extends GameShell {
                 this.showLoginScreenStatus('Please wait...', 'Connecting to server');
             }
 
-            console.log('test');
 
             this.clientStream = new ClientStream(await this.createSocket(this.server, this.port), this);
             this.clientStream.maxReadTries = GameConnection.maxReadTries;
@@ -94,8 +93,6 @@ class GameConnection extends GameShell {
 
             let sessId = await this.clientStream.getLong();
             this.sessionID = sessId;
-
-            console.log('test2');
 
             if (sessId.equals(0)) {
                 this.showLoginScreenStatus('Login server offline.', 'Please try again in a few mins');

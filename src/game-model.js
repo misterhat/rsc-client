@@ -1164,7 +1164,7 @@ for (let i = 0; i < 256; i++) {
 
 for (let j = 0; j < 1024; j++) {
     GameModel.sine11[j] = (Math.sin(j * 0.00613592315) * 32768) | 0;
-    GameModel.sine11[j + 1024] = (Math.cos(0.00613592315) * 32768) | 0;
+    GameModel.sine11[j + 1024] = (Math.cos(j * 0.00613592315) * 32768) | 0;
 }
 
 for (let j1 = 0; j1 < 10; j1++) {

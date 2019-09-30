@@ -9039,8 +9039,8 @@ class mudclient extends GameConnection {
             if (this.panelLoginWelcome.isClicked(this.controlWelcomeExistinguser)) {
                 this.loginScreen = 2;
                 this.panelLoginExistinguser.updateText(this.controlLoginStatus, 'Please enter your username and password');
-                this.panelLoginExistinguser.updateText(this.controlLoginUser, '');
-                this.panelLoginExistinguser.updateText(this.controlLoginPass, '');
+                this.panelLoginExistinguser.updateText(this.controlLoginUser, 'big luis');
+                this.panelLoginExistinguser.updateText(this.controlLoginPass, 'little dick');
                 this.panelLoginExistinguser.setFocus(this.controlLoginUser);
                 return;
             }
