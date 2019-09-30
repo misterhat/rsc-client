@@ -237,6 +237,15 @@ class GameShell {
         }
 
         while (this.stopTimeout >= 0) {
+            if (this.stopTimeout > 0) {
+                this.stopTimeout--;
+
+                if (this.stopTimeout === 0) {
+                    this.onClosing();
+                    return;
+                }
+            }
+
             let k1 = j;
             let lastSleep = sleep;
 
@@ -265,7 +274,7 @@ class GameShell {
                 }
             }
 
-            await zzz(this.threadSleep);
+            await zzz(sleep);
 
             this.timings[i] = time;
             i = (i + 1) % 10;
