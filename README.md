@@ -1,7 +1,40 @@
 # rsc-client
 
-a ported runescape classic client (*mudclient*) revision 204 from java to 
-javascript.
+a port of the 
+[runescape classic](https://en.wikipedia.org/wiki/RuneScape#History_and_development) 
+client ([*mudclient revision 204*](https://github.com/misterhat/mudclient204))
+from java to javascript.
+
+![](./screenshot.png?raw=true)
+
+## install
+
+    npm install rsc-client
+
+## usage
+
+the `dist/` directory contains everything you need to use the client.
+run `npm start` to start a simple HTTP server http://localhost:1337. 
+you may put optional arguments into the hash of the URL as such:
+
+    http://localhost:1337/index.html#members,127.0.0.1,43595
+
+alternatively, you can manually invoke `mudclient` on your own canvas as such:
+
+```javascript
+const mudclient = require('rsc-client');
+
+const mc = new mudclient(document.getElementById('mudclient-canvas'));
+mc.members = false;
+mc.threadSleep = 10;
+
+(async () => {
+    await mc.startApplication(512, 346, 'Runescape by Andrew Gower', false);
+})();
+```
+
+just make sure that wherever you host it, it's able to access 
+`./data204/` via XHR for its cache files.
 
 ## license
 This program is free software: you can redistribute it and/or modify it under 

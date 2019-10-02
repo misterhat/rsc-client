@@ -87,13 +87,6 @@ class Packet {
         return 0;
     }
 
-    availableStream() {
-        return 0;
-    }
-
-    async readStreamBytes(i, j, abyte0) {
-    }
-
     hasPacket() {
         return this.packetStart > 0;
     }
@@ -167,13 +160,14 @@ class Packet {
     }
 
     newPacket(i) {
-        if (this.packetStart > (((this.packetMaxLength * 4) / 5) | 0))
+        if (this.packetStart > (((this.packetMaxLength * 4) / 5) | 0)) {
             try {
                 this.writePacket(0);
             } catch (e) {
                 this.socketException = true;
                 this.socketExceptionMessage = e.message;
             }
+        }
 
         if (this.packetData === null) {
             this.packetData = new Int8Array(this.packetMaxLength);
@@ -183,13 +177,6 @@ class Packet {
         this.packetData[this.packetStart + 3] = 0;
         this.packetEnd = this.packetStart + 3;
         this.packet8Check = 8;
-    }
-
-    writeStreamBytes(abyte0, i, j) {
-    }
-
-    async readStream() {
-        return 0;
     }
 
     async getLong() {

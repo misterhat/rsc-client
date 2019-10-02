@@ -1,11 +1,8 @@
-//const GameModel = require('./game-model');
 const Long = require('long');
 const Polygon = require('./polygon');
 const Scanline = require('./scanline');
 
 const COLOUR_TRANSPARENT = 12345678;
-
-//console.log('GameModel from Scene', GameModel);
 
 class Scene {
     constructor(surface, i, polygons, k) {

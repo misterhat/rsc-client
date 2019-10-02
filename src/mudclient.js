@@ -11,12 +11,17 @@ const Long = require('long');
 const Panel = require('./panel');
 const S_OPCODES = require('./opcodes/server');
 const Scene = require('./scene');
+const StreamAudioPlayer = require('./stream-audio-player');
 const Surface = require('./surface');
 const SurfaceSprite = require('./surface-sprite');
 const Utility = require('./utility');
 const VERSION = require('./version');
 const WordFilter = require('./word-filter');
 const World = require('./world');
+
+function fromCharArray(a) {
+    return Array.from(a).map(c => String.fromCharCode(c)).join('');
+}
 
 class mudclient extends GameConnection {
     constructor(canvas) {
@@ -5255,7 +5260,7 @@ class mudclient extends GameConnection {
     async loadSounds() {
         try {
             this.soundData = await this.readDataFile('sounds' + VERSION.SOUNDS + '.mem', 'Sound effects', 90);
-            //this.audioPlayer = new StreamAudioPlayer();
+            this.audioPlayer = new StreamAudioPlayer();
         } catch (e) {
             console.log('Unable to init sounds:' + e.message);
             console.error(e);
@@ -5969,8 +5974,8 @@ class mudclient extends GameConnection {
             this.panelLoginExistinguser.drawPanel();
         }
 
-        //this.drawUiTabSocial(true);
-
+        // blue bar
+        this.surface._drawSprite_from3(0, this.gameHeight - 4, this.spriteMedia + 22); 
         this.surface.draw(this.graphics, 0, 0);
     }
 
@@ -7649,7 +7654,7 @@ class mudclient extends GameConnection {
                     let length = Utility.getUnsignedByte(pdata[offset]);
 
                     offset++;
-                    this.optionMenuEntry[i] = pdata.slice(offset, length).toString();
+                    this.optionMenuEntry[i] = fromCharArray(pdata.slice(offset, offset + length));
                     offset += length;
                 }
 
@@ -8246,8 +8251,7 @@ class mudclient extends GameConnection {
             }
 
             if (opcode === S_OPCODES.SOUND) {
-                let s = pdata.slice(1, psize - 1).toString();
-
+                let s = fromCharArray(pdata.slice(1, psize));
                 this.playSoundFile(s);
                 return;
             }
@@ -8282,7 +8286,7 @@ class mudclient extends GameConnection {
             }
 
             if (opcode === S_OPCODES.SERVER_MESSAGE) {
-                this.serverMessage = pdata.slice(1, psize - 1).toString();
+                this.serverMessage = fromCharArray(pdata.slice(1, psize));
                 this.showDialogServermessage = true;
                 this.serverMessageBoxTop = false;
 
@@ -8290,7 +8294,7 @@ class mudclient extends GameConnection {
             }
 
             if (opcode === S_OPCODES.SERVER_MESSAGE_ONTOP) {
-                this.serverMessage = pdata.slice(1, psize - 1).toString();
+                this.serverMessage = fromCharArray(pdata.slice(1, psize));
                 this.showDialogServermessage = true;
                 this.serverMessageBoxTop = true;
 

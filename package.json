@@ -2,11 +2,11 @@
   "name": "rsc-client",
   "version": "1.0.0",
   "description": "runescape classic client in javascript",
-  "main": "./dist/mudclient.js",
+  "main": "./src/mudclient.js",
   "scripts": {
-    "build-dev": "browserify example.js > example.bundle.js",
-    "build": "browserify -p tinyify src/mudclient.js > dist/mudclient.min.js",
-    "start": "st -p 1337"
+    "build-dev": "browserify index.js > dist/index.bundle.js",
+    "build": "browserify -p tinyify index.js > dist/index.bundle.min.js",
+    "start": "st -p 1337 -d dist"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/misterhat/rsc-client#readme",
   "devDependencies": {
+    "alawmulaw": "^5.0.2",
     "browserify": "^16.5.0",
     "eslint": "^6.4.0",
     "long": "^4.0.0",

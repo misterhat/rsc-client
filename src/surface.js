@@ -108,7 +108,6 @@ class Surface {
     draw(g, x, y) {
         // blit our canvas to the page's canvas
         this.setComplete();
-        //g.drawImage(image, x, y, this);
         g.drawImage(this.imageData, x, y);
     }
 

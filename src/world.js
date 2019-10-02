@@ -4,9 +4,6 @@ const GameModel = require('./game-model');
 const Utility = require('./utility');
 const ndarray = require('ndarray');
 
-console.log('Scene in World', Scene);
-console.log('GameModel in World', GameModel);
-
 class World {
     constructor(scene, surface) {
         this.regionWidth = 96;

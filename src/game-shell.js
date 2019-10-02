@@ -12,8 +12,8 @@ const { TGA } = require('./lib/tga');
 
 class GameShell {
     constructor(canvas) {
-        this.canvas = canvas;
-        this._graphics = new Graphics(this.canvas);
+        this._canvas = canvas;
+        this._graphics = new Graphics(this._canvas);
 
         this.mouseActionTimeout = 0;
         this.loadingStep = 0;
@@ -55,18 +55,21 @@ class GameShell {
     }
 
     async startApplication(width, height, title, resizeable) {
+        window.document.title = title;
+        this._canvas.width = width;
+        this._canvas.height = height;
+
         console.log('Started application');
         this.appletWidth = width;
         this.appletHeight = height;
-        window.document.title = title;
 
-        GameShell.gameFrame = this.canvas.getContext('2d');
+        GameShell.gameFrame = this._canvas.getContext('2d');
 
-        this.canvas.addEventListener('drag', this.mouseDragged.bind(this));
-        this.canvas.addEventListener('mousedown', this.mousePressed.bind(this));
-        this.canvas.addEventListener('contextmenu', this.mousePressed.bind(this));
-        this.canvas.addEventListener('mousemove', this.mouseMoved.bind(this));
-        this.canvas.addEventListener('mouseup', this.mouseReleased.bind(this));
+        this._canvas.addEventListener('drag', this.mouseDragged.bind(this));
+        this._canvas.addEventListener('mousedown', this.mousePressed.bind(this));
+        this._canvas.addEventListener('contextmenu', this.mousePressed.bind(this));
+        this._canvas.addEventListener('mousemove', this.mouseMoved.bind(this));
+        this._canvas.addEventListener('mouseup', this.mouseReleased.bind(this));
 
         window.addEventListener('keydown', this.keyPressed.bind(this));
         window.addEventListener('keyup', this.keyReleased.bind(this));

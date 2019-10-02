@@ -3,8 +3,6 @@ const Scene = require('./scene');
 
 const COLOUR_TRANSPARENT = 12345678;
 
-console.log('Scene in GameModel', Scene);
-
 class GameModel {
     constructor() {
         this.numVertices = 0;
